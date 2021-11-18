@@ -7,7 +7,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage2 extends State<LoginPage> {
+
   final _formKey = GlobalKey<FormState>();
+  String email = "";
+  String password = "";
+
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(
@@ -22,7 +26,9 @@ class _LoginPage2 extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset('assets/unite_logo.png', height: 150, width: 150,),
-                SizedBox(height: 60.0,),
+                SizedBox(height: 20.0,),
+                Text("UNITE", style: TextStyle(fontFamily: 'Horizon', fontSize: 40.0, color: Colors.lightBlue),),
+                SizedBox(height: 20.0,),
                 TextFormField(
                   textAlign: TextAlign.center,
                   decoration: new InputDecoration(
@@ -36,6 +42,9 @@ class _LoginPage2 extends State<LoginPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter some text';
+                    }
+                    else {
+                      email = value;
                     }
                     return null;
                   },
@@ -59,6 +68,9 @@ class _LoginPage2 extends State<LoginPage> {
                     }
                     else if (value.length < 6){
                       return 'Password length cannot be less than 6';
+                    }
+                    else{
+                      password = value;
                     }
                     return null;
                   },
@@ -91,13 +103,11 @@ class _LoginPage2 extends State<LoginPage> {
                     )
                   ],
                 ),
-
               ],
             ),
           ),
         )
       ),
-
     );
   }
 }

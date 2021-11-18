@@ -8,6 +8,7 @@ import 'Greeting.dart';
 void main() {
   runApp(MaterialApp(
     //home: ProfileView(),
+    debugShowCheckedModeBanner: false,
     initialRoute: '/greeting',
     routes: {
       '/login': (context) => LoginPage(),

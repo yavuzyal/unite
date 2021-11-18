@@ -48,7 +48,7 @@ class _LoginPage2 extends State<LoginPage> {
                     textAlign: TextAlign.center,
                     decoration: new InputDecoration(
                       hintText: "Enter Email",
-                      fillColor: Colors.black,
+                      hintStyle: AppStyles.hintTextStyle,
                       border: new OutlineInputBorder(
                         borderRadius: new BorderRadius.circular(0.0),
                         borderSide: new BorderSide(),
@@ -71,7 +71,7 @@ class _LoginPage2 extends State<LoginPage> {
                     textAlign: TextAlign.center,
                     decoration: new InputDecoration(
                       hintText: "Enter Password",
-                      fillColor: Colors.black,
+                      hintStyle: AppStyles.hintTextStyle,
                       border: new OutlineInputBorder(
                         borderRadius: new BorderRadius.circular(0.0),
                         borderSide: new BorderSide(),
@@ -103,7 +103,7 @@ class _LoginPage2 extends State<LoginPage> {
                         );
                       }
                     },
-                    child: const Text('Login', style: TextStyle(fontSize: 16),),
+                    child: Text('Login', style: AppStyles.buttonText,),
                   ),
                   SizedBox(height: 10.0,),
                   Row(

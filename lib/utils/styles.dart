@@ -3,6 +3,19 @@ import 'colors.dart';
 import 'package:flutter/material.dart';
 
 class AppStyles{
+
+  static final appBarStyle = GoogleFonts.signika(
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: FontWeight.w100
+  );
+
+  static final hintTextStyle = GoogleFonts.signika(
+    color: Color(0x9E5A5A5A),
+    fontSize: 15,
+    letterSpacing: 3
+  );
+
   static final appNameMainPage = GoogleFonts.signika(
     color: AppColors.logoColor,
     fontSize: 80,
@@ -17,6 +30,11 @@ class AppStyles{
     color: AppColors.logoColor,
     fontSize: 17,
     fontWeight: FontWeight.w700
+  );
+
+  static final buttonText = GoogleFonts.signika(
+      color: Colors.white,
+      fontSize: 17,
   );
 
   static final colorizeColors = [

@@ -30,7 +30,7 @@ class _RegisterPage2 extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Register Page"), backgroundColor: AppColors.logoColor, centerTitle: true,
+        title: Text("Register Page"), titleTextStyle: AppStyles.appBarStyle, backgroundColor: AppColors.logoColor, centerTitle: true,
       ),
       body: Center(
           child: Form(
@@ -49,7 +49,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Email",
-                        fillColor: Colors.black,
+                        hintStyle: AppStyles.hintTextStyle,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
                           borderSide: new BorderSide(),
@@ -71,7 +71,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Username",
-                        fillColor: Colors.black,
+                        hintStyle: AppStyles.hintTextStyle,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
                           borderSide: new BorderSide(),
@@ -93,7 +93,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Password",
-                        fillColor: Colors.black,
+                        hintStyle: AppStyles.hintTextStyle,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
                           borderSide: new BorderSide(),
@@ -125,7 +125,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                           );
                         }
                       },
-                      child: const Text('Sign Up', style: TextStyle(fontSize: 16),),
+                      child: Text('Sign Up', style: AppStyles.buttonText,),
                     ),
                   ],
                 ),

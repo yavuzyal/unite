@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-
+import 'utils/styles.dart';
 import 'Login.dart';
 
 class Greeting extends StatefulWidget {
@@ -16,17 +16,6 @@ class _GreetingState extends State<Greeting> {
     new Timer(const Duration(seconds: 3), onClose);
   }
 
-  final colorizeColors = [
-    Colors.purple,
-    Colors.blue,
-    Colors.yellow,
-    Colors.red,
-  ];
-
-  final colorizeTextStyle = TextStyle(
-    fontSize: 50.0,
-    fontFamily: 'Horizon',
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +27,16 @@ class _GreetingState extends State<Greeting> {
             children: <Widget>[
                   Image.asset(
                     'assets/unite_logo.png',
-                    height: 200.0,
-                    width: 200.0,
+                    height: 250.0,
+                    width: 250.0,
                   ),
                   SizedBox(height: 25,),
                   AnimatedTextKit(
                     animatedTexts: [
                       ColorizeAnimatedText(
-                        'UNITE',
-                        textStyle: colorizeTextStyle,
-                        colors: colorizeColors,
+                        'UNIte',
+                        textStyle: AppStyles.colorizeTextStyle,
+                        colors: AppStyles.colorizeColors,
                       ),
                     ],
                     isRepeatingAnimation: false,

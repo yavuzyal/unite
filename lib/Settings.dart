@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unite/RegisterPage.dart';
-import 'package:unite/usables/config.dart';
+import 'package:unite/usables/config.dart' as globals;
 import 'package:unite/utils/styles.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
@@ -31,7 +31,7 @@ class _LoginPage2 extends State<Settings> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-
+      backgroundColor: globals.light ? Colors.white: Colors.black,
       body: Center(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -49,10 +49,10 @@ class _LoginPage2 extends State<Settings> {
                       style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                       onPressed: () {
                         setState(() {
-                          currentTheme.switchTheme();
+                          globals.light = !globals.light;
                         });
                       },
-                      child: const Text('Dark Mode', style: TextStyle(fontSize: 20, ),),
+                      child: globals.light ? Text('Dark Mode', style: TextStyle(fontSize: 20, ),) : Text('Light Mode', style: TextStyle(fontSize: 20, ),),
                     ),
                     SizedBox(height: 10.0,),
                   ],

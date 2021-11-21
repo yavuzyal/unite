@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
-import 'package:unite/usables/config.dart';
+import 'package:unite/usables/config.dart' as globals;
 
 import 'Greeting.dart';
 import 'Settings.dart';
@@ -10,9 +10,7 @@ import 'Settings.dart';
 void main() {
   runApp(MaterialApp(
     //home: ProfileView(),
-    theme: ThemeData.light(),
-    darkTheme: ThemeData.dark(),
-    themeMode: currentTheme.currentTheme(),
+    theme: globals.light ? globals.lightTheme : globals.darkTheme,
     debugShowCheckedModeBanner: false,
     initialRoute: '/greeting',
     routes: {
@@ -21,6 +19,7 @@ void main() {
       '/register': (context) => RegisterPage(),
       '/greeting': (context) => Greeting(),
       '/settings': (context) => Settings(),
+      '/pageOne': (context) => LoginPage(),
     },
   ));
 }
@@ -30,6 +29,9 @@ class MainPage extends StatefulWidget {
 
   @override
   State<MainPage> createState() => _MainPageState();
+
+  static final ValueNotifier<ThemeMode> themeNotifier =
+  ValueNotifier(ThemeMode.light);
 }
 
 /// This is the private State class that goes with MyStatefulWidget.
@@ -53,16 +55,6 @@ class _MainPageState extends State<MainPage> {
     Settings(),
   ];
 
-  void initState(){
-    super.initState();
-    currentTheme.addListener(() {
-      print("Changes");
-      setState(() {
-        currentTheme.switchTheme();
-      });
-    });
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -73,32 +65,23 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('UNIte'), centerTitle: true, actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.email,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            // do something
-          },
-        )
-      ],
+        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
+        title: const Text('UNIte'), centerTitle: true,
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Account',
-            backgroundColor: Colors.lightBlueAccent,
+            backgroundColor: globals.light ? Colors.lightBlueAccent: Colors.blue[700],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
-            label: 'Bu ne yaw',
+            label: 'Location',
             backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(

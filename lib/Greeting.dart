@@ -13,7 +13,7 @@ class _GreetingState extends State<Greeting> {
   @override
   initState() {
     super.initState();
-    new Timer(const Duration(seconds: 3), onClose);
+    new Timer(const Duration(seconds: 2), onClose);
   }
 
 
@@ -32,6 +32,7 @@ class _GreetingState extends State<Greeting> {
                   ),
                   SizedBox(height: 25,),
                   AnimatedTextKit(
+                    pause : const Duration(milliseconds: 5000),
                     animatedTexts: [
                       ColorizeAnimatedText(
                         'UNIte',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/utils/styles.dart';
+import 'package:unite/profile.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 
@@ -100,6 +101,10 @@ class _LoginPage2 extends State<LoginPage> {
                       if (_formKey.currentState!.validate()) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('All done')),
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Profile()),
                         );
                       }
                     },

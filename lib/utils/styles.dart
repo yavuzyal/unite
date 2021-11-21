@@ -23,7 +23,29 @@ class AppStyles{
 
   static final appNamePage = GoogleFonts.signika(
     color: AppColors.logoColor,
-    fontSize: 50,
+    fontSize: 60,
+  );
+
+  static final profileName = GoogleFonts.nunito(
+    color: AppColors.logoColor,
+    fontSize: 40,
+    fontWeight: FontWeight.w700
+  );
+
+  static final profileText = GoogleFonts.signika(
+      color: AppColors.appTextColor,
+      fontSize: 18,
+  );
+
+  static final commentName = GoogleFonts.signika(
+    color: AppColors.appTextColor,
+    fontWeight: FontWeight.bold,
+    fontSize: 18,
+  );
+
+  static final postText = GoogleFonts.signika(
+    color: AppColors.postTextColor,
+    fontSize: 18,
   );
 
   static final signUp = GoogleFonts.signika(
@@ -40,7 +62,7 @@ class AppStyles{
   static final colorizeColors = [
     Color(0xFF60A8F7),
     Color(0xFF9947EE),
-    Color(0xFFF64C6D),
+    Color(0xFFF64CDA),
     Color(0xFF608BF7)
   ];
 

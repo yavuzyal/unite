@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
-
+import 'package:unite/profile.dart';
+import 'package:unite/utils/post_page.dart';
+import 'utils/post.dart';
 import 'Greeting.dart';
 
 
@@ -9,12 +11,13 @@ void main() {
   runApp(MaterialApp(
     //home: ProfileView(),
     debugShowCheckedModeBanner: false,
-    initialRoute: '/greeting',
+    initialRoute: '/profile',
     routes: {
       '/login': (context) => LoginPage(),
       '/main': (context) => MainPage(),
       '/register': (context) => RegisterPage(),
       '/greeting': (context) => Greeting(),
+      '/profile': (context) => Profile(),
     },
   ));
 }

@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-
-
-
 import 'package:unite/main.dart';
 import 'utils/styles.dart';
 import 'Login.dart';
@@ -20,17 +17,6 @@ class _GreetingState extends State<Greeting> {
     new Timer(const Duration(seconds: 3), onClose);
   }
 
-  final colorizeColors = [
-    Colors.purple,
-    Colors.blue,
-    Colors.yellow,
-    Colors.red,
-  ];
-
-  final colorizeTextStyle = TextStyle(
-    fontSize: 50.0,
-    fontFamily: 'Horizon',
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +26,25 @@ class _GreetingState extends State<Greeting> {
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-                  Image.asset(
-                    'assets/unite_logo.png',
-                    height: 200.0,
-                    width: 200.0,
+              Image.asset(
+                'assets/unite_logo.png',
+                height: 250.0,
+                width: 250.0,
+              ),
+              SizedBox(height: 25,),
+              AnimatedTextKit(
+                animatedTexts: [
+                  ColorizeAnimatedText(
+                    'UNIte',
+                    textStyle: AppStyles.colorizeTextStyle,
+                    colors: AppStyles.colorizeColors,
                   ),
-                  SizedBox(height: 25,),
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      ColorizeAnimatedText(
-                        'UNITE',
-                        textStyle: colorizeTextStyle,
-                        colors: colorizeColors,
-                      ),
-                    ],
-                    isRepeatingAnimation: false,
-                    onTap: () {
-                      print("Tap Event");
-                    },
-                  ),
+                ],
+                isRepeatingAnimation: false,
+                onTap: () {
+                  print("Tap Event");
+                },
+              ),
             ],
           )),
     );

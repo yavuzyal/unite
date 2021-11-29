@@ -5,17 +5,6 @@ import 'package:flutter/material.dart';
 class AppStyles{
 
   static final appBarStyle = GoogleFonts.signika(
-<<<<<<< Updated upstream
-    color: Colors.white,
-    fontSize: 20,
-    fontWeight: FontWeight.w100
-  );
-
-  static final hintTextStyle = GoogleFonts.signika(
-    color: Color(0x9E5A5A5A),
-    fontSize: 15,
-    letterSpacing: 3
-=======
       color: Colors.white,
       fontSize: 20,
       fontWeight: FontWeight.w100
@@ -25,7 +14,6 @@ class AppStyles{
       color: Color(0x9E5A5A5A),
       fontSize: 15,
       letterSpacing: 3
->>>>>>> Stashed changes
   );
 
   static final appNameMainPage = GoogleFonts.signika(
@@ -39,16 +27,6 @@ class AppStyles{
   );
 
   static final profileName = GoogleFonts.nunito(
-<<<<<<< Updated upstream
-    color: AppColors.logoColor,
-    fontSize: 40,
-    fontWeight: FontWeight.w700
-  );
-
-  static final profileText = GoogleFonts.signika(
-      color: AppColors.appTextColor,
-      fontSize: 18,
-=======
       color: AppColors.logoColor,
       fontSize: 40,
       fontWeight: FontWeight.w700
@@ -57,7 +35,6 @@ class AppStyles{
   static final profileText = GoogleFonts.signika(
     color: AppColors.appTextColor,
     fontSize: 18,
->>>>>>> Stashed changes
   );
 
   static final commentName = GoogleFonts.signika(
@@ -72,14 +49,9 @@ class AppStyles{
   );
 
   static final signUp = GoogleFonts.signika(
-    color: AppColors.logoColor,
-    fontSize: 17,
-    fontWeight: FontWeight.w700
-  );
-
-  static final buttonText = GoogleFonts.signika(
-      color: Colors.white,
+      color: AppColors.logoColor,
       fontSize: 17,
+      fontWeight: FontWeight.w700
   );
 
   static final buttonText = GoogleFonts.signika(
@@ -95,6 +67,6 @@ class AppStyles{
   ];
 
   static final colorizeTextStyle = GoogleFonts.signika(
-      fontSize: 120,
+    fontSize: 120,
   );
 }

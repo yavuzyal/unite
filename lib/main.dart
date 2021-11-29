@@ -1,47 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
-<<<<<<< Updated upstream
-=======
 import 'package:unite/usables/config.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
->>>>>>> Stashed changes
 import 'package:unite/profile.dart';
 import 'package:unite/utils/post_page.dart';
 import 'utils/post.dart';
 import 'Greeting.dart';
+import 'Settings.dart';
 
 
 void main() {
   runApp(MaterialApp(
     //home: ProfileView(),
+    theme: globals.light ? globals.lightTheme : globals.darkTheme,
     debugShowCheckedModeBanner: false,
-    initialRoute: '/profile',
+    initialRoute: '/greeting',
     routes: {
       '/login': (context) => LoginPage(),
       '/main': (context) => MainPage(),
       '/register': (context) => RegisterPage(),
       '/greeting': (context) => Greeting(),
-<<<<<<< Updated upstream
-=======
       '/settings': (context) => Settings(),
       '/pageOne': (context) => LoginPage(),
->>>>>>> Stashed changes
       '/profile': (context) => Profile(),
     },
   ));
 }
 
 class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
   @override
-  State<MainPage> createState() => _MainPage2();
+  State<MainPage> createState() => _MainPageState();
+
+  static final ValueNotifier<ThemeMode> themeNotifier =
+  ValueNotifier(ThemeMode.light);
 }
 
-<<<<<<< Updated upstream
-class _MainPage2 extends State<MainPage> {
-=======
 /// This is the private State class that goes with MyStatefulWidget.
 class _MainPageState extends State<MainPage> {
 
@@ -73,23 +71,13 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
->>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
-    final PageController controller = PageController(initialPage: 0);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Main Page"), centerTitle: true, backgroundColor: Colors.lightBlueAccent, automaticallyImplyLeading: true,
-        leading: IconButton(icon: Icon(Icons.email), onPressed: () {  },), backwardsCompatibility: true,
+        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
+        title: const Text('UNIte'), centerTitle: true,
       ),
-<<<<<<< Updated upstream
-      body: PageView(
-        scrollDirection: Axis.horizontal,
-        controller: controller,
-        children: const <Widget>[
-          Center(
-            child: Text('First Page'),
-=======
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -110,16 +98,22 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.add_box),
             label: 'Add Post',
             backgroundColor: Colors.purple,
->>>>>>> Stashed changes
           ),
-          Center(
-            child: Text('Second Page'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.email),
+            label: 'Messages',
+            backgroundColor: Colors.orange,
           ),
-          Center(
-            child: Text('Third Page'),
-          )
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+            backgroundColor: Colors.pink,
+          ),
         ],
-      )
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }

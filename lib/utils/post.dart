@@ -17,10 +17,4 @@ class Post {
 
   @override
   String toString() => 'Post: $text\nDate: $date\nLikes: $likeCount\nComments: $commentCount';
-<<<<<<< Updated upstream
 }
-
-
-=======
-}
->>>>>>> Stashed changes

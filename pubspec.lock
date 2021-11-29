@@ -113,7 +113,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
-<<<<<<< Updated upstream
   checked_yaml:
     dependency: transitive
     description:
@@ -128,8 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.5"
-=======
->>>>>>> Stashed changes
   clock:
     dependency: transitive
     description:
@@ -322,7 +319,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-<<<<<<< Updated upstream
   mime:
     dependency: transitive
     description:
@@ -337,8 +333,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-=======
->>>>>>> Stashed changes
   path:
     dependency: transitive
     description:
@@ -519,7 +513,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2"
-<<<<<<< Updated upstream
   timing:
     dependency: transitive
     description:
@@ -527,8 +520,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-=======
->>>>>>> Stashed changes
   typed_data:
     dependency: transitive
     description:

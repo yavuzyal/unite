@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
-=======
 import 'package:unite/main.dart';
 import 'package:unite/profile.dart';
->>>>>>> Stashed changes
 import 'utils/styles.dart';
 import 'Login.dart';
 
@@ -56,23 +53,9 @@ class _GreetingState extends State<Greeting> {
   }
 
   void onClose() {
-<<<<<<< Updated upstream
-    Navigator.of(context).pushReplacement(new PageRouteBuilder(
-        maintainState: true,
-        opaque: true,
-        pageBuilder: (context, _, __) => new LoginPage(),
-        transitionDuration: const Duration(seconds: 2),
-        transitionsBuilder: (context, anim1, anim2, child) {
-          return new FadeTransition(
-            child: child,
-            opacity: anim1,
-          );
-        }));
-=======
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
->>>>>>> Stashed changes
   }
 }

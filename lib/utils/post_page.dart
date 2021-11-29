@@ -57,10 +57,17 @@ class _PostPageState extends State<PostPage> {
                   IconButton(
                     constraints: BoxConstraints(),
                     onPressed: () {
+<<<<<<< Updated upstream
                     setState(() {
                       widget.post.likeCount++;
                     });
                   },
+=======
+                      setState(() {
+                        widget.post.likeCount++;
+                      });
+                    },
+>>>>>>> Stashed changes
                     iconSize: 25,
                     splashRadius: 150,
                     padding: EdgeInsets.all(0),
@@ -91,4 +98,8 @@ class _PostPageState extends State<PostPage> {
       ),
     );
   }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

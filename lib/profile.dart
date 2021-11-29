@@ -26,6 +26,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+<<<<<<< Updated upstream
       appBar: AppBar(
         title: Text("Profile Page"), titleTextStyle: AppStyles.appBarStyle, backgroundColor: AppColors.logoColor, centerTitle: true,
       ),
@@ -59,6 +60,8 @@ class _ProfileState extends State<Profile> {
           alignment: Alignment.center,
         ),
       ),
+=======
+>>>>>>> Stashed changes
       body:
       SingleChildScrollView(
         child: Column(
@@ -69,7 +72,11 @@ class _ProfileState extends State<Profile> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
+<<<<<<< Updated upstream
                     children: [
+=======
+                  children: [
+>>>>>>> Stashed changes
                     Image.asset('assets/unite_logo.png', height: 50, width: 50,),
                     SizedBox(height: 30.0,),
                     CircleAvatar(
@@ -82,6 +89,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       radius: 70,
                     ),
+<<<<<<< Updated upstream
                       SizedBox(height : 15),
                       Text("Barış Altop", style: AppStyles.profileName,),
 
@@ -160,6 +168,86 @@ class _ProfileState extends State<Profile> {
                           ),
                       ),
                     ],
+=======
+                    SizedBox(height : 15),
+                    Text("Barış Altop", style: AppStyles.profileName,),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                          Expanded(child: Text("Sabancı University", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                          Expanded(child: Text("Computer Science", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                          Expanded(child: Text("30", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(90,0,20,0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                          Expanded(child: Text("Hacking, coding, travelling, interest4, interest5", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                          Expanded(child: Text("Hi there, I am using UNIte!", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+                    Container(
+                      child: Column(
+                        children: myPosts.map(
+                                (post) =>
+                                PostTile(
+                                  post: post,
+                                  delete: () {
+                                    setState(() {
+                                      myPosts.remove(post);
+                                    });
+                                  },
+                                  like: () {
+                                    setState(() {
+                                      post.likeCount++;
+                                    });
+                                  },)
+                        ).toList(),
+                      ),
+                    ),
+                  ],
+>>>>>>> Stashed changes
                 ),
               ),
             ),
@@ -168,4 +256,8 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

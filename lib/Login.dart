@@ -4,6 +4,13 @@ import 'package:unite/utils/styles.dart';
 import 'package:unite/profile.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
+import 'package:flutter/material.dart';
+import 'package:unite/RegisterPage.dart';
+import 'package:unite/utils/styles.dart';
+import 'package:unite/profile.dart';
+import 'utils/colors.dart';
+import 'utils/styles.dart';
+import 'package:unite/main.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -77,6 +84,24 @@ class _LoginPage2 extends State<LoginPage> {
                         borderRadius: new BorderRadius.circular(0.0),
                         borderSide: new BorderSide(),
                       ),
+<<<<<<< Updated upstream
+=======
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        else if (value.length < 6){
+                          return 'Password length cannot be less than 6 characters';
+                        }
+                        else if(RegExp("r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}\$").hasMatch(value)){
+                          return 'error';
+                        }
+                        else{
+                          password = value;
+                        }
+                        return null;
+                      },
+>>>>>>> Stashed changes
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -121,12 +146,48 @@ class _LoginPage2 extends State<LoginPage> {
                             context,
                             MaterialPageRoute(builder: (context) => RegisterPage()),
                           );
+<<<<<<< Updated upstream
                         },
                         child: new Text("Sign Up", style: AppStyles.signUp, ),
                       )
                     ],
                   ),
                 ],
+=======
+                          Navigator.of(context).pushReplacement(new PageRouteBuilder(
+                          maintainState: true,
+                          opaque: true,
+                          pageBuilder: (context, _, __) => new MainPage(),
+                          transitionDuration: const Duration(seconds: 2),
+                          transitionsBuilder: (context, anim1, anim2, child) {
+                          return new FadeTransition(
+                          child: child,
+                          opacity: anim1,
+                          );
+                          }));
+                          }
+                      },
+                      child: const Text('Login', style: TextStyle(fontSize: 16),),
+                    ),
+                    SizedBox(height: 10.0,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("New to Unite? ", style: TextStyle(fontSize: 16),),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => RegisterPage()),
+                            );
+                          },
+                          child: new Text("Sign Up", style: AppStyles.signUp, ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+>>>>>>> Stashed changes
               ),
             ),
           ),

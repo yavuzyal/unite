@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:unite/main.dart';
+import 'package:unite/profile.dart';
 import 'utils/styles.dart';
 import 'Login.dart';
 
@@ -13,7 +15,7 @@ class _GreetingState extends State<Greeting> {
   @override
   initState() {
     super.initState();
-    new Timer(const Duration(seconds: 3), onClose);
+    new Timer(const Duration(seconds: 2), onClose);
   }
 
 
@@ -32,6 +34,7 @@ class _GreetingState extends State<Greeting> {
                   ),
                   SizedBox(height: 25,),
                   AnimatedTextKit(
+                    pause : const Duration(milliseconds: 5000),
                     animatedTexts: [
                       ColorizeAnimatedText(
                         'UNIte',
@@ -50,16 +53,9 @@ class _GreetingState extends State<Greeting> {
   }
 
   void onClose() {
-    Navigator.of(context).pushReplacement(new PageRouteBuilder(
-        maintainState: true,
-        opaque: true,
-        pageBuilder: (context, _, __) => new LoginPage(),
-        transitionDuration: const Duration(seconds: 2),
-        transitionsBuilder: (context, anim1, anim2, child) {
-          return new FadeTransition(
-            child: child,
-            opacity: anim1,
-          );
-        }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 }

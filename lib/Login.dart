@@ -1,3 +1,4 @@
+//import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/utils/styles.dart';
@@ -54,10 +55,13 @@ class _LoginPage2 extends State<LoginPage> {
                           borderSide: new BorderSide(),
                         ),
                       ),
-                      validator: (value) {
+                      validator: (String ? value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
                         }
+                        //else if(!EmailValidator.validate(email)){
+                        //  return 'Please enter a valid email address';
+                        //}
                         else {
                           email = value;
                         }

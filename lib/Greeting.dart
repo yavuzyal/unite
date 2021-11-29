@@ -1,7 +1,13 @@
 import 'dart:async';
+import 'package:after_layout/after_layout.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/main.dart';
+
+import 'package:unite/profile.dart';
+import 'Walkthrough.dart';
+
 import 'utils/styles.dart';
 import 'Login.dart';
 
@@ -14,9 +20,29 @@ class _GreetingState extends State<Greeting> {
   @override
   initState() {
     super.initState();
-    new Timer(const Duration(seconds: 3), onClose);
+    new Timer(const Duration(seconds: 2), checkFirstSeen);
+
   }
 
+  Future checkFirstSeen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    bool _seen = (prefs.getBool('seen') ?? false);
+    print(_seen);
+
+    if (_seen) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      await prefs.setBool('seen', true);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WalkthroughScreen()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +77,7 @@ class _GreetingState extends State<Greeting> {
   }
 
   void onClose() {
+
     Navigator.of(context).pushReplacement(new PageRouteBuilder(
         maintainState: true,
         opaque: true,
@@ -62,5 +89,11 @@ class _GreetingState extends State<Greeting> {
             opacity: anim1,
           );
         }));
+
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WalkthroughScreen()),
+    );
   }
 }

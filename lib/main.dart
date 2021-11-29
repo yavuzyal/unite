@@ -3,6 +3,15 @@ import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/usables/config.dart' as globals;
 
+
+import 'package:flutter/material.dart';
+import 'package:unite/Login.dart';
+import 'package:unite/RegisterPage.dart';
+import 'package:unite/profile.dart';
+import 'package:unite/utils/post_page.dart';
+import 'Walkthrough.dart';
+import 'utils/post.dart';
+
 import 'Greeting.dart';
 import 'Settings.dart';
 
@@ -20,6 +29,8 @@ void main() {
       '/greeting': (context) => Greeting(),
       '/settings': (context) => Settings(),
       '/pageOne': (context) => LoginPage(),
+      '/profile': (context) => Profile(),
+      '/walkthrough': (context) => WalkthroughScreen(),
     },
   ));
 }

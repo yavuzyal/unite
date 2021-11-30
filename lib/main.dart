@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
-    LoginPage(),
+    Profile(),
     Text(
       'Location',
       style: optionStyle,
@@ -76,6 +76,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
         title: const Text('UNIte'), centerTitle: true,
       ),

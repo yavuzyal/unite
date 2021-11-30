@@ -1,6 +1,8 @@
 //import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/main.dart';
 import 'package:unite/utils/styles.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'utils/colors.dart';
@@ -12,6 +14,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage2 extends State<LoginPage> {
+
+  Future setLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    await prefs.setBool('loggedIn', true);
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
+  }
 
   final _formKey = GlobalKey<FormState>();
   String email = "";
@@ -103,8 +113,13 @@ class _LoginPage2 extends State<LoginPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('All done')),
+                            const SnackBar(content: Text('Login Successful')),
                           );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MainPage()),
+                          );
+                          setLoggedIn();
                         }
                       },
                       child: const Text('Login', style: TextStyle(fontSize: 16),),

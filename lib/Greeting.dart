@@ -21,7 +21,6 @@ class _GreetingState extends State<Greeting> {
   initState() {
     super.initState();
     new Timer(const Duration(seconds: 2), checkFirstSeen);
-
   }
 
   Future checkFirstSeen() async {
@@ -30,11 +29,23 @@ class _GreetingState extends State<Greeting> {
     bool _seen = (prefs.getBool('seen') ?? false);
     print(_seen);
 
+    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    bool _loggedIn = (prefs.getBool('loggedIn') ?? false);
+    print(_loggedIn);
+
     if (_seen) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      if(!_loggedIn){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
+      else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
+        );
+      }
     } else {
       await prefs.setBool('seen', true);
       Navigator.push(

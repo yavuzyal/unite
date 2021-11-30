@@ -1,4 +1,4 @@
-//import 'package:email_validator/email_validator.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/RegisterPage.dart';
@@ -19,13 +19,15 @@ class _LoginPage2 extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
     await prefs.setBool('loggedIn', true);
-    await prefs.setString('email', email);
-    await prefs.setString('password', password);
+    await prefs.setString('email', email!);
+    await prefs.setString('password', password!);
   }
 
   final _formKey = GlobalKey<FormState>();
-  String email = "";
-  String password = "";
+  String? email = "";
+  String? password = "";
+  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
 
   Color buttonColorCheck(Set<MaterialState> states){
     const Set<MaterialState> interactiveStates = <MaterialState>{
@@ -50,7 +52,7 @@ class _LoginPage2 extends State<LoginPage> {
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children:[
                     Image.asset('assets/unite_logo.png', height: 150, width: 150,),
                     SizedBox(height: 20.0,),
                     Text("UNIte", style: AppStyles.appNameMainPage,),
@@ -65,13 +67,13 @@ class _LoginPage2 extends State<LoginPage> {
                           borderSide: new BorderSide(),
                         ),
                       ),
-                      validator: (String ? value) {
+                      validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
                         }
-                        //else if(!EmailValidator.validate(email)){
-                        //  return 'Please enter a valid email address';
-                        //}
+                        else if(!EmailValidator.validate(value)){
+                          return 'Please enter a valid email address';
+                        }
                         else {
                           email = value;
                         }
@@ -98,8 +100,8 @@ class _LoginPage2 extends State<LoginPage> {
                         else if (value.length < 6){
                           return 'Password length cannot be less than 6 characters';
                         }
-                        else if(RegExp("^(?=.{8,32}\$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*").hasMatch(value)){
-                          return 'error';
+                        else if(!regex.hasMatch(value)){
+                          return 'Password should include an uppercase letter, a lowercase letter, \n one digit and a special character';
                         }
                         else{
                           password = value;

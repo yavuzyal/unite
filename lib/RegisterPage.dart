@@ -1,4 +1,6 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:unite/Login.dart';
 import 'utils/styles.dart';
 import 'utils/colors.dart';
 
@@ -26,6 +28,7 @@ class _RegisterPage2 extends State<RegisterPage> {
   String email = "";
   String password = "";
   String username = "";
+  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +58,12 @@ class _RegisterPage2 extends State<RegisterPage> {
                           borderSide: new BorderSide(),
                         ),
                       ),
-                      validator: (value) {
+                      validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
+                        }
+                        else if(!EmailValidator.validate(value)){
+                          return 'Please enter a valid email address';
                         }
                         else{
                           email = value;
@@ -106,7 +112,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                         else if (value.length < 6){
                           return 'Password length cannot be less than 6 characters';
                         }
-                        else if(!RegExp("^(?=.{8,32}\$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*(),.?:{}|<>]).*").hasMatch(value)){
+                        else if(!regex.hasMatch(value)){
                           return 'Password should include an uppercase letter, a lowercase letter, \n one digit and a special character';
                         }
                         else{
@@ -121,7 +127,11 @@ class _RegisterPage2 extends State<RegisterPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('All done')),
+                            const SnackBar(content: Text('Signed Up Successfully!')),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
                           );
                         }
                       },

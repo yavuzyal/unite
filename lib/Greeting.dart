@@ -25,11 +25,11 @@ class _GreetingState extends State<Greeting> {
 
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING WALKTHROUGH
     bool _seen = (prefs.getBool('seen') ?? false);
     print(_seen);
 
-    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    //await prefs.clear();    //TO CHECK THE NOT LOGGED IN CASE
     bool _loggedIn = (prefs.getBool('loggedIn') ?? false);
     print(_loggedIn);
 

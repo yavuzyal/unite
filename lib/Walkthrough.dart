@@ -98,7 +98,7 @@ class MyStatelessWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('You can find other people by\nsearching a specific location',overflow: TextOverflow.fade, textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
+                      Text('You can find other people\nby searching a location',overflow: TextOverflow.fade, textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ],
                   ),
                   Row(
@@ -141,7 +141,7 @@ class MyStatelessWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('For privacy, other people can add\nyou with a one time code only',overflow: TextOverflow.fade, textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
+                      Text('For privacy, others can only add\nyou with a one time code!',overflow: TextOverflow.fade, textAlign: TextAlign.center,style: TextStyle(fontSize: 25),),
                     ],
                   ),
                   Row(

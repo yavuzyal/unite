@@ -26,7 +26,7 @@ class _LoginPage2 extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? email = "";
   String? password = "";
-  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~-]).{8,}$');
 
 
   Color buttonColorCheck(Set<MaterialState> states){
@@ -99,11 +99,11 @@ class _LoginPage2 extends State<LoginPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter some text';
                             }
-                            else if (value.length < 6){
-                              return 'Password length cannot be less than 6 characters';
+                            else if (value.length < 8){
+                              return 'Password length cannot be less than 8 characters';
                             }
                             else if(!regex.hasMatch(value)){
-                              return 'Password should include an uppercase letter, a lowercase letter, \n one digit and a special character';
+                              return 'Password should include an uppercase letter, a lowercase\n  letter, one digit and a special character';
                             }
                             else{
                               password = value;

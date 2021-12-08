@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unite/utils/dimensions.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
@@ -34,7 +35,7 @@ class _ProfileState extends State<Profile> {
           children: [
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: AppDimensions.padding8,
                 child: Column(
                   children: [
                     Image.asset('assets/unite_logo.png', height: 50, width: 50,),
@@ -53,7 +54,7 @@ class _ProfileState extends State<Profile> {
                     Text("Barış Altop", style: AppStyles.profileName,),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -63,7 +64,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -74,7 +75,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -85,7 +86,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,20,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -96,7 +97,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

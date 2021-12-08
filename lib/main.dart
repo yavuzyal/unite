@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/usables/config.dart' as globals;
 
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
@@ -16,12 +20,31 @@ import 'Greeting.dart';
 import 'Settings.dart';
 
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final Future<FirebaseApp> _fbapp = Firebase.initializeApp();
+
   runApp(MaterialApp(
-    //home: ProfileView(),
+    home: FutureBuilder(
+      future: _fbapp,
+      builder: (context, snapshot){
+        if(snapshot.hasError){
+          print('You have an error ${snapshot.error.toString()}');
+        }
+        else if(snapshot.hasData){
+          return Greeting();
+        }
+        else{
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        throw "You have thrown something";
+      },
+    ),
     theme: globals.light ? globals.lightTheme : globals.darkTheme,
     debugShowCheckedModeBanner: false,
-    initialRoute: '/greeting',
+    //initialRoute: '/greeting',
     routes: {
       '/login': (context) => LoginPage(),
       '/main': (context) => MainPage(),
@@ -47,6 +70,7 @@ class MainPage extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MainPageState extends State<MainPage> {
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[

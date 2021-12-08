@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "903298080978",
+    "firebase_url": "https://unite-37b31-default-rtdb.europe-west1.firebasedatabase.app/",
+    "project_id": "unite-37b31",
+    "storage_bucket": "unite-37b31.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903298080978:android:0cbac305c580bf92d20d0b",
+        "android_client_info": {
+          "package_name": "com.example.unite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903298080978-7dt8cld5gure19mhde1c8jm3583v8diq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBz79BynfV8tIXgYgyoiHOjsPz1HJKISzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903298080978-7dt8cld5gure19mhde1c8jm3583v8diq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

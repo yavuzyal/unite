@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
+import 'package:unite/utils/dimensions.dart';
 
 /// This is the main application widget.
 class WalkthroughScreen extends StatelessWidget {
@@ -41,7 +42,7 @@ class MyStatelessWidget extends StatelessWidget {
 
         Center( //ILK SAYFASI
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: AppDimensions.padding8,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -84,7 +85,7 @@ class MyStatelessWidget extends StatelessWidget {
 
         Center(  //IKINCI SAYFASI
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: AppDimensions.padding8,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -127,7 +128,7 @@ class MyStatelessWidget extends StatelessWidget {
 
         Center(  //3. SAYFASI
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: AppDimensions.padding8,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -170,7 +171,7 @@ class MyStatelessWidget extends StatelessWidget {
 
         Center(  //4. SAYFASI
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: AppDimensions.padding8,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -212,7 +213,7 @@ class MyStatelessWidget extends StatelessWidget {
 
         Center(  //5. SAYFASI
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: AppDimensions.padding8,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

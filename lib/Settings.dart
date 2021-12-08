@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/usables/config.dart' as globals;
+import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
@@ -44,7 +45,7 @@ class _Settings2 extends State<Settings> {
       backgroundColor: globals.light ? Colors.white: Colors.black,
       body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: AppDimensions.padding20,
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(

@@ -1,8 +1,10 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/main.dart';
+import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'utils/colors.dart';
@@ -43,12 +45,21 @@ class _LoginPage2 extends State<LoginPage> {
   }
 
   Widget build(BuildContext context) {
+
+    final db = FirebaseDatabase.instance.reference().child("zoom_users");
+    db.once().then((DataSnapshot snapshot){
+      Map<dynamic, dynamic> values = snapshot.value;
+      values.forEach((key,values) {
+        print(values["name"]);
+      });
+    });
+
     return new WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
           body: Center(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppDimensions.padding20,
                 child: Form(
                   key: _formKey,
                   child: SingleChildScrollView(

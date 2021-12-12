@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -110,7 +111,6 @@ class _RegisterPage2 extends State<RegisterPage> {
                       ),
                       SizedBox(height: 20.0,),
                       TextFormField(
-                        obscureText: true,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Username",
@@ -163,24 +163,24 @@ class _RegisterPage2 extends State<RegisterPage> {
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.resolveWith(
                                 buttonColorCheck)),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
 
-                            print("in validate");
-                            print(getUser());
+                            await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
-                            database.child('users/').child(username).set({'email': email, 'password': password})
-                                .onError((error, stackTrace) => print("There is an error of setting the email and password to Firebase dB"));
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Signed Up Successfully!')),
-                            );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
-                            );
+                            setState(() {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Signed Up Successfully!')),
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              );
+                            });
+                            //database.child('users/').child(username).set({'email': email, 'password': password})
+                            //    .onError((error, stackTrace) => print("There is an error of setting the email and password to Firebase dB"));
                           }
                         },
                         child: const Text(

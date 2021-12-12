@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 
 import 'package:http/http.dart' as http;
@@ -24,38 +26,42 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Future<FirebaseApp> _fbapp = Firebase.initializeApp();
 
-  runApp(MaterialApp(
-    home: FutureBuilder(
-      future: _fbapp,
-      builder: (context, snapshot){
-        if(snapshot.hasError){
-          print('You have an error ${snapshot.error.toString()}');
-        }
-        else if(snapshot.hasData){
-          return Greeting();
-        }
-        else{
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        throw "You have thrown something";
-      },
-    ),
-    theme: globals.light ? globals.lightTheme : globals.darkTheme,
-    debugShowCheckedModeBanner: false,
-    //initialRoute: '/greeting',
-    routes: {
-      '/login': (context) => LoginPage(),
-      '/main': (context) => MainPage(),
-      '/register': (context) => RegisterPage(),
-      '/greeting': (context) => Greeting(),
-      '/settings': (context) => Settings(),
-      '/pageOne': (context) => LoginPage(),
-      '/profile': (context) => Profile(),
-      '/walkthrough': (context) => WalkthroughScreen(),
-    },
-  ));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => GoogleSignInProvider(),
+      child: MaterialApp(
+        home: FutureBuilder(
+          future: _fbapp,
+          builder: (context, snapshot){
+            if(snapshot.hasError){
+              print('You have an error ${snapshot.error.toString()}');
+            }
+            else if(snapshot.hasData){
+              return Greeting();
+            }
+            else{
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            throw "You have thrown something";
+          },
+        ),
+        theme: globals.light ? globals.lightTheme : globals.darkTheme,
+        debugShowCheckedModeBanner: false,
+        //initialRoute: '/greeting',
+        routes: {
+          '/login': (context) => LoginPage(),
+          '/main': (context) => MainPage(),
+          '/register': (context) => RegisterPage(),
+          '/greeting': (context) => Greeting(),
+          '/settings': (context) => Settings(),
+          '/pageOne': (context) => LoginPage(),
+          '/profile': (context) => Profile(),
+          '/walkthrough': (context) => WalkthroughScreen(),
+        },
+      ),)
+  );
 }
 
 class MainPage extends StatefulWidget {
@@ -68,7 +74,6 @@ class MainPage extends StatefulWidget {
   ValueNotifier(ThemeMode.light);
 }
 
-/// This is the private State class that goes with MyStatefulWidget.
 class _MainPageState extends State<MainPage> {
 
   int _selectedIndex = 0;

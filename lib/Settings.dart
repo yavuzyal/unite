@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/Login.dart';
@@ -70,12 +71,24 @@ class _Settings2 extends State<Settings> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
                       //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
-                      onPressed: () {
-                        setLogOut();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                      onPressed: () async{
+
+                        await FirebaseAuth.instance.signOut();
+
+                        setState(() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                          );
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Logged Out')),
                         );
+
+                        //setLogOut();
+
                       },
                       child: Text('Log Out', style: TextStyle(fontSize: 20, ),),
                     ),

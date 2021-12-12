@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,7 @@ class _LoginPage2 extends State<LoginPage> {
   Future GoogleLogin() async {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
     //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
+    FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -150,6 +152,7 @@ class _LoginPage2 extends State<LoginPage> {
                                 await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((currentUser) => {
                                   setState(() {
                                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
+                                    FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
                                   })
                                 }).catchError((onError)=>{

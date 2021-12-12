@@ -8,6 +8,7 @@ import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -55,10 +56,14 @@ class _LoggedIn extends State<LoggedIn> {
     Settings(),
   ];
 
+  static List<String> page_names = [
+    "Account", "Location", "Add_post", "Messages", "Settings"
+  ];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    FirebaseAnalytics.instance.logScreenView(screenClass: page_names[_selectedIndex], screenName: page_names[_selectedIndex]);
   }
 
   @override

@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/main.dart';
@@ -34,6 +38,11 @@ class _LoginPage2 extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Email or password is wrong!')),
     );
+  }
+
+  Future GoogleLogin() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
+    //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -152,13 +161,32 @@ class _LoginPage2 extends State<LoginPage> {
                             },
                             child: const Text('Sign In', style: TextStyle(fontSize: 16),),
                           ),
-                          SizedBox(height: 10.0,),
-                          ElevatedButton(
+                          SizedBox(height: 5.0,),
+                          Row(
+                              children: <Widget>[
+                                Expanded(
+                                    child: Divider()
+                                ),
+
+                                Text("OR"),
+
+                                Expanded(
+                                    child: Divider()
+                                ),
+                              ]
+                          ),
+                          SizedBox(height: 5.0,),
+                          ElevatedButton.icon(
+                            style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                               onPressed: (){
                                 final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
                                 provider.googleLogin();
+
+                                GoogleLogin();
                               },
-                              child: Text("Sign In with Google")),
+                            label: Text("Sign In with Google", style: TextStyle(fontSize: 16),),
+                            icon: FaIcon(FontAwesomeIcons.google),
+                          ),
                           SizedBox(height: 10.0,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

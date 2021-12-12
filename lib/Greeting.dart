@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:after_layout/after_layout.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/main.dart';
 
 import 'package:unite/profile.dart';
@@ -24,6 +26,9 @@ class _GreetingState extends State<Greeting> {
   }
 
   Future checkFirstSeen() async {
+
+    final user = FirebaseAuth.instance.currentUser;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING WALKTHROUGH
     bool _seen = (prefs.getBool('seen') ?? false);
@@ -34,7 +39,7 @@ class _GreetingState extends State<Greeting> {
     print(_loggedIn);
 
     if (_seen) {
-      if(!_loggedIn){
+      if(user == null){
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
@@ -43,7 +48,7 @@ class _GreetingState extends State<Greeting> {
       else{
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MainPage()),
+          MaterialPageRoute(builder: (context) => LoggedIn()),
         );
       }
     } else {

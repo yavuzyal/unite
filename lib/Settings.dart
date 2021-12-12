@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
@@ -73,7 +75,10 @@ class _Settings2 extends State<Settings> {
                       //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
                       onPressed: () async{
 
-                        await FirebaseAuth.instance.signOut();
+                        //await FirebaseAuth.instance.signOut();
+
+                        final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                        provider.googleLogout();
 
                         setState(() {
                           Navigator.push(

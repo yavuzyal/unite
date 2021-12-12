@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'utils/colors.dart';
@@ -26,6 +27,8 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
 
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       body:
       SingleChildScrollView(
@@ -43,15 +46,15 @@ class _ProfileState extends State<Profile> {
                     CircleAvatar(
                       backgroundColor: AppColors.logoColor,
                       child: ClipOval(
-                        child: Image.network(
-                          'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg',
-                          fit: BoxFit.cover,
-                        ),
+                        child: Image.network(user!.photoURL == null ?
+                        'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg': user!.photoURL!, fit: BoxFit.cover,),
+                        //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                       ),
                       radius: 70,
                     ),
                     SizedBox(height : 15),
-                    Text("Barış Altop", style: AppStyles.profileName,),
+                    Text(user.displayName==null ? "Barış Altop" : user!.displayName!, style: AppStyles.profileName,),
+                    //user!.displayName!
 
                     Padding(
                       padding: AppDimensions.paddingltrb,

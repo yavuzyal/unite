@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
@@ -104,47 +106,30 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
-        title: const Text('UNIte'), centerTitle: true,
+      body: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            print("problem");
+            return Center(child: CircularProgressIndicator(),);
+          }
+          else if(snapshot.hasData) {
+            print("logged in");
+            return LoggedIn();
+          }
+          else if(snapshot.hasError) {
+            print("error");
+            return Center(
+              child: Text("Something Went Wrong"),
+            );
+          }
+          else{
+            print("en son");
+            return LoginPage();
+          }
+        },
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.shifting,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-            backgroundColor: globals.light ? Colors.lightBlueAccent: Colors.blue[700],
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Location',
-            backgroundColor: Colors.green,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
-            label: 'Add Post',
-            backgroundColor: Colors.purple,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.email),
-            label: 'Messages',
-            backgroundColor: Colors.orange,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-            backgroundColor: Colors.pink,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
-      ),
+
     );
   }
 }

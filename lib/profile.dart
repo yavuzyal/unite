@@ -5,6 +5,7 @@ import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
 import 'utils/post.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -30,6 +31,11 @@ class _ProfileState extends State<Profile> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){FirebaseCrashlytics.instance.crash();},
+        backgroundColor: AppColors.logoColor,
+        child: Icon(Icons.close, color: AppColors.postTextColor,),
+      ),
       body:
       SingleChildScrollView(
         child: Column(

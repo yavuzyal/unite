@@ -1,16 +1,31 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
+import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 
 class Settings extends StatefulWidget {
   @override
-  State<Settings> createState() => _LoginPage2();
+  State<Settings> createState() => _Settings2();
 }
 
-class _LoginPage2 extends State<Settings> {
+class _Settings2 extends State<Settings> {
+
+  Future setLogOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //await prefs.clear();    //TO CHECK THE FIRST TIME OPENING
+    await prefs.setBool('loggedIn', false);
+    await prefs.setString('email', '');
+    await prefs.setString('password', '');
+  }
 
   final _formKey = GlobalKey<FormState>();
   String email = "";
@@ -34,7 +49,7 @@ class _LoginPage2 extends State<Settings> {
       backgroundColor: globals.light ? Colors.white: Colors.black,
       body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: AppDimensions.padding20,
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -46,7 +61,8 @@ class _LoginPage2 extends State<Settings> {
                     Text("UNIte", style: AppStyles.appNameMainPage,),
                     SizedBox(height: 20.0,),
                     ElevatedButton(
-                      style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
+                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                      //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                       onPressed: () {
                         setState(() {
                           globals.light = !globals.light;
@@ -55,6 +71,34 @@ class _LoginPage2 extends State<Settings> {
                       child: globals.light ? Text('Dark Mode', style: TextStyle(fontSize: 20, ),) : Text('Light Mode', style: TextStyle(fontSize: 20, ),),
                     ),
                     SizedBox(height: 10.0,),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                      //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
+                      onPressed: () async{
+
+
+                        //await FirebaseAuth.instance.signOut();
+
+                        final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                        provider.googleLogout();
+
+                        setState(() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                          );
+                        });
+                        FirebaseAnalytics.instance.logScreenView(screenClass: "LoginPage", screenName: "LoginPage");
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Logged Out')),
+                        );
+                        //setLogOut();
+
+                      },
+                      child: Text('Log Out', style: TextStyle(fontSize: 20, ),),
+                    ),
                   ],
                 ),
               ),

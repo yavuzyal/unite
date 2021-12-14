@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
+import 'package:unite/message.dart';
 import 'package:unite/usables/config.dart' as globals;
 
 import 'package:http/http.dart' as http;
@@ -68,6 +69,14 @@ class _LoggedIn extends State<LoggedIn> {
         automaticallyImplyLeading: false,
         backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
         title: const Text('UNIte'), centerTitle: true,
+        leading: ElevatedButton.icon(
+            onPressed: (){
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Message(), settings: RouteSettings(name: 'Message')),);
+            },
+            icon: Icon(Icons.local_post_office),
+            label: Text('Messaging')),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),

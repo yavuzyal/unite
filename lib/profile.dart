@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:unite/utils/dimensions.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
 import 'utils/post.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -25,7 +28,14 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
 
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){FirebaseCrashlytics.instance.crash();},
+        backgroundColor: AppColors.logoColor,
+        child: Icon(Icons.close, color: AppColors.postTextColor,),
+      ),
       body:
       SingleChildScrollView(
         child: Column(
@@ -34,7 +44,7 @@ class _ProfileState extends State<Profile> {
           children: [
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: AppDimensions.padding8,
                 child: Column(
                   children: [
                     Image.asset('assets/unite_logo.png', height: 50, width: 50,),
@@ -42,18 +52,18 @@ class _ProfileState extends State<Profile> {
                     CircleAvatar(
                       backgroundColor: AppColors.logoColor,
                       child: ClipOval(
-                        child: Image.network(
-                          'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg',
-                          fit: BoxFit.cover,
-                        ),
+                        child: Image.network(user!.photoURL == null ?
+                        'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg': user!.photoURL!, fit: BoxFit.cover,),
+                        //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                       ),
                       radius: 70,
                     ),
                     SizedBox(height : 15),
-                    Text("Barış Altop", style: AppStyles.profileName,),
+                    Text(user.displayName==null ? "Barış Altop" : user!.displayName!, style: AppStyles.profileName,),
+                    //user!.displayName!
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -63,7 +73,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -74,7 +84,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -85,7 +95,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,20,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -96,7 +106,7 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(90,0,0,0),
+                      padding: AppDimensions.paddingltrb,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

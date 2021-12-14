@@ -3,6 +3,7 @@ import 'post.dart';
 import 'styles.dart';
 import 'colors.dart';
 import 'post_page.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class PostTile extends StatelessWidget {
 
@@ -20,7 +21,8 @@ class PostTile extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => PostPage(post: post)),
           );
-        },
+          FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
+          },
         child: Card(
           margin: EdgeInsets.all(10),
           color: AppColors.postBackgroundColor,

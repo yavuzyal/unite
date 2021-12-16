@@ -125,7 +125,7 @@ class _PostScreen extends State {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
                   Expanded(
                     child: Stack(
                       children: [
@@ -150,7 +150,7 @@ class _PostScreen extends State {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
                   Padding(
                     padding: AppDimensions.padding20,
                     child: Expanded(

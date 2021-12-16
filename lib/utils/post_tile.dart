@@ -30,12 +30,13 @@ class PostTile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.fitHeight),
+                Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                 Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(width :55),
                         IconButton(
@@ -56,6 +57,7 @@ class PostTile extends StatelessWidget {
                         Text(post.text, style: AppStyles.postText),
                         SizedBox(height : 15),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
                               constraints: BoxConstraints(),

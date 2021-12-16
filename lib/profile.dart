@@ -45,7 +45,6 @@ class _ProfileState extends State<Profile> {
 
   List<Post> myPosts = [];
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -74,7 +73,7 @@ class _ProfileState extends State<Profile> {
                             backgroundColor: AppColors.logoColor,
                             child: ClipOval(
                               child: Image.network(_user!.photoURL == null ?
-                              'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg': _user!.photoURL!, fit: BoxFit.cover,),
+                              'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg': _user!.photoURL!, fit: BoxFit.fitWidth,),
                               //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                             ),
                             radius: 70,

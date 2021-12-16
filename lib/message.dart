@@ -1,4 +1,4 @@
-import 'dart:html';
+// ignore_for_file: non_constant_identifier_names
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,39 +12,43 @@ import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class Message extends StatefulWidget {
   @override
   State<Message> createState() => _Message();
 }
 
+
+
 class _Message extends State<Message> {
 
-  String message = '';
   final _formKey = GlobalKey<FormState>();
+  String message = "";
+
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Messages'),
-        centerTitle: true,
-      ),
+      backgroundColor: globals.light ? Colors.white: Colors.black,
       body: Center(
           child: Padding(
             padding: AppDimensions.padding20,
             child: Form(
               key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 500.0,  //buraya ekranın 3/4'ü gibi bir size koy
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height / 2,
+                    child: SingleChildScrollView(
+
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextFormField(
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
                           textAlign: TextAlign.center,
                           decoration: new InputDecoration(
                             hintText: "Enter Your Message",
@@ -55,27 +59,25 @@ class _Message extends State<Message> {
                             ),
                           ),
                           validator: (String? value) {
-                            if (value != '' || value != null) {
-                              message = value!;
+                            if (value == null || value.isEmpty || value == '') {
+                              return 'Cannot send empty message :(';
                             }
                             else {
-                              return 'Cannot send an empty message :(';
+                              message = value;
                             }
                             return null;
                           },
 
-                        ),
-                        SizedBox(width: 20.0,),
-                        ElevatedButton.icon(
-                            onPressed: (){
-                              //send message implementation
-                            },
-                            icon: Icon(Icons.arrow_forward),
-                            label: Text('Send Message'))
-                      ],
-                    ),
-                  ],
-                ),
+                        ),),
+                      ElevatedButton.icon(
+                          onPressed: () async {
+
+                          },
+                          icon: Icon(Icons.local_post_office),
+                          label: Text('Send Message'))
+                    ],
+                  ),
+                ],
               ),
             ),
           )

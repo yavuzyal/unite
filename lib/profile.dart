@@ -5,6 +5,8 @@ import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
 import 'utils/post.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -15,11 +17,14 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [
 
     Post(text: 'Hanım ve ben', image_url: "https://fastly.4sqi.net/img/user/130x130/70007152-VS1PELETNKOZ0TQ1.jpg", date: '22.10.2021', likeCount: 10, commentCount: 5, comments: {"duygu": "<3", "yasemin": "heyyo", "berk": "yasasin", "yavuz": "couple goals", "zeynep": "AAAAAaaaAAAAAAAAAAAAaaaAAAAAAAAAAAAaaaAAAAAAAAAAAAaaaAAAAAAA"}),
     Post(text: 'Sabanj', image_url: "https://studyinturkey.net/wp-content/uploads/2020/12/sabanci-universitesi-kampus.jpg", date: '22.10.2019', likeCount: 10, commentCount: 5, comments: {}),
+    Post(text: 'Deneme', image_url: "https://studyinturkey.net/wp-content/uploads/2020/12/sabanci-universitesi-kampus.jpg", date: '24.10.2019', likeCount: 16, commentCount: 0, comments: {}),
+
 
   ];
 
@@ -30,6 +35,11 @@ class _ProfileState extends State<Profile> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){FirebaseCrashlytics.instance.crash();},
+        backgroundColor: AppColors.logoColor,
+        child: Icon(Icons.close, color: AppColors.postTextColor,),
+      ),
       body:
       SingleChildScrollView(
         child: Column(

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +14,9 @@ import 'package:unite/LoggedIn.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/main.dart';
-import 'package:unite/usables/globals.dart' as globals;
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
-import 'package:unite/usables/config.dart';
+import 'package:unite/usables/config.dart' as globals;
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 
@@ -25,7 +24,6 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPage2();
 }
-
 
 class _LoginPage2 extends State<LoginPage> {
 
@@ -44,10 +42,12 @@ class _LoginPage2 extends State<LoginPage> {
   }
 
   Future GoogleLogin() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(), settings: RouteSettings(name: 'MainPage')),);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
     //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
+    FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
 
+  User? _user = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
   //String? email = "";
   //String? password = "";
@@ -72,8 +72,6 @@ class _LoginPage2 extends State<LoginPage> {
     String email = "";
     String password = "";
 
-    User? user = FirebaseAuth.instance.currentUser;
-
     return ChangeNotifierProvider(
         create: (context) => GoogleSignInProvider(),
         child: WillPopScope(
@@ -89,9 +87,9 @@ class _LoginPage2 extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children:[
                           Image.asset('assets/unite_logo.png', height: 150, width: 150,),
-                          SizedBox(height: 10.0,),
+                          SizedBox(height: 20.0,),
                           Text("UNIte", style: AppStyles.appNameMainPage,),
-                          SizedBox(height: 10.0,),
+                          SizedBox(height: 20.0,),
                           TextFormField(
                             textAlign: TextAlign.center,
                             decoration: new InputDecoration(
@@ -153,7 +151,8 @@ class _LoginPage2 extends State<LoginPage> {
                                 await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((currentUser) => {
                                   setState(() {
                                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(), settings: RouteSettings(name: 'MainPage')),);
+                                    FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
                                   })
                                 }).catchError((onError)=>{
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email or password is wrong!')),)
@@ -199,7 +198,7 @@ class _LoginPage2 extends State<LoginPage> {
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => RegisterPage(), settings: RouteSettings(name: 'RegisterPage')),
+                                    MaterialPageRoute(builder: (context) => RegisterPage()),
                                   );
                                 },
                                 child: new Text("Sign Up", style: AppStyles.signUp, ),

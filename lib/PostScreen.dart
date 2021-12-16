@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -41,6 +42,7 @@ class _PostScreen extends State {
   File? _imageFile = null;
   final _user = FirebaseAuth.instance.currentUser;
   String post_message = '';
+  final _formKey = GlobalKey<FormState>();
 
   ///NOTE: Only supported on Android & iOS
   ///Needs image_picker plugin {https://pub.dev/packages/image_picker}
@@ -55,22 +57,21 @@ class _PostScreen extends State {
     });
   }
 
-  Future uploadPost(uid, like, comment, url) async {
+  Future uploadPost(uid, like, comment, url, caption) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
-    firestoreInstance.collection("users").add(
-    {
-    uid : {
-      "image_url" : url,
-      "like" : like,
-      "comment" : {}
-    },
-    }).then((value){
-    print(value.id);
+    firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
+        {
+          "image_url" : url,
+          "like" : like,
+          "comment" : {},
+          "caption": caption,
+        }).then((value){
+      print(value.id);
     });
   }
 
-  Future uploadImageToFirebase(BuildContext context) async {
+  Future uploadImageToFirebase(BuildContext context, caption) async {
     String fileName = basename(_imageFile!.path);
     firebase_storage.Reference ref =
     firebase_storage.FirebaseStorage.instance
@@ -92,7 +93,7 @@ class _PostScreen extends State {
 
     firebase_storage.UploadTask task = await Future.value(uploadTask);
     Future.value(uploadTask).then((value) async => {
-      url = await value.ref.getDownloadURL(), print(url), uploadPost(_user!.uid, 0, 0, url),
+      url = await value.ref.getDownloadURL(), print(url), uploadPost(_user!.uid, 0, 0, url, caption),
       print("Upload file path ${value.ref.fullPath}"),ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Uploaded to storage"),
       )),
@@ -108,73 +109,103 @@ class _PostScreen extends State {
         children: [
           Container(
             margin: const EdgeInsets.only(top: 20),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      "Select an image to add",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 28,
+            child: Form(
+              key: _formKey,
+              child:Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text(
+                        "Select an image to add",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 28,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 20.0),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: double.infinity,
-                        margin: const EdgeInsets.only(
-                            left: 30.0, right: 30.0, top: 10.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30.0),
-                          child: _imageFile != null ?
-                          InkWell(onTap: pickImage, child: Image.file(_imageFile!)  ,)
-                              : FlatButton(
-                            child: Icon(
-                              Icons.add_a_photo,
-                              color: Colors.lightBlueAccent,
-                              size: 50,
+                  SizedBox(height: 20.0),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: double.infinity,
+                          margin: const EdgeInsets.only(
+                              left: 30.0, right: 30.0, top: 10.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30.0),
+                            child: _imageFile != null ?
+                            InkWell(onTap: pickImage, child: Image.file(_imageFile!)  ,)
+                                : FlatButton(
+                              child: Icon(
+                                Icons.add_a_photo,
+                                color: Colors.lightBlueAccent,
+                                size: 50,
+                              ),
+                              onPressed: pickImage,
                             ),
-                            onPressed: pickImage,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20.0),
-                Padding(
-                  padding: AppDimensions.padding20,
-                  child: Expanded(
-                    child: TextFormField(
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Write a caption...",
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
-                        ),
-                      ),
-                      validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
-                        }
-                        else {
-                          post_message = value;
-                        }
-                        return null;
-                      },
+                      ],
                     ),
-                  ),),
+                  ),
+                  SizedBox(height: 20.0),
+                  Padding(
+                    padding: AppDimensions.padding20,
+                    child: Expanded(
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Write a caption...",
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          if (value == '' || value == null) {
+                            return 'Please enter some text';
+                          }
+                          else {
+                            post_message = value;
+                            print(post_message);
+                            print('post message yazdirma yeri');
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  //SizedBox(height: 20,),
+                  ElevatedButton(
+                    onPressed: () {
+                      if(_formKey.currentState!.validate()){
 
-                addPostButton(context),
-              ],
+                        uploadImageToFirebase(context, post_message);
+
+                        //setState(() {
+                         // ScaffoldMessenger.of(context).showSnackBar(
+                         //   const SnackBar(
+                         //       content: Text('Added Post :D')),
+                         // );
+                          //Navigator.push(
+                          //  context,
+                          //  MaterialPageRoute(
+                          //      builder: (context) => LoggedIn()),
+                          //);
+                        //});
+                      }
+                    },
+                    child: Text(
+                      "Add Post",
+                      style: TextStyle(fontSize: 20,color: Colors.white),
+                    ),
+                  ),
+                  //addPostButton(context, post_message),
+                ],
+              ),
             ),
           ),
         ],
@@ -182,7 +213,8 @@ class _PostScreen extends State {
     );
   }
 
-  Widget addPostButton(BuildContext context) {
+  Widget addPostButton(BuildContext context, String post_message) {
+    print("Message: " + post_message);
     return Container(
       child: Stack(
         children: [
@@ -198,7 +230,7 @@ class _PostScreen extends State {
                 borderRadius: BorderRadius.circular(30.0)),
             child: FlatButton(
               onPressed: () {
-                uploadImageToFirebase(context);
+                uploadImageToFirebase(context, post_message);
               },
               child: Text(
                 "Add Post",

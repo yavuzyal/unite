@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -78,6 +79,10 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
+  Future loggedInScreen() async{
+    return LoggedIn();
+  }
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
@@ -114,6 +119,7 @@ class _MainPageState extends State<MainPage> {
             return Center(child: CircularProgressIndicator(),);
           }
           else if(snapshot.hasData) {
+            print(snapshot);
             print("logged in");
             return LoggedIn();
           }

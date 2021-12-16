@@ -76,7 +76,7 @@ class _Settings2 extends State<Settings> {
                       //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
                       onPressed: () async{
 
-                        //await FirebaseAuth.instance.signOut();
+                        await FirebaseAuth.instance.signOut();
 
                         final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
                         provider.googleLogout();
@@ -86,7 +86,7 @@ class _Settings2 extends State<Settings> {
                             context,
                             MaterialPageRoute(builder: (context) => LoginPage()),
                           );
-                          FirebaseAnalytics.instance.logScreenView(screenClass: "LoginPage", screenName: "LoginPage");
+                          //FirebaseAnalytics.instance.logScreenView(screenClass: "LoginPage", screenName: "LoginPage");
                           });
 
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -47,6 +47,7 @@ class _LoginPage2 extends State<LoginPage> {
     FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
 
+  User? _user = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
   //String? email = "";
   //String? password = "";
@@ -70,8 +71,6 @@ class _LoginPage2 extends State<LoginPage> {
 
     String email = "";
     String password = "";
-
-    User? user = FirebaseAuth.instance.currentUser;
 
     return ChangeNotifierProvider(
         create: (context) => GoogleSignInProvider(),

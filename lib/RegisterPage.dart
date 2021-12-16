@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +12,6 @@ import 'package:unite/utils/dimensions.dart';
 import 'utils/styles.dart';
 import 'utils/colors.dart';
 
-
 class RegisterPage extends StatefulWidget {
 
   @override
@@ -21,7 +21,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPage2 extends State<RegisterPage> {
 
   final database = FirebaseDatabase.instance.reference();
-  //bu database root'una referans veriyor
 
   Future<String> getUser() async {
     print("in getUser");

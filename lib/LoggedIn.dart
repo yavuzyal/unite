@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
+import 'package:unite/Message.dart';
+import 'package:unite/PostScreen.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
@@ -18,6 +20,7 @@ import 'package:unite/RegisterPage.dart';
 import 'package:unite/profile.dart';
 import 'package:unite/utils/post_page.dart';
 import 'Walkthrough.dart';
+import 'add_post.dart';
 import 'utils/post.dart';
 
 import 'Greeting.dart';
@@ -45,14 +48,8 @@ class _LoggedIn extends State<LoggedIn> {
       'Location',
       style: optionStyle,
     ),
-    Text(
-      'Add Post',
-      style: optionStyle,
-    ),
-    Text(
-      'Messages',
-      style: optionStyle,
-    ),
+    PostScreen(),
+    Message(),
     Settings(),
   ];
 

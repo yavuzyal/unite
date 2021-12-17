@@ -39,7 +39,7 @@ class LoggedIn extends StatefulWidget {
 
 class _LoggedIn extends State<LoggedIn> {
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),

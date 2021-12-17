@@ -102,7 +102,7 @@ class _EditProfile extends State {
     });
   }
 
-  User_info user_profile = new User_info('','','','','', '');
+  User_info user_profile = new User_info('','','','','','');
 
   Future uploadProfile(school, major, age, interest, bio, profile_pic) async {
 
@@ -126,22 +126,19 @@ class _EditProfile extends State {
 
     else{
       for(var mes in profile_info.docs){
-        if(mes.exists){
           user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
-          print("MES: " + mes.id);
-          //firestoreInstance.collection("users").doc(_user!.uid).collection('profile_info').doc(mes.id).delete();
+
           firestoreInstance.collection("users").doc(_user!.uid ).collection('profile_info').doc(mes.id).update(    //.add(
               {
-                "school" : school,
-                "major" : major,
-                "age" : age,
-                "interest": interest,
-                "bio": bio,
-                "profile_pic": profile_pic,
+                "school" : (school == '') ? user_profile.school : school,
+                "major" : (major == '') ? user_profile.major : major,
+                "age" : (age == '') ? user_profile.age : age,
+                "interest": (interest == '') ? user_profile.interest : interest,
+                "bio": (bio == '') ? user_profile.bio : bio,
+                "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
               }).then((value){
             //print(value.id);
           });
-        }
       }
     }
   }
@@ -167,14 +164,12 @@ class _EditProfile extends State {
                       child: CircleAvatar(
                         backgroundColor: AppColors.logoColor,
                         child: ClipOval(
-                          child: _imageFile == null ?
-                              Image.asset('assets/usericon.png') : Image.file(_imageFile!),
+                          child: _imageFile == null ? Image.asset('assets/usericon.png') : Image.file(_imageFile!),
                           //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                         ),
                         radius: 70,
                       ),
                     ),
-
                     SizedBox(height: 20,),
                     TextFormField(
                       textAlign: TextAlign.center,
@@ -187,13 +182,11 @@ class _EditProfile extends State {
                         ),
                       ),
                       validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
+                        if(value!.isEmpty || value == ''){
+                          school = '';
                         }
-                        else {
-                          school = value;
-                        }
-                        return null;
+                        else
+                          school = value!;
                       },
                     ),
                     SizedBox(height: 10,),
@@ -208,13 +201,11 @@ class _EditProfile extends State {
                         ),
                       ),
                       validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
+                        if(value!.isEmpty || value == ''){
+                          major = '';
                         }
-                        else {
-                          major = value;
-                        }
-                        return null;
+                        else
+                          major = value!;
                       },
                     ),
                     SizedBox(height: 10,),
@@ -229,13 +220,11 @@ class _EditProfile extends State {
                         ),
                       ),
                       validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
+                        if(value!.isEmpty || value == ''){
+                          age = '';
                         }
-                        else {
-                          age = value;
-                        }
-                        return null;
+                        else
+                          age = value!;
                       },
                     ),
                     SizedBox(height: 10,),
@@ -250,13 +239,11 @@ class _EditProfile extends State {
                         ),
                       ),
                       validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
+                        if(value!.isEmpty || value == ''){
+                          interest = '';
                         }
-                        else {
-                          interest = value;
-                        }
-                        return null;
+                        else
+                          interest = value!;
                       },
                     ),
                     SizedBox(height: 10,),
@@ -271,13 +258,11 @@ class _EditProfile extends State {
                         ),
                       ),
                       validator: (String? value) {
-                        if (value == '' || value == null) {
-                          return 'Please enter some text';
+                        if(value!.isEmpty || value == ''){
+                          bio = '';
                         }
-                        else {
-                          bio = value;
-                        }
-                        return null;
+                        else
+                          bio = value!;
                       },
                     ),
                     SizedBox(height: 10,),
@@ -285,8 +270,13 @@ class _EditProfile extends State {
                       onPressed: () {
                         if(_formKey.currentState!.validate()){
 
-                          uploadImageToFirebase(context);
-
+                          if(_imageFile == null){
+                            uploadProfile(school,major,age,interest,bio,'');
+                          }
+                          else{
+                            uploadImageToFirebase(context);
+                          }
+                          
                           setState(() {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

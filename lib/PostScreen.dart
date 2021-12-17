@@ -66,6 +66,7 @@ class _PostScreen extends State {
           "like" : like,
           "comment" : {},
           "caption": caption,
+          "datetime": DateTime.now(),
         }).then((value){
       print(value.id);
     });

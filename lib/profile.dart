@@ -41,10 +41,14 @@ class _ProfileState extends State<Profile> {
       user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
     }
 
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').orderBy('datetime', descending: true).get();
 
     for(var message in snapshot.docs){
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: '22.10.2019', likeCount: 0, commentCount: 0, comments: {});
+      Timestamp t = message.get('datetime');
+      DateTime d = t.toDate();
+      String date = d.toString().substring(0,10);
+
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: 0, commentCount: 0, comments: {});
       myPosts.add(post);
     }
   }

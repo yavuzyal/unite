@@ -19,7 +19,6 @@ import 'package:unite/RegisterPage.dart';
 import 'package:unite/profile.dart';
 import 'package:unite/utils/post_page.dart';
 import 'Walkthrough.dart';
-import 'add_post.dart';
 import 'utils/post.dart';
 
 import 'Greeting.dart';

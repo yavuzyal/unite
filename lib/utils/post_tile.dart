@@ -38,6 +38,7 @@ class PostTile extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text(post.date,style: TextStyle(color: Colors.white, )),
                         SizedBox(width :55),
                         IconButton(
                           alignment: Alignment.topRight,

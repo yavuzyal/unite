@@ -36,7 +36,7 @@ class PostTile extends StatelessWidget {
                 Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(width :55),
                         IconButton(

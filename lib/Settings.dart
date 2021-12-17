@@ -8,6 +8,7 @@ import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
+import 'EditProfile.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -70,6 +71,21 @@ class _Settings2 extends State<Settings> {
                       },
                       child: globals.light ? Text('Dark Mode', style: TextStyle(fontSize: 20, ),) : Text('Light Mode', style: TextStyle(fontSize: 20, ),),
                     ),
+
+                    SizedBox(height: 10,),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                      onPressed: () {
+                        setState(() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditProfile()),
+                          );
+                          //FirebaseAnalytics.instance.logScreenView(screenClass: "LoginPage", screenName: "LoginPage");
+                        });
+                      },
+                      child: Text('Edit Profile', style:  TextStyle(fontSize: 20),),),
+
                     SizedBox(height: 10.0,),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),

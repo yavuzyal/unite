@@ -212,36 +212,6 @@ class _PostScreen extends State {
       ),
     );
   }
-
-  Widget addPostButton(BuildContext context, String post_message) {
-    print("Message: " + post_message);
-    return Container(
-      child: Stack(
-        children: [
-          Container(
-            padding:
-            const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
-            margin: const EdgeInsets.only(
-                top: 0, left: 20.0, right: 20.0, bottom: 20.0),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [orange, green],
-                ),
-                borderRadius: BorderRadius.circular(30.0)),
-            child: FlatButton(
-              onPressed: () {
-                uploadImageToFirebase(context, post_message);
-              },
-              child: Text(
-                "Add Post",
-                style: TextStyle(fontSize: 20,color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 /*
 if request.auth != null*/

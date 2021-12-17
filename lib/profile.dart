@@ -16,24 +16,32 @@ class Profile extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
-class post {
-  String ? caption;
-  int ? likes;
-  String ? date;
-  int ? likeCount;
-  int ? commentCount;
-  List ? comments;
+class User_info {
+  String school = '';
+  String major = '';
+  String age = '';
+  String interest = '';
+  String bio = '';
+  String profile_pic = '';
 
-
+  User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
 class _ProfileState extends State<Profile> {
 
+  User_info user_profile = new User_info('','','','','', '');
+
   final _user = FirebaseAuth.instance.currentUser;
 
   Future getPosts() async{
+
+    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+
+    for(var mes in profile_info.docs){
+      user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
+    }
+
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').get();
-    List docs = snapshot.docs;
 
     for(var message in snapshot.docs){
       Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: '22.10.2019', likeCount: 0, commentCount: 0, comments: {});
@@ -47,9 +55,12 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder(
         future: getPosts(),
         builder: (context, snapshot){
+          if( snapshot.connectionState == ConnectionState.waiting){
+            return  Center(child: CircularProgressIndicator());}
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: (){FirebaseCrashlytics.instance.crash();},
@@ -72,8 +83,10 @@ class _ProfileState extends State<Profile> {
                           CircleAvatar(
                             backgroundColor: AppColors.logoColor,
                             child: ClipOval(
-                              child: Image.network(_user!.photoURL == null ?
-                              'https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg': _user!.photoURL!, fit: BoxFit.fitWidth,),
+                              child:
+                              user_profile.profile_pic == '' ?
+                              Image.asset('assets/usericon.png') :
+                                  Image.network(user_profile.profile_pic),
                               //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                             ),
                             radius: 70,
@@ -88,7 +101,10 @@ class _ProfileState extends State<Profile> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text("Sabancı University", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                Expanded(child: Text(user_profile.school == '' ?
+                                  "No information was given!" :
+                                  user_profile.school
+                                  , style: AppStyles.profileText, textAlign: TextAlign.left,))
                               ],
                             ),
                           ),
@@ -98,18 +114,9 @@ class _ProfileState extends State<Profile> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text("Computer Science", style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text("30", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                Expanded(child: Text(user_profile.major == '' ?
+                                "No information was given!" :
+                                user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
                               ],
                             ),
                           ),
@@ -120,7 +127,9 @@ class _ProfileState extends State<Profile> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text("Hacking, coding, travelling, interest4, interest5", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                Expanded(child: Text(user_profile.age == '' ?
+                                "No information was given!" :
+                                user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
                               ],
                             ),
                           ),
@@ -131,7 +140,22 @@ class _ProfileState extends State<Profile> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text("Hi there, I am using UNIte!", style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                Expanded(child: Text(user_profile.interest == '' ?
+                                "No information was given!" :
+                                user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: AppDimensions.paddingltrb,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Expanded(child: Text(user_profile.bio == '' ?
+                                "No information was given!" :
+                                user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
                               ],
                             ),
                           ),

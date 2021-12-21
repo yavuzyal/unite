@@ -167,6 +167,14 @@ class _RegisterPage2 extends State<RegisterPage> {
 
                             await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
+                            List<String> indexList = [];
+
+                            for(int i = 1; i <= username.length; i++){
+                              indexList.add(username.substring(0, i).toLowerCase());
+                            }
+
+                            await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
+
                             setState(() {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

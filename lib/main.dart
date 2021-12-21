@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/Search.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 
@@ -87,10 +88,7 @@ class _MainPageState extends State<MainPage> {
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),
-    Text(
-      'Location',
-      style: optionStyle,
-    ),
+    Search(),
     Text(
       'Add Post',
       style: optionStyle,

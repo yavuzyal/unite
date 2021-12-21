@@ -36,6 +36,10 @@ class _PostPageState extends State<PostPage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Post Page'),
+      ),
       body:
       SafeArea(
         child: Padding(

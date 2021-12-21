@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/PostScreen.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/Search.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -42,10 +43,7 @@ class _LoggedIn extends State<LoggedIn> {
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),
-    Text(
-      'Location',
-      style: optionStyle,
-    ),
+    Search(),
     PostScreen(),
     Text('Message'),
     Settings(),

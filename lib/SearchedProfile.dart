@@ -9,12 +9,14 @@ import 'utils/post.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-class Profile extends StatefulWidget {
+class SearchedProfile extends StatefulWidget {
 
-  const Profile({Key? key}) : super(key: key);
+  final String userId;
+
+  const SearchedProfile({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _ProfileState createState() => _ProfileState();
+  _SearchedProfile createState() => _SearchedProfile(userId: userId);
 }
 
 class User_info {
@@ -28,25 +30,27 @@ class User_info {
   User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
-class _ProfileState extends State<Profile> {
+class _SearchedProfile extends State<SearchedProfile> {
+
+  final String userId;
+
+  _SearchedProfile({Key? key, required this.userId});
 
   User_info user_profile = new User_info('','','','','', '');
-  String displayName = '';
 
-  final _user = FirebaseAuth.instance.currentUser;
+  //final _user = FirebaseAuth.instance.currentUser;
 
   Future getPosts() async{
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+    print(userId);
 
-    DocumentSnapshot<Map<String, dynamic>> username = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
-    displayName = username.data()!.values.last;
+    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(userId).collection('profile_info').get();
 
     for(var mes in profile_info.docs){
       user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
     }
 
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').orderBy('datetime', descending: true).get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').orderBy('datetime', descending: true).get();
 
     for(var message in snapshot.docs){
       Timestamp t = message.get('datetime');
@@ -95,13 +99,13 @@ class _ProfileState extends State<Profile> {
                               child:
                               user_profile.profile_pic == '' ?
                               Image.asset('assets/usericon.png') :
-                                  Image.network(user_profile.profile_pic),
+                              Image.network(user_profile.profile_pic),
                               //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                             ),
                             radius: 70,
                           ),
                           SizedBox(height : 15),
-                          Text(_user!.displayName==null ? displayName : _user!.displayName!, style: AppStyles.profileName,),
+                          Text("Deneme", style: AppStyles.profileName,),
                           //user!.displayName!
 
                           Padding(
@@ -111,8 +115,8 @@ class _ProfileState extends State<Profile> {
                               children: [
                                 Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.school == '' ?
-                                  "No information was given!" :
-                                  user_profile.school
+                                "No information was given!" :
+                                user_profile.school
                                   , style: AppStyles.profileText, textAlign: TextAlign.left,))
                               ],
                             ),

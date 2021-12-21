@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,6 +15,7 @@ import 'package:unite/LoggedIn.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/main.dart';
+import 'package:unite/setUsername.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'package:unite/usables/config.dart' as globals;
@@ -42,9 +44,16 @@ class _LoginPage2 extends State<LoginPage> {
   }
 
   Future GoogleLogin() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
+
+    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+
+    for(var mes in profile_info.docs){
+
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
+
+    }
     //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
-    FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
+    //FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
 
   User? _user = FirebaseAuth.instance.currentUser;

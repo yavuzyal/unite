@@ -33,9 +33,9 @@ class Post {
 final Color green = Colors.brown;
 final Color orange = Colors.brown;
 
-class EditProfile extends StatefulWidget {
+class setUsername extends StatefulWidget {
   @override
-  _EditProfile createState() => _EditProfile();
+  _setUsername createState() => _setUsername();
 }
 
 class User_info {
@@ -49,7 +49,7 @@ class User_info {
   User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
-class _EditProfile extends State {
+class _setUsername extends State {
 
   final _user = FirebaseAuth.instance.currentUser;
   String school = '';
@@ -57,7 +57,6 @@ class _EditProfile extends State {
   String age = '';
   String interest = '';
   String bio = '';
-  String username = '';
   final _formKey = GlobalKey<FormState>();
 
   final _picker = ImagePicker();
@@ -70,10 +69,6 @@ class _EditProfile extends State {
     setState(() {
       _imageFile = File(pickedFile!.path);
     });
-  }
-
-  Future deneme() async{
-    print('deneme girdim');
   }
 
   Future uploadImageToFirebase(BuildContext context) async {
@@ -98,7 +93,7 @@ class _EditProfile extends State {
 
     firebase_storage.UploadTask task = await Future.value(uploadTask);
     Future.value(uploadTask).then((value) async => {
-      url = await value.ref.getDownloadURL(), print(url), uploadProfile(username, school, major, age, interest, bio, url),//addUserId(),
+      url = await value.ref.getDownloadURL(), print(url), uploadProfile(school, major, age, interest, bio, url),
       print("Upload file path ${value.ref.fullPath}"),ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Uploaded to storage"),
       )),
@@ -109,26 +104,14 @@ class _EditProfile extends State {
 
   User_info user_profile = new User_info('','','','','','');
 
-  Future uploadProfile(String username, school, major, age, interest, bio, profile_pic) async {
+  Future uploadProfile(school, major, age, interest, bio, profile_pic) async {
 
     final firestoreInstance = FirebaseFirestore.instance;
 
     QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
-    //QuerySnapshot users = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('username').get();
 
-    List<String> indexList = [];
-    for(int i = 1; i <= username.length; i++){
-      indexList.add(username.substring(0, i).toLowerCase());
-    }
-
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-      'username' : username,
-      'searchKey': indexList,
-      'userId': _user!.uid});
-
-
-    if(profile_info.docs.isEmpty){    //If profile_info part is empty and we want to set the values of it
-      firestoreInstance.collection("users").doc(_user!.uid).collection('profile_info').doc('info').set(    //.add(
+    if(profile_info.docs.isEmpty){
+      firestoreInstance.collection("users").doc(_user!.uid ).collection('profile_info').add(    //.add(
           {
             "school" : school,
             "major" : major,
@@ -141,39 +124,23 @@ class _EditProfile extends State {
       });
     }
 
-    else{     //If profile_info is not empty, but we want to update it
+    else{
       for(var mes in profile_info.docs){
-          user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
+        user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
-          firestoreInstance.collection("users").doc(_user!.uid ).collection('profile_info').doc('info').update(    //.add(
-              {
-                "school" : (school == '') ? user_profile.school : school,
-                "major" : (major == '') ? user_profile.major : major,
-                "age" : (age == '') ? user_profile.age : age,
-                "interest": (interest == '') ? user_profile.interest : interest,
-                "bio": (bio == '') ? user_profile.bio : bio,
-                "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
-              }).then((value){
-            //print(value.id);
-          });
+        firestoreInstance.collection("users").doc(_user!.uid ).collection('profile_info').doc(mes.id).update(    //.add(
+            {
+              "school" : (school == '') ? user_profile.school : school,
+              "major" : (major == '') ? user_profile.major : major,
+              "age" : (age == '') ? user_profile.age : age,
+              "interest": (interest == '') ? user_profile.interest : interest,
+              "bio": (bio == '') ? user_profile.bio : bio,
+              "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
+            }).then((value){
+          //print(value.id);
+        });
       }
     }
-  }
-
-  Future addUserId() async {
-    QuerySnapshot userId = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('userId').get();
-
-    /*if(userId.size == 0){    //We will pass the user id for the search functionality
-      print('in userId');
-      print(_user!.uid);
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-        'userId' : _user!.uid,
-      });
-    }*/
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-      'userId' : _user!.uid,
-    });
-
   }
 
   @override
@@ -204,25 +171,6 @@ class _EditProfile extends State {
                       ),
                     ),
                     SizedBox(height: 20,),
-                    TextFormField(
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Username",
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
-                        ),
-                      ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          username = '';
-                        }
-                        else
-                          username = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
                     TextFormField(
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
@@ -323,12 +271,12 @@ class _EditProfile extends State {
                         if(_formKey.currentState!.validate()){
 
                           if(_imageFile == null){
-                            uploadProfile(username,school,major,age,interest,bio,'');
+                            uploadProfile(school,major,age,interest,bio,'');
                           }
                           else{
                             uploadImageToFirebase(context);
                           }
-                          
+
                           setState(() {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

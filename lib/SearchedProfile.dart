@@ -30,6 +30,11 @@ class User_info {
   User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
+class Username {
+  String username = '';
+  Username(this.username);
+}
+
 class _SearchedProfile extends State<SearchedProfile> {
 
   final String userId;
@@ -37,10 +42,12 @@ class _SearchedProfile extends State<SearchedProfile> {
   _SearchedProfile({Key? key, required this.userId});
 
   User_info user_profile = new User_info('','','','','', '');
-
-  //final _user = FirebaseAuth.instance.currentUser;
+  String user = '';
 
   Future getPosts() async{
+
+    DocumentSnapshot<Map<String, dynamic>> user_Name = await FirebaseFirestore.instance.collection('users').doc(userId).get();   //.doc(userId).collection('username').get();
+    user = user_Name.data()!.values.last;
 
     print(userId);
 
@@ -105,7 +112,7 @@ class _SearchedProfile extends State<SearchedProfile> {
                             radius: 70,
                           ),
                           SizedBox(height : 15),
-                          Text("Deneme", style: AppStyles.profileName,),
+                          Text(user, style: AppStyles.profileName,),
                           //user!.displayName!
 
                           Padding(

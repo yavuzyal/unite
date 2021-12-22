@@ -31,9 +31,7 @@ class _Search extends State<Search> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         body: Column(
           children: [
             Padding(
@@ -81,7 +79,6 @@ class _Search extends State<Search> {
             ),
           ],
         )
-      ),
     );
   }
 

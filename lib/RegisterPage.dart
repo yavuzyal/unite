@@ -173,7 +173,7 @@ class _RegisterPage2 extends State<RegisterPage> {
                               indexList.add(username.substring(0, i).toLowerCase());
                             }
 
-                            await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
+                            //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
 
                             setState(() {
                               ScaffoldMessenger.of(context).showSnackBar(

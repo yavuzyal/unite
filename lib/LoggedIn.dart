@@ -50,7 +50,7 @@ class _LoggedIn extends State<LoggedIn> {
   ];
 
   static List<String> page_names = [
-    "Account", "Location", "Add_post", "Messages", "Settings"
+    "Account", "Search", "Add_post", "Messages", "Settings"
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -79,8 +79,8 @@ class _LoggedIn extends State<LoggedIn> {
             backgroundColor: globals.light ? Colors.lightBlueAccent: Colors.blue[700],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Location',
+            icon: Icon(Icons.search),
+            label: 'Search',
             backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(

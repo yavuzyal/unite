@@ -121,11 +121,15 @@ class _EditProfile extends State {
       indexList.add(username.substring(0, i).toLowerCase());
     }
 
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-      'username' : username,
-      'searchKey': indexList,
-      'userId': _user!.uid});
+    DocumentSnapshot<Map<String, dynamic>> getUserName = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    print(getUserName.data()!.values);
+    String name = getUserName.data()!.values.last;
+    final key = getUserName.data()!.values.first;
 
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
+      'username' : username == "" ? name : username,
+      'searchKey': indexList == []? key : indexList,
+      'userId': _user!.uid});
 
     if(profile_info.docs.isEmpty){    //If profile_info part is empty and we want to set the values of it
       firestoreInstance.collection("users").doc(_user!.uid).collection('profile_info').doc('info').set(    //.add(

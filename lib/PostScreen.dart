@@ -62,11 +62,12 @@ class _PostScreen extends State {
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
-          "like" : like,
+          "likeCount" : like,
           "comment" : {},
           "caption": caption,
           "datetime": DateTime.now(),
           "location": location,
+          "likedBy": {},
         }).then((value){
       print(value.id);
     });

@@ -55,14 +55,12 @@ class _ProfileState extends State<Profile> {
     for(var message in snapshot.docs){
       //print("POST ID: ");
       //print(message.id);
-      likeCount = message.get('like');
+      likeCount = message.get('likeCount');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: message.get('like'), commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
-      print('like count check');
-      print(likeCount);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
       myPosts.add(post);
     }
   }
@@ -188,20 +186,17 @@ class _ProfileState extends State<Profile> {
                                         //userId: _user!.uid,
                                         post: post,
                                         delete: () {
-                                          setState(() {
-                                            myPosts.remove(post);
+                                          setState(() async {
+                                            //myPosts.remove(post);
+
+                                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
+
                                           });
                                         },
                                         like: () {
-                                          setState(() async {
+                                          setState(()  {
                                             //post.likeCount++;
-
-                                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
-                                              'like': likeCount + 1,
-                                            }).then((value){setState(() {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                                  LoggedIn()),);
-                                            });});
+                                            dummy = dummy + 1;
                                           });
                                         },)
                               ).toList(),

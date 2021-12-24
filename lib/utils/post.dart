@@ -5,8 +5,10 @@ class Post {
   int likeCount;
   int commentCount;
   Map<String, String> comments;
+  String postId;
 
   Post({
+    required this.postId,
     required this.text,
     required this.image_url,
     required this.date,

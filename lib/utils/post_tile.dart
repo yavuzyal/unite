@@ -4,12 +4,14 @@ import 'styles.dart';
 import 'colors.dart';
 import 'post_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostTile extends StatelessWidget {
 
   final Post post;
   final VoidCallback delete;
   final VoidCallback like;
+  //final userId;
   const PostTile({required this.post, required this.delete, required this.like});
 
   @override

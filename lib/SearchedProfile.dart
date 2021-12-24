@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'LoggedIn.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
@@ -43,6 +44,7 @@ class _SearchedProfile extends State<SearchedProfile> {
 
   User_info user_profile = new User_info('','','','','', '');
   String user = '';
+  int likeCount = 0;
 
   Future getPosts() async{
 
@@ -63,8 +65,9 @@ class _SearchedProfile extends State<SearchedProfile> {
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
+      likeCount = message.get('like');
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: 0, commentCount: 0, comments: {});
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);
       myPosts.add(post);
     }
   }
@@ -82,6 +85,10 @@ class _SearchedProfile extends State<SearchedProfile> {
           if( snapshot.connectionState == ConnectionState.waiting){
             return  Center(child: CircularProgressIndicator());}
           return Scaffold(
+            appBar: AppBar(
+              title: Text(user),
+              centerTitle: true,
+            ),
             floatingActionButton: FloatingActionButton(
               onPressed: (){FirebaseCrashlytics.instance.crash();},
               backgroundColor: AppColors.logoColor,
@@ -186,6 +193,7 @@ class _SearchedProfile extends State<SearchedProfile> {
                               children: myPosts.map(
                                       (post) =>
                                       PostTile(
+                                        //userId: userId,
                                         post: post,
                                         delete: () {
                                           setState(() {
@@ -193,8 +201,18 @@ class _SearchedProfile extends State<SearchedProfile> {
                                           });
                                         },
                                         like: () {
-                                          setState(() {
-                                            post.likeCount++;
+                                          setState(() async {
+                                            //post.likeCount++;
+
+                                            await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
+                                              'like': likeCount + 1,
+                                            });
+
+                                            setState(() {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                  LoggedIn()),);
+                                            });
+
                                           });
                                         },)
                               ).toList(),

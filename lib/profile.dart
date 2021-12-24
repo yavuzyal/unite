@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
@@ -34,6 +35,8 @@ class _ProfileState extends State<Profile> {
   String displayName = '';
 
   final _user = FirebaseAuth.instance.currentUser;
+  int likeCount = 0;
+  int dummy = 0;
 
   Future getPosts() async{
 
@@ -41,6 +44,7 @@ class _ProfileState extends State<Profile> {
 
     DocumentSnapshot<Map<String, dynamic>> username = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
     displayName = username.data()!.values.last;
+    print(displayName);
 
     for(var mes in profile_info.docs){
       user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
@@ -49,11 +53,16 @@ class _ProfileState extends State<Profile> {
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').orderBy('datetime', descending: true).get();
 
     for(var message in snapshot.docs){
+      //print("POST ID: ");
+      //print(message.id);
+      likeCount = message.get('like');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: 0, commentCount: 0, comments: {});
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: message.get('like'), commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
+      print('like count check');
+      print(likeCount);
       myPosts.add(post);
     }
   }
@@ -101,7 +110,8 @@ class _ProfileState extends State<Profile> {
                             radius: 70,
                           ),
                           SizedBox(height : 15),
-                          Text(_user!.displayName==null ? displayName : _user!.displayName!, style: AppStyles.profileName,),
+                          Text(displayName , style: AppStyles.profileName,),
+                          //Text(_user!.displayName==null ? displayName : _user!.displayName!, style: AppStyles.profileName,),
                           //user!.displayName!
 
                           Padding(
@@ -109,7 +119,7 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Icon(Icons.school, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.school == '' ?
                                   "No information was given!" :
                                   user_profile.school
@@ -122,7 +132,7 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Icon(Icons.note, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.major == '' ?
                                 "No information was given!" :
                                 user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
@@ -135,7 +145,7 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Icon(Icons.family_restroom, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.age == '' ?
                                 "No information was given!" :
                                 user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
@@ -148,7 +158,7 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Icon(Icons.check_circle, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.interest == '' ?
                                 "No information was given!" :
                                 user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
@@ -161,7 +171,7 @@ class _ProfileState extends State<Profile> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                Icon(Icons.add_box_rounded, color: AppColors.appTextColor),
                                 Expanded(child: Text(user_profile.bio == '' ?
                                 "No information was given!" :
                                 user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
@@ -175,6 +185,7 @@ class _ProfileState extends State<Profile> {
                               children: myPosts.map(
                                       (post) =>
                                       PostTile(
+                                        //userId: _user!.uid,
                                         post: post,
                                         delete: () {
                                           setState(() {
@@ -182,8 +193,15 @@ class _ProfileState extends State<Profile> {
                                           });
                                         },
                                         like: () {
-                                          setState(() {
-                                            post.likeCount++;
+                                          setState(() async {
+                                            //post.likeCount++;
+
+                                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+                                              'like': likeCount + 1,
+                                            }).then((value){setState(() {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                  LoggedIn()),);
+                                            });});
                                           });
                                         },)
                               ).toList(),

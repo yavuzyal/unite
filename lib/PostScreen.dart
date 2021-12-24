@@ -42,10 +42,9 @@ class _PostScreen extends State {
   File? _imageFile = null;
   final _user = FirebaseAuth.instance.currentUser;
   String post_message = '';
+  String location = '';
   final _formKey = GlobalKey<FormState>();
 
-  ///NOTE: Only supported on Android & iOS
-  ///Needs image_picker plugin {https://pub.dev/packages/image_picker}
   final _picker = ImagePicker();
 
   Future pickImage() async {
@@ -67,6 +66,7 @@ class _PostScreen extends State {
           "comment" : {},
           "caption": caption,
           "datetime": DateTime.now(),
+          "location": location,
         }).then((value){
       print(value.id);
     });
@@ -103,6 +103,17 @@ class _PostScreen extends State {
     });
   }
 
+  BoxDecoration myBoxDecoration() {
+    return BoxDecoration(
+      border: Border.all(
+          width: 3.0
+      ),
+      borderRadius: BorderRadius.all(
+          Radius.circular(30.0) //                 <--- border radius here
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,9 +123,9 @@ class _PostScreen extends State {
             margin: const EdgeInsets.only(top: 20),
             child: Form(
               key: _formKey,
-              child:Column(
+              child: Column(
                 children: [
-                  Padding(
+                  /*Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
                       child: Text(
@@ -125,15 +136,18 @@ class _PostScreen extends State {
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 10.0),
+                  ),*/
+                  //SizedBox(height: 10.0),
                   Expanded(
                     child: Stack(
                       children: [
                         Container(
+                          decoration: myBoxDecoration(),
+                          //color: Colors.lightBlueAccent,
                           height: double.infinity,
+                          width: double.infinity,
                           margin: const EdgeInsets.only(
-                              left: 30.0, right: 30.0, top: 10.0),
+                              left: 30.0, right: 30.0, top: 15.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(30.0),
                             child: _imageFile != null ?
@@ -153,7 +167,7 @@ class _PostScreen extends State {
                   ),
                   SizedBox(height: 10.0),
                   Padding(
-                    padding: AppDimensions.padding20,
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
                         textAlign: TextAlign.center,
@@ -161,7 +175,7 @@ class _PostScreen extends State {
                           hintText: "Write a caption...",
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(0.0),
+                            borderRadius: new BorderRadius.circular(5.0),
                             borderSide: new BorderSide(),
                           ),
                         ),
@@ -179,7 +193,35 @@ class _PostScreen extends State {
                       ),
                     ),
                   ),
-                  //SizedBox(height: 20,),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    child: Expanded(
+                      child: TextFormField(
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Location...",
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(5.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          if (value == '' || value == null) {
+                            return 'Please enter some text';
+                          }
+                          else {
+                            location = value;
+                            //print(post_message);
+                            //print('post message yazdirma yeri');
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
                   ElevatedButton(
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
@@ -204,6 +246,7 @@ class _PostScreen extends State {
                       style: TextStyle(fontSize: 20,color: Colors.white),
                     ),
                   ),
+                  SizedBox(height: 15,),
                   //addPostButton(context, post_message),
                 ],
               ),

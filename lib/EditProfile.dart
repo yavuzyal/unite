@@ -167,13 +167,6 @@ class _EditProfile extends State {
   Future addUserId() async {
     QuerySnapshot userId = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('userId').get();
 
-    /*if(userId.size == 0){    //We will pass the user id for the search functionality
-      print('in userId');
-      print(_user!.uid);
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-        'userId' : _user!.uid,
-      });
-    }*/
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
       'userId' : _user!.uid,
     });
@@ -338,10 +331,7 @@ class _EditProfile extends State {
                               const SnackBar(
                                   content: Text('Profile Updated')),
                             );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoggedIn()),
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),
                             );
                           });
                         }

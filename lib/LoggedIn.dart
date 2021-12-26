@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
+import 'package:unite/Notifications.dart';
 import 'package:unite/PostScreen.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/Search.dart';
@@ -63,6 +64,13 @@ class _LoggedIn extends State<LoggedIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()),);
+            },),
+        ],
         automaticallyImplyLeading: false,
         backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
         title: const Text('UNIte'), centerTitle: true,

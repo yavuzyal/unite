@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'package:unite/utils/post_tile_searched.dart';
 import 'LoggedIn.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
@@ -192,8 +193,8 @@ class _SearchedProfile extends State<SearchedProfile> {
                             child: Column(
                               children: myPosts.map(
                                       (post) =>
-                                      PostTile(
-                                        //userId: userId,
+                                      PostTileSearched(
+                                        userId: userId,
                                         post: post,
                                         delete: () {
                                           setState(() {

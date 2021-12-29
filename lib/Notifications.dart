@@ -84,6 +84,7 @@ class _Notifications extends State<Notifications> {
             print('SNAPSHOT: ');
             print(notifications[0].message);
             return ListView.builder(
+                reverse: true,
                 itemCount: notifications.length,
                 itemBuilder: (context, index){
                   return Card(

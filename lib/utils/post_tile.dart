@@ -8,6 +8,8 @@ import 'colors.dart';
 import 'post_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class PostTile extends StatelessWidget {
 
@@ -22,6 +24,28 @@ class PostTile extends StatelessWidget {
 
   final _user = FirebaseAuth.instance.currentUser;
   bool liked_already = false;
+
+  Future <void>report(Post post)async {
+    String username = "unite.report.mail@gmail.com";
+    String password = "Elma1357!";
+
+    final smtpServer = gmail(username, password);
+
+    // Create our email message.
+    final message = Message()
+      ..from = Address(username)
+      ..recipients.add('unite.report.mail@gmail.com') //recipent email
+      ..subject = 'Post report' //subject of the email
+      ..text = '${_user!.email} reported the post: ${post.postId}'; //body of the email
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString()); //print if the email is sent
+    } on MailerException catch (e) {
+      print('Message not sent. \n'+ e.toString()); //print if the email is not sent
+      // e.toString() will show why the email is not sending
+    }
+  }
 
   Future <bool >alreadyLiked() async {
     DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
@@ -100,8 +124,8 @@ class PostTile extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(post.date,style: TextStyle(color: Colors.white, )),
-                            SizedBox(width :55),
+                            Text(post.date, style: AppStyles.postText),
+                            SizedBox(width :5),
                             IconButton(
                               alignment: Alignment.topRight,
                               onPressed: delete,
@@ -110,6 +134,17 @@ class PostTile extends StatelessWidget {
                               color: AppColors.postTextColor,
                               icon: Icon(
                                 Icons.delete_outline,
+                              ),
+                            ),
+                            SizedBox(width :5),
+                            IconButton(
+                              alignment: Alignment.topRight,
+                              onPressed: () => report(post),
+                              iconSize: 20,
+                              splashRadius: 24,
+                              color: AppColors.postTextColor,
+                              icon: Icon(
+                                Icons.report,
                               ),
                             ),
                           ],

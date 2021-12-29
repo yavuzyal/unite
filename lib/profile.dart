@@ -191,6 +191,13 @@ class _ProfileState extends State<Profile> {
 
                                             await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
 
+                                            FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
+                                                {
+                                                  'message' : 'You deleted a post!',
+                                                  'datetime': DateTime.now(),
+                                                  'url': post.image_url
+                                                });
+
                                           });
                                         },
                                         like: () {

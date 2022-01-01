@@ -66,7 +66,7 @@ class _SearchedProfile extends State<SearchedProfile> {
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
-      likeCount = message.get('like');
+      likeCount = message.get('likeCount');
 
       Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);
       myPosts.add(post);

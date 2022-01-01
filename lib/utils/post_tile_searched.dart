@@ -76,18 +76,25 @@ class PostTileSearched extends StatelessWidget {
   Future onPostComment() async{
     DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
+    print('Comment: ');
+    print(comment);
+
     List<dynamic> listOfComments = [];
 
     print(comments.data()!.cast().values.toList());
 
-    listOfComments = comments.data()!.cast().values.toList()[4];
+    listOfComments = comments.data()!.cast().values.toList()[6];
+
+
 
     listOfComments.add(comment);
 
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
       'comment': listOfComments,
     });
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -106,94 +113,97 @@ class PostTileSearched extends StatelessWidget {
             child: Card(
               margin: EdgeInsets.all(10),
               color: AppColors.postBackgroundColor,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(post.date,style: TextStyle(color: Colors.white, )),
-                                SizedBox(width :55),
-                                IconButton(
-                                  alignment: Alignment.topRight,
-                                  onPressed: delete,
-                                  iconSize: 20,
-                                  splashRadius: 24,
-                                  color: AppColors.postTextColor,
-                                  icon: Icon(
-                                    Icons.delete_outline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                SizedBox(height :5),
-                                Text(post.text, style: AppStyles.postText),
-                                SizedBox(height : 15),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    LikeButton(
-                                      isLiked: liked_already,
-                                      onTap: (isLiked) async {
-                                        return onLikeButtonTapped(liked_already);
-                                      },
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(post.date,style: TextStyle(color: Colors.white, )),
+                                  SizedBox(width :55),
+                                  IconButton(
+                                    alignment: Alignment.topRight,
+                                    onPressed: delete,
+                                    iconSize: 20,
+                                    splashRadius: 24,
+                                    color: AppColors.postTextColor,
+                                    icon: Icon(
+                                      Icons.delete_outline,
                                     ),
-                                    SizedBox(width: 5),
-                                    Text('${post.likeCount}', style: AppStyles.postText),
-                                    SizedBox(width: 15),
-                                    Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                    SizedBox(width: 5),
-                                    Text('${post.commentCount}', style: AppStyles.postText)
-                                  ],
-                                ),
-                                SizedBox(height : 15),
-                              ],
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(height :5),
+                                  Text(post.text, style: AppStyles.postText),
+                                  SizedBox(height : 15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      LikeButton(
+                                        isLiked: liked_already,
+                                        onTap: (isLiked) async {
+                                          return onLikeButtonTapped(liked_already);
+                                        },
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text('${post.likeCount}', style: AppStyles.postText),
+                                      SizedBox(width: 15),
+                                      Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                      SizedBox(width: 5),
+                                      Text('${post.commentCount}', style: AppStyles.postText)
+                                    ],
+                                  ),
+                                  SizedBox(height : 15),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            textAlign: TextAlign.center,
+                            decoration: new InputDecoration(
+                              hintText: "Add a comment...",
+                              fillColor: Colors.black,
+                              border: new OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                borderSide: new BorderSide(),
+                              ),
                             ),
-                          ],
+                            validator: (String? value) {
+                              if(value!.isEmpty || value == ''){
+                                comment = '';
+                              }
+                              else
+                                comment = value!;
+                            },
+                          ),
                         ),
+                        FloatingActionButton(
+                            onPressed: () async {
+                              onPostComment();
+                            },
+                            child: Text('Post'))
                       ],
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          decoration: new InputDecoration(
-                            hintText: "Add a comment...",
-                            fillColor: Colors.black,
-                            border: new OutlineInputBorder(
-                              borderRadius: new BorderRadius.circular(0.0),
-                              borderSide: new BorderSide(),
-                            ),
-                          ),
-                          validator: (String? value) {
-                            if(value!.isEmpty || value == ''){
-                              comment = '';
-                            }
-                            else
-                              comment = value!;
-                          },
-                        ),
-                      ),
-                      FloatingActionButton(
-                          onPressed: () async {
-                            onPostComment();
-                          },
-                          child: Text('Post'))
-                    ],
-                  ),
-                ],
-              )
+                  ],
+                ),
+              ),
             ),
           );
         });

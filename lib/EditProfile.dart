@@ -176,8 +176,8 @@ class _EditProfile extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
+      body: SingleChildScrollView(
+        child:
           Container(
             margin: const EdgeInsets.only(top: 20),
             child: Form(
@@ -325,7 +325,7 @@ class _EditProfile extends State {
                           else{
                             uploadImageToFirebase(context);
                           }
-                          
+
                           setState(() {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -347,8 +347,6 @@ class _EditProfile extends State {
               ),
             ),
           ),
-
-        ],
       ),
     );
   }

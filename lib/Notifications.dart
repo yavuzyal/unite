@@ -79,7 +79,7 @@ class _Notifications extends State<Notifications> {
       body: FutureBuilder(
         future: getNotifications(),
         builder: (context, snapshot){
-          if(!snapshot.hasData) return CircularProgressIndicator();
+          if(!snapshot.hasData) return Center(child: CircularProgressIndicator(),);
           else{
             print('SNAPSHOT: ');
             print(notifications[0].message);

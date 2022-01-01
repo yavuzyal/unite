@@ -23,12 +23,14 @@ class PostTile extends StatelessWidget {
   final _user = FirebaseAuth.instance.currentUser;
   bool liked_already = false;
 
-  Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+  Future <bool> alreadyLiked() async {
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
 
-    List<dynamic> listOfLikes = [];
+    List listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
+
+    //listOfLikes = liked.data()!.cast().values.toList()[1];
 
     print(listOfLikes.contains(_user!.uid));
 
@@ -42,11 +44,11 @@ class PostTile extends StatelessWidget {
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
 
-    List<dynamic> listOfLikes = [];
+    List listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
     if(isLiked == false){
         listOfLikes.add(_user!.uid);

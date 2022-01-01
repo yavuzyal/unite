@@ -43,16 +43,15 @@ class _SearchedProfile extends State<SearchedProfile> {
 
   _SearchedProfile({Key? key, required this.userId});
 
-  User_info user_profile = new User_info('','','','','', '');
+  User_info user_profile = new User_info('','','','','','');
   String user = '';
   int likeCount = 0;
 
   Future getPosts() async{
 
     DocumentSnapshot<Map<String, dynamic>> user_Name = await FirebaseFirestore.instance.collection('users').doc(userId).get();   //.doc(userId).collection('username').get();
-    user = user_Name.data()!.values.last;
 
-    print(userId);
+    user = user_Name.data()!.values.last;
 
     QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(userId).collection('profile_info').get();
 
@@ -62,13 +61,21 @@ class _SearchedProfile extends State<SearchedProfile> {
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').orderBy('datetime', descending: true).get();
 
+    print(snapshot.docs.length);
+
     for(var message in snapshot.docs){
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
-      likeCount = message.get('like');
+      likeCount = message.get('likeCount');
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);
+      print('comment get');
+      print(message.get('comment'));
+
+      //SIKINTI POST OLUŞTURMADA BURAYA BAK!!!
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: message.get('comment'), postId: message.id);
+      print('post');
+      print(post);
       myPosts.add(post);
     }
   }
@@ -85,8 +92,13 @@ class _SearchedProfile extends State<SearchedProfile> {
         builder: (context, snapshot){
           if( snapshot.connectionState == ConnectionState.waiting){
             return  Center(child: CircularProgressIndicator());}
+
+          print('mypost length');
+          print(myPosts.length);
+
           return Scaffold(
             appBar: AppBar(
+              backgroundColor: Colors.lightBlueAccent,
               title: Text(user),
               centerTitle: true,
             ),
@@ -196,24 +208,12 @@ class _SearchedProfile extends State<SearchedProfile> {
                                       PostTileSearched(
                                         userId: userId,
                                         post: post,
-                                        delete: () {
-                                          setState(() {
-                                            myPosts.remove(post);
-                                          });
-                                        },
+                                        delete: () {},
                                         like: () {
-                                          setState(() async {
+                                          setState(()  {
                                             //post.likeCount++;
-
-                                            await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
-                                              'like': likeCount + 1,
-                                            });
-
-                                            setState(() {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                                  LoggedIn()),);
-                                            });
-
+                                            int dummy = 0;
+                                            dummy = dummy + 1;
                                           });
                                         },)
                               ).toList(),

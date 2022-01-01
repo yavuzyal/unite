@@ -25,14 +25,12 @@ class PostTileSearched extends StatelessWidget {
   bool liked_already = false;
   String comment = '';
 
-  Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+  Future <bool> alreadyLiked() async {
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
-    List<dynamic> listOfLikes = [];
+    List listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
-
-    print(listOfLikes.contains(_user!.uid));
+    listOfLikes = liked.get('likedBy');
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -44,16 +42,16 @@ class PostTileSearched extends StatelessWidget {
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
-    List<dynamic> listOfLikes = [];
+    List listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
         'likeCount': post.likeCount + 1,
         'likedBy': listOfLikes,
       }).then((value) => success = true);
@@ -64,7 +62,7 @@ class PostTileSearched extends StatelessWidget {
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
         'likeCount': post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);
@@ -74,20 +72,24 @@ class PostTileSearched extends StatelessWidget {
   }
 
   Future onPostComment() async{
-    DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
-    List<dynamic> listOfComments = [];
+    DocumentSnapshot comments = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
-    print(comments.data()!.cast().values.toList());
+    List listOfComments = [];
 
-    listOfComments = comments.data()!.cast().values.toList()[4];
+    String currentComment = _user!.uid + comment;
 
-    listOfComments.add(comment);
+    listOfComments = comments.get('comment');
 
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+    listOfComments.add(currentComment);
+    //ilk 27 user id
+
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
       'comment': listOfComments,
     });
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +97,11 @@ class PostTileSearched extends StatelessWidget {
     return FutureBuilder(
         future: alreadyLiked().then((result) => liked_already = result),
         builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return  Center(child: CircularProgressIndicator());}
+
+          print(post.comments);
+
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -163,34 +170,36 @@ class PostTileSearched extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          decoration: new InputDecoration(
-                            hintText: "Add a comment...",
-                            fillColor: Colors.black,
-                            border: new OutlineInputBorder(
-                              borderRadius: new BorderRadius.circular(0.0),
-                              borderSide: new BorderSide(),
+                  Form(
+                    key: _formKey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            textAlign: TextAlign.center,
+                            decoration: new InputDecoration(
+                              hintText: "Add a comment...",
+                              fillColor: Colors.black,
+                              border: new OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                borderSide: new BorderSide(),
+                              ),
                             ),
-                          ),
-                          validator: (String? value) {
-                            if(value!.isEmpty || value == ''){
-                              comment = '';
-                            }
-                            else
+                            validator: (String? value) {
                               comment = value!;
-                          },
+                            },
+                          ),
                         ),
-                      ),
-                      FloatingActionButton(
-                          onPressed: () async {
-                            onPostComment();
-                          },
-                          child: Text('Post'))
-                    ],
+                        FloatingActionButton(
+                            onPressed: () {
+                              print('before validate');
+                              if (_formKey.currentState!.validate()) {
+                                onPostComment();
+                              }
+                            },
+                            child: Text('Post'))
+                      ],
+                    ),
                   ),
                 ],
               )

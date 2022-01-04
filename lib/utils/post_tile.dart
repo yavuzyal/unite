@@ -125,174 +125,181 @@ class _PostTileState extends State<PostTile> {
     return FutureBuilder(
         future: isThereImage().then((value) => there_is_image = value),
         builder: (context, snapshot){
-          if(there_is_image){
-            return FutureBuilder(
-                future: alreadyLiked().then((result) => liked_already = result),
-                builder: (context, snapshot){
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
-                      );
-                      FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(10),
-                      color: AppColors.postBackgroundColor,
-                      child:
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
-                            Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(widget.post.date, style: AppStyles.postText),
-                                    //SizedBox(width :5),
-                                    IconButton(
-                                      alignment: Alignment.topRight,
-                                      onPressed: widget.delete,
-                                      iconSize: 20,
-                                      splashRadius: 24,
-                                      color: AppColors.postTextColor,
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                      ),
-                                    ),
-                                    //SizedBox(width :5),
-                                    IconButton(
-                                      alignment: Alignment.topRight,
-                                      onPressed: () => report(widget.post),
-                                      iconSize: 20,
-                                      splashRadius: 24,
-                                      color: AppColors.postTextColor,
-                                      icon: Icon(
-                                        Icons.report,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    SizedBox(height :5),
-                                    Text(widget.post.text, style: AppStyles.postText),
-                                    SizedBox(height : 15),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        LikeButton(
-                                          isLiked: liked_already,
-                                          onTap: (isLiked) {
-                                            return onLikeButtonTapped(context, liked_already, widget.post);
-                                          },
-                                        ),
-                                        SizedBox(width: 5),
-                                        Text('${widget.post.likeCount}', style: AppStyles.postText),
-                                        SizedBox(width: 15),
-                                        Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                        SizedBox(width: 5),
-                                        Text('${widget.post.commentCount}', style: AppStyles.postText)
-                                      ],
-                                    ),
-                                    SizedBox(height : 45),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                });
-          }
+          if( snapshot.connectionState == ConnectionState.waiting){
+            return  Card(
+                margin: EdgeInsets.all(10),
+          color: AppColors.postBackgroundColor,
+          child:Center(child: CircularProgressIndicator()));}
           else{
-            return FutureBuilder(
-                future: alreadyLiked().then((result) => liked_already = result),
-                builder: (context, snapshot){
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
-                      );
-                      FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(10),
-                      color: AppColors.postBackgroundColor,
-                      child:
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(widget.post.date, style: AppStyles.postText),
-                                    //SizedBox(width :5),
-                                    IconButton(
-                                      alignment: Alignment.topRight,
-                                      onPressed: widget.delete,
-                                      iconSize: 20,
-                                      splashRadius: 24,
-                                      color: AppColors.postTextColor,
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                      ),
-                                    ),
-                                    //SizedBox(width :5),
-                                    IconButton(
-                                      alignment: Alignment.topRight,
-                                      onPressed: () => report(widget.post),
-                                      iconSize: 20,
-                                      splashRadius: 24,
-                                      color: AppColors.postTextColor,
-                                      icon: Icon(
-                                        Icons.report,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                    SizedBox(height :5),
-                                    Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
-                                    SizedBox(height : 15),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        LikeButton(
-                                          isLiked: liked_already,
-                                          onTap: (isLiked) {
-                                            return onLikeButtonTapped(context, liked_already, widget.post);
-                                          },
+            if(there_is_image){
+              return FutureBuilder(
+                  future: alreadyLiked().then((result) => liked_already = result),
+                  builder: (context, snapshot){
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                        );
+                        FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(10),
+                        color: AppColors.postBackgroundColor,
+                        child:
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(widget.post.date, style: AppStyles.postText),
+                                      //SizedBox(width :5),
+                                      IconButton(
+                                        alignment: Alignment.topRight,
+                                        onPressed: widget.delete,
+                                        iconSize: 20,
+                                        splashRadius: 24,
+                                        color: AppColors.postTextColor,
+                                        icon: Icon(
+                                          Icons.delete_outline,
                                         ),
-                                        SizedBox(width: 5),
-                                        Text('${widget.post.likeCount}', style: AppStyles.postText),
-                                        SizedBox(width: 15),
-                                        Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                        SizedBox(width: 5),
-                                        Text('${widget.post.commentCount}', style: AppStyles.postText)
-                                      ],
-                                    ),
-                                    SizedBox(height : 45),
-
-                              ],
-                            ),
-                          ],
+                                      ),
+                                      //SizedBox(width :5),
+                                      IconButton(
+                                        alignment: Alignment.topRight,
+                                        onPressed: () => report(widget.post),
+                                        iconSize: 20,
+                                        splashRadius: 24,
+                                        color: AppColors.postTextColor,
+                                        icon: Icon(
+                                          Icons.report,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      SizedBox(height :5),
+                                      Text(widget.post.text, style: AppStyles.postText),
+                                      SizedBox(height : 15),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          LikeButton(
+                                            isLiked: liked_already,
+                                            onTap: (isLiked) {
+                                              return onLikeButtonTapped(context, liked_already, widget.post);
+                                            },
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text('${widget.post.likeCount}', style: AppStyles.postText),
+                                          SizedBox(width: 15),
+                                          Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                          SizedBox(width: 5),
+                                          Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                        ],
+                                      ),
+                                      SizedBox(height : 45),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                });
+                    );
+                  });
+            }
+            else{
+              return FutureBuilder(
+                  future: alreadyLiked().then((result) => liked_already = result),
+                  builder: (context, snapshot){
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                        );
+                        FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(10),
+                        color: AppColors.postBackgroundColor,
+                        child:
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(widget.post.date, style: AppStyles.postText),
+                                      //SizedBox(width :5),
+                                      IconButton(
+                                        alignment: Alignment.topRight,
+                                        onPressed: widget.delete,
+                                        iconSize: 20,
+                                        splashRadius: 24,
+                                        color: AppColors.postTextColor,
+                                        icon: Icon(
+                                          Icons.delete_outline,
+                                        ),
+                                      ),
+                                      //SizedBox(width :5),
+                                      IconButton(
+                                        alignment: Alignment.topRight,
+                                        onPressed: () => report(widget.post),
+                                        iconSize: 20,
+                                        splashRadius: 24,
+                                        color: AppColors.postTextColor,
+                                        icon: Icon(
+                                          Icons.report,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height :5),
+                                  Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
+                                  SizedBox(height : 15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      LikeButton(
+                                        isLiked: liked_already,
+                                        onTap: (isLiked) {
+                                          return onLikeButtonTapped(context, liked_already, widget.post);
+                                        },
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text('${widget.post.likeCount}', style: AppStyles.postText),
+                                      SizedBox(width: 15),
+                                      Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                      SizedBox(width: 5),
+                                      Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                    ],
+                                  ),
+                                  SizedBox(height : 45),
+
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            }
           }
         });
   }

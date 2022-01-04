@@ -11,16 +11,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
-class PostTile extends StatelessWidget {
+class PostTile extends StatefulWidget {
 
   final Post post;
   final VoidCallback delete;
   final VoidCallback like;
+  int dummy = 0;
 
-  //LikeButtonTapCallback isLiked;
-
-  //final userId;
   PostTile({required this.post, required this.delete, required this.like});
+
+  @override
+  _PostTileState createState() => _PostTileState();
+
+}
+
+class _PostTileState extends State<PostTile> {
 
   final _user = FirebaseAuth.instance.currentUser;
   bool liked_already = false;
@@ -48,7 +53,7 @@ class PostTile extends StatelessWidget {
   }
 
   Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -62,42 +67,48 @@ class PostTile extends StatelessWidget {
     return false;
   }
 
-  Future<bool> onLikeButtonTapped(bool isLiked) async{
+  Future<bool> onLikeButtonTapped(context, bool isLiked, post) async{
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.data()!.cast().values.toList()[1];
 
     if(isLiked == false){
-        listOfLikes.add(_user!.uid);
+      listOfLikes.add(_user!.uid);
 
-        await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
-          'likeCount': post.likeCount + 1,
-          'likedBy': listOfLikes,
-        }).then((value) => success = true);
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).update({
+        'likeCount': widget.post.likeCount + 1,
+        'likedBy': listOfLikes,
+      }).then((value) => success = true);
 
-        return success;
+      setState(() {
+        post.likeCount = post.likeCount + 1;
+      });
+
+      return success;
     }
 
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
-        'likeCount': post.likeCount - 1,
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).update({
+        'likeCount': widget.post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);
+
+      setState(() {
+        post.likeCount = post.likeCount - 1;
+      });
 
       return success;
     }
   }
-
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
         future: alreadyLiked().then((result) => liked_already = result),
         builder: (context, snapshot){
@@ -105,7 +116,7 @@ class PostTile extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PostPage(post: post)),
+                MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
               );
               FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
             },
@@ -118,17 +129,17 @@ class PostTile extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                    Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                     Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(post.date, style: AppStyles.postText),
+                            Text(widget.post.date, style: AppStyles.postText),
                             SizedBox(width :5),
                             IconButton(
                               alignment: Alignment.topRight,
-                              onPressed: delete,
+                              onPressed: widget.delete,
                               iconSize: 20,
                               splashRadius: 24,
                               color: AppColors.postTextColor,
@@ -139,7 +150,7 @@ class PostTile extends StatelessWidget {
                             SizedBox(width :5),
                             IconButton(
                               alignment: Alignment.topRight,
-                              onPressed: () => report(post),
+                              onPressed: () => report(widget.post),
                               iconSize: 20,
                               splashRadius: 24,
                               color: AppColors.postTextColor,
@@ -152,23 +163,23 @@ class PostTile extends StatelessWidget {
                         Column(
                           children: [
                             SizedBox(height :5),
-                            Text(post.text, style: AppStyles.postText),
+                            Text(widget.post.text, style: AppStyles.postText),
                             SizedBox(height : 15),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 LikeButton(
                                   isLiked: liked_already,
-                                  onTap: (isLiked) async {
-                                    return onLikeButtonTapped(liked_already);
+                                  onTap: (isLiked) {
+                                    return onLikeButtonTapped(context, liked_already, widget.post);
                                   },
                                 ),
                                 SizedBox(width: 5),
-                                Text('${post.likeCount}', style: AppStyles.postText),
+                                Text('${widget.post.likeCount}', style: AppStyles.postText),
                                 SizedBox(width: 15),
                                 Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                 SizedBox(width: 5),
-                                Text('${post.commentCount}', style: AppStyles.postText)
+                                Text('${widget.post.commentCount}', style: AppStyles.postText)
                               ],
                             ),
                             SizedBox(height : 45),
@@ -182,7 +193,5 @@ class PostTile extends StatelessWidget {
             ),
           );
         });
-
-
   }
 }

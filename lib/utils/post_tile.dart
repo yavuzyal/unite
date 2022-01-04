@@ -136,7 +136,7 @@ class _PostTileState extends State<PostTile> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(widget.post.date, style: AppStyles.postText),
-                            SizedBox(width :5),
+                            //SizedBox(width :5),
                             IconButton(
                               alignment: Alignment.topRight,
                               onPressed: widget.delete,
@@ -147,7 +147,7 @@ class _PostTileState extends State<PostTile> {
                                 Icons.delete_outline,
                               ),
                             ),
-                            SizedBox(width :5),
+                            //SizedBox(width :5),
                             IconButton(
                               alignment: Alignment.topRight,
                               onPressed: () => report(widget.post),

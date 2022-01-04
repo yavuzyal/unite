@@ -69,7 +69,7 @@ class _PostScreen extends State {
           "caption": caption,
           "datetime": DateTime.now(),
           "location": location,
-          "likedBy": {},
+          "likedBy": [],
         }).then((value){
       print(value.id);
     });
@@ -236,7 +236,14 @@ class _PostScreen extends State {
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
 
-                        uploadImageToFirebase(context, post_message);
+                        if(_imageFile == null){
+                          uploadPost(_user!.uid, 0, 0, '', post_message);
+                        }
+                        else{
+                          uploadImageToFirebase(context, post_message);
+                        }
+
+
 
                         //setState(() {
                          // ScaffoldMessenger.of(context).showSnackBar(

@@ -26,7 +26,7 @@ class PostTileSearched extends StatelessWidget {
   String comment = '';
 
   Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -44,7 +44,7 @@ class PostTileSearched extends StatelessWidget {
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -53,7 +53,7 @@ class PostTileSearched extends StatelessWidget {
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
         'likeCount': post.likeCount + 1,
         'likedBy': listOfLikes,
       }).then((value) => success = true);
@@ -64,7 +64,7 @@ class PostTileSearched extends StatelessWidget {
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
         'likeCount': post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);

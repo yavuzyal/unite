@@ -11,24 +11,29 @@ import 'post_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PostTileSearched extends StatelessWidget {
+
+class PostTileSearched extends StatefulWidget {
 
   final Post post;
   final VoidCallback delete;
   final VoidCallback like;
   String userId;
 
-  //LikeButtonTapCallback isLiked;
-
-  //final userId;
   PostTileSearched({required this.post, required this.delete, required this.like, required this.userId});
+
+  @override
+  _PostTileSearched createState() => _PostTileSearched();
+
+}
+
+class _PostTileSearched extends State<PostTileSearched> {
 
   final _user = FirebaseAuth.instance.currentUser;
   bool liked_already = false;
   String comment = '';
 
   Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -46,7 +51,7 @@ class PostTileSearched extends StatelessWidget {
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -55,10 +60,14 @@ class PostTileSearched extends StatelessWidget {
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
-        'likeCount': post.likeCount + 1,
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
+        'likeCount': widget.post.likeCount + 1,
         'likedBy': listOfLikes,
       }).then((value) => success = true);
+
+      setState(() {
+        widget.post.likeCount = widget.post.likeCount + 1;
+      });
 
       return success;
     }
@@ -66,17 +75,21 @@ class PostTileSearched extends StatelessWidget {
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
-        'likeCount': post.likeCount - 1,
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
+        'likeCount': widget.post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);
+
+      setState(() {
+        widget.post.likeCount = widget.post.likeCount - 1;
+      });
 
       return success;
     }
   }
 
   Future onPostComment() async{
-    DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfComments = [];
 
@@ -86,13 +99,13 @@ class PostTileSearched extends StatelessWidget {
 
     listOfComments.add(comment);
 
-    await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
+    await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
       'comment': listOfComments,
     });
   }
 
   Future<bool> isThereImage () async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     if(liked.data()!.cast().values.toList()[2] == "" || liked.data()!.cast().values.toList()[2] == null){
       return false;
@@ -130,12 +143,6 @@ class PostTileSearched extends StatelessWidget {
     return FutureBuilder(
         future: isThereImage().then((value) => there_is_image = value),
         builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return  Card(
-                margin: EdgeInsets.all(10),
-                color: AppColors.postBackgroundColor,
-                child:Center(child: CircularProgressIndicator()));}
-          else{
             if(there_is_image){
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
@@ -144,7 +151,7 @@ class PostTileSearched extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -158,17 +165,17 @@ class PostTileSearched extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                                    Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                                     SizedBox(width: 55,),
                                     Column(
                                       children: [
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Text(post.date,style: TextStyle(color: Colors.white, )),
+                                            Text(widget.post.date,style: TextStyle(color: Colors.white, )),
                                             IconButton(
                                               alignment: Alignment.topRight,
-                                              onPressed: () => report(post),
+                                              onPressed: () => report(widget.post),
                                               iconSize: 20,
                                               splashRadius: 24,
                                               color: AppColors.postTextColor,
@@ -181,7 +188,7 @@ class PostTileSearched extends StatelessWidget {
                                         Column(
                                           children: [
                                             SizedBox(height :5),
-                                            Text(post.text, style: AppStyles.postText),
+                                            Text(widget.post.text, style: AppStyles.postText),
                                             SizedBox(height : 15),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
@@ -193,11 +200,11 @@ class PostTileSearched extends StatelessWidget {
                                                   },
                                                 ),
                                                 SizedBox(width: 5),
-                                                Text('${post.likeCount}', style: AppStyles.postText),
+                                                Text('${widget.post.likeCount}', style: AppStyles.postText),
                                                 SizedBox(width: 15),
                                                 Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                                 SizedBox(width: 5),
-                                                Text('${post.commentCount}', style: AppStyles.postText)
+                                                Text('${widget.post.commentCount}', style: AppStyles.postText)
                                               ],
                                             ),
                                             SizedBox(height : 15),
@@ -251,7 +258,7 @@ class PostTileSearched extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -271,11 +278,11 @@ class PostTileSearched extends StatelessWidget {
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Text(post.date,style: TextStyle(color: Colors.white, )),
+                                            Text(widget.post.date,style: TextStyle(color: Colors.white, )),
                                             SizedBox(width :55),
                                             IconButton(
                                               alignment: Alignment.topRight,
-                                              onPressed: () => report(post),
+                                              onPressed: () => report(widget.post),
                                               iconSize: 20,
                                               splashRadius: 24,
                                               color: AppColors.postTextColor,
@@ -288,7 +295,7 @@ class PostTileSearched extends StatelessWidget {
                                         Column(
                                           children: [
                                             SizedBox(height :5),
-                                            Text(post.text, style: AppStyles.postText),
+                                            Text(widget.post.text, style: AppStyles.postText),
                                             SizedBox(height : 15),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
@@ -300,11 +307,11 @@ class PostTileSearched extends StatelessWidget {
                                                   },
                                                 ),
                                                 SizedBox(width: 5),
-                                                Text('${post.likeCount}', style: AppStyles.postText),
+                                                Text('${widget.post.likeCount}', style: AppStyles.postText),
                                                 SizedBox(width: 15),
                                                 Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                                 SizedBox(width: 5),
-                                                Text('${post.commentCount}', style: AppStyles.postText)
+                                                Text('${widget.post.commentCount}', style: AppStyles.postText)
                                               ],
                                             ),
                                             SizedBox(height : 15),
@@ -350,7 +357,6 @@ class PostTileSearched extends StatelessWidget {
                     );
                   });
             }
-          }
     }
     );
   }

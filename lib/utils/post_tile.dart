@@ -125,12 +125,6 @@ class _PostTileState extends State<PostTile> {
     return FutureBuilder(
         future: isThereImage().then((value) => there_is_image = value),
         builder: (context, snapshot){
-          if( snapshot.connectionState == ConnectionState.waiting){
-            return  Card(
-                margin: EdgeInsets.all(10),
-          color: AppColors.postBackgroundColor,
-          child:Center(child: CircularProgressIndicator()));}
-          else{
             if(there_is_image){
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
@@ -300,7 +294,7 @@ class _PostTileState extends State<PostTile> {
                     );
                   });
             }
-          }
+
         });
   }
 }

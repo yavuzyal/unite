@@ -95,7 +95,9 @@ class _Notifications extends State<Notifications> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Image.network(notifications[index].url, height: 80, width: 80, fit: BoxFit.cover),
+                          notifications[index].url != "" ?
+                          Image.network(notifications[index].url, height: 80, width: 80, fit: BoxFit.cover) :
+                          Text(''),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [

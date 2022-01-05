@@ -29,7 +29,10 @@ class User_info {
   User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
-class _ProfileState extends State<Profile> {
+
+class _ProfileState extends State<Profile> with TickerProviderStateMixin {
+
+  late TabController _tabController = new TabController(length: 2, vsync: this);
 
   User_info user_profile = new User_info('','','','','', '');
   String displayName = '';
@@ -62,12 +65,15 @@ class _ProfileState extends State<Profile> {
 
       Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
       myPosts.add(post);
+      myImages.add(Image.network(post.image_url));
+
     }
   }
 
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
+  List<Image> myImages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -178,35 +184,80 @@ class _ProfileState extends State<Profile> {
                           ),
 
                           SizedBox(height: 20),
-                          Container(
-                            child: Column(
-                              children: myPosts.map(
-                                      (post) =>
-                                      PostTile(
-                                        //userId: _user!.uid,
-                                        post: post,
-                                        delete: () {
-                                          setState(() async {
-                                            //myPosts.remove(post);
+                          TabBar(
+                            unselectedLabelColor: AppColors.appTextColor,
+                            unselectedLabelStyle: AppStyles.profileText,
+                            labelColor: AppColors.appTextColor,
+                            labelStyle: AppStyles.profileText,
+                            indicatorColor: AppColors.logoColor,
+                            indicatorWeight: 3,
 
-                                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
+                            tabs: [
+                              Tab(
+                                text: 'Posts',
+                              ),
+                              Tab(
+                                text: 'Media',
+                              )
+                            ],
+                            controller: _tabController,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                          ),
+                          SizedBox(
+                            height: 500,
+                            child: TabBarView(
+                              children: [
+                                Container(child: SingleChildScrollView(
+                                  child: Center(child: Container(
+                                      child: Column(
+                                        children: myPosts.map(
+                                                (post) =>
+                                                PostTile(
+                                                  //userId: _user!.uid,
+                                                  post: post,
+                                                  delete: () {
+                                                    setState(() async {
+                                                      //myPosts.remove(post);
 
-                                            FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
-                                                {
-                                                  'message' : 'You deleted a post!',
-                                                  'datetime': DateTime.now(),
-                                                  'url': post.image_url
-                                                });
+                                                      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
 
-                                          });
-                                        },
-                                        like: () {
-                                          setState(()  {
-                                            //post.likeCount++;
-                                            dummy = dummy + 1;
-                                          });
-                                        },)
-                              ).toList(),
+                                                      FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
+                                                          {
+                                                            'message' : 'You deleted a post!',
+                                                            'datetime': DateTime.now(),
+                                                            'url': post.image_url
+                                                          });
+
+                                                    });
+                                                  },
+                                                  like: () {
+                                                    setState(()  {
+                                                      //post.likeCount++;
+                                                      dummy = dummy + 1;
+                                                    });
+                                                  },)
+                                        ).toList(),
+                                      ),
+                                    ),
+                                    ),
+                                ),
+                                ),
+                                CustomScrollView(
+                                  primary: false,
+                                  slivers: <Widget>[
+                                    SliverPadding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      sliver: SliverGrid.count(
+                                          mainAxisSpacing: 1, //horizontal space
+                                          crossAxisSpacing: 1, //vertical space
+                                          crossAxisCount: 3, //number of images for a row
+                                          children: myImages
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                              controller: _tabController,
                             ),
                           ),
                         ],

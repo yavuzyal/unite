@@ -80,6 +80,8 @@ class _SearchedProfile extends State<SearchedProfile> {
   @override
   Widget build(BuildContext context) {
 
+
+
     return FutureBuilder(
         future: getPosts(),
         builder: (context, snapshot){

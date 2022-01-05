@@ -82,7 +82,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
         future: getPosts(),
         builder: (context, snapshot){
           if( snapshot.connectionState == ConnectionState.waiting){
-            return  Center(child: CircularProgressIndicator());}
+            return  Center(child: CircularProgressIndicator());
+          }
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               onPressed: (){FirebaseCrashlytics.instance.crash();},

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/post_tile_searched.dart';
@@ -46,19 +47,16 @@ class _SearchedProfile extends State<SearchedProfile> {
   User_info user_profile = new User_info('','','','','', '');
   String user = '';
   int likeCount = 0;
+  bool following = false;
+  bool ispriv = true;
 
   Future getPosts() async{
 
-    DocumentSnapshot<Map<String, dynamic>> user_Name = await FirebaseFirestore.instance.collection('users').doc(userId).get();   //.doc(userId).collection('username').get();
-    user = user_Name.data()!.values.last;
+    DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    print(userId);
+    user = mes.get('username');
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(userId).collection('profile_info').get();
-
-    for(var mes in profile_info.docs){
-      user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
-    }
+    user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').orderBy('datetime', descending: true).get();
 
@@ -72,165 +70,295 @@ class _SearchedProfile extends State<SearchedProfile> {
       myPosts.add(post);
     }
   }
+  
+  Future addFollower () async {
+
+    if(following == false){
+      DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      List followerArray = [];
+
+      followerArray = follower.get('followers');
+      int followerCount = follower.get('followerCount');
+
+      followerArray.add(_user!.uid);
+
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'followers': followerArray,
+        'followerCount': followerCount + 1,
+      });
+
+      setState(() {
+        following = true;
+      });
+
+    }
+
+    else if(following == true){
+      DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      List followerArray = [];
+
+      followerArray = follower.get('followers');
+      int followerCount = follower.get('followerCount');
+
+      followerArray.remove(_user!.uid);
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'followers': followerArray,
+        'followerCount': followerCount - 1,
+      });
+
+      setState(() {
+        following = false;
+      });
+
+    }
+  }
+
+  Future senFollowRequest() async {
+    DocumentSnapshot followList = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    List followRequests = [];
+    followRequests = followList.get('follow_requests');
+
+    if(!followRequests.contains(_user!.uid)){
+      followRequests.add(_user!.uid);
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'follow_requests': followRequests,
+      });
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('notifications').add({
+        'uid': _user!.uid,
+        'message' : 'Follow Request!',
+        'datetime': DateTime.now(),
+        'url' : '',
+      });
+    }
+
+  }
+
+
+  Future isFollowing() async {
+
+    DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    List followerArray = [];
+
+    followerArray = follower.get('followers');
+    String private = follower.get('isPrivate');
+
+    if(private == 'private'){
+      ispriv = true;
+    }
+    else if(private == 'public'){
+      ispriv = false;
+    }
+
+    if(followerArray.contains(_user!.uid)){
+      following = true;
+    }
+    else if(!followerArray.contains(_user!.uid)){
+      following = false;
+    }
+
+  }
 
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
+  final _user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return FutureBuilder(
-        future: getPosts(),
-        builder: (context, snapshot){
-          if( snapshot.connectionState == ConnectionState.waiting){
-            return  Center(child: CircularProgressIndicator());}
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(user),
-              centerTitle: true,
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: (){FirebaseCrashlytics.instance.crash();},
-              backgroundColor: AppColors.logoColor,
-              child: Icon(Icons.close, color: AppColors.postTextColor,),
-            ),
-            body:
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: AppDimensions.padding8,
-                      child: Column(
-                        children: [
-                          Image.asset('assets/unite_logo.png', height: 50, width: 50,),
-                          SizedBox(height: 30.0,),
-                          CircleAvatar(
-                            backgroundColor: AppColors.logoColor,
-                            child: ClipOval(
-                              child:
-                              user_profile.profile_pic == '' ?
-                              Image.asset('assets/usericon.png') :
-                              Image.network(user_profile.profile_pic),
-                              //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
-                            ),
-                            radius: 70,
-                          ),
-                          SizedBox(height : 15),
-                          Text(user, style: AppStyles.profileName,),
-                          //user!.displayName!
-
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text(user_profile.school == '' ?
-                                "No information was given!" :
-                                user_profile.school
-                                  , style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text(user_profile.major == '' ?
-                                "No information was given!" :
-                                user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text(user_profile.age == '' ?
-                                "No information was given!" :
-                                user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text(user_profile.interest == '' ?
-                                "No information was given!" :
-                                user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: AppDimensions.paddingltrb,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                Expanded(child: Text(user_profile.bio == '' ?
-                                "No information was given!" :
-                                user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: 20),
-                          Container(
+        future: isFollowing(),
+        builder: (context, snapshot) {
+          return FutureBuilder(
+              future: getPosts(),
+              builder: (context, snapshot){
+                if( snapshot.connectionState == ConnectionState.waiting){
+                  return  Center(child: CircularProgressIndicator());}
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(user),
+                    centerTitle: true,
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: (){FirebaseCrashlytics.instance.crash();},
+                    backgroundColor: AppColors.logoColor,
+                    child: Icon(Icons.close, color: AppColors.postTextColor,),
+                  ),
+                  body:
+                  SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: AppDimensions.padding8,
                             child: Column(
-                              children: myPosts.map(
-                                      (post) =>
-                                      PostTileSearched(
-                                        userId: userId,
-                                        post: post,
-                                        delete: () {
-                                          setState(() {
-                                            myPosts.remove(post);
-                                          });
-                                        },
-                                        like: () {
-                                          setState(() async {
-                                            //post.likeCount++;
+                              children: [
+                                Image.asset('assets/unite_logo.png', height: 50, width: 50,),
+                                SizedBox(height: 30.0,),
+                                CircleAvatar(
+                                  backgroundColor: AppColors.logoColor,
+                                  child: ClipOval(
+                                    child:
+                                    user_profile.profile_pic == '' ?
+                                    Image.asset('assets/usericon.png') :
+                                    Image.network(user_profile.profile_pic),
+                                    //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
+                                  ),
+                                  radius: 70,
+                                ),
+                                SizedBox(height : 15),
+                                Text(user, style: AppStyles.profileName,),
+                                //user!.displayName!
 
-                                            await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
-                                              'like': likeCount + 1,
-                                            });
+                                Padding(
+                                  padding: AppDimensions.paddingltrb,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                      Expanded(child: Text(user_profile.school == '' ?
+                                      "No information was given!" :
+                                      user_profile.school
+                                        , style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: AppDimensions.paddingltrb,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                      Expanded(child: Text(user_profile.major == '' ?
+                                      "No information was given!" :
+                                      user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    ],
+                                  ),
+                                ),
 
-                                            setState(() {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                                  LoggedIn()),);
-                                            });
+                                Padding(
+                                  padding: AppDimensions.paddingltrb,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                      Expanded(child: Text(user_profile.age == '' ?
+                                      "No information was given!" :
+                                      user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    ],
+                                  ),
+                                ),
 
-                                          });
-                                        },)
-                              ).toList(),
+                                Padding(
+                                  padding: AppDimensions.paddingltrb,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                      Expanded(child: Text(user_profile.interest == '' ?
+                                      "No information was given!" :
+                                      user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: AppDimensions.paddingltrb,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                      Expanded(child: Text(user_profile.bio == '' ?
+                                      "No information was given!" :
+                                      user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: 10),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        following == true ? addFollower() : senFollowRequest();
+                                      },
+                                      child: following==true ? Text('Unfollow', style: TextStyle(fontSize: 20),) : Text('Follow', style: TextStyle(fontSize: 20),),
+                                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: (){
+
+                                      },
+                                      child: Text('Message', style: TextStyle(fontSize: 20),),
+                                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 10),
+                                ispriv == true && following == false ?
+                                    Container(
+                                      child: Center(
+                                        child: Column(
+                                          children: [
+                                            SizedBox(height: 25,),
+                                            Icon(Icons.lock, size: 200, color: Colors.blueAccent,),
+                                            Text('Private Account!', style: TextStyle(fontSize: 25),),
+                                            SizedBox(height: 50,),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                    : Container(
+                                  child: Column(
+                                    children: myPosts.map(
+                                            (post) =>
+                                            PostTileSearched(
+                                              userId: userId,
+                                              post: post,
+                                              delete: () {
+                                                setState(() {
+                                                  myPosts.remove(post);
+                                                });
+                                              },
+                                              like: () {
+                                                setState(() async {
+                                                  //post.likeCount++;
+
+                                                  await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
+                                                    'like': likeCount + 1,
+                                                  });
+
+                                                  setState(() {
+                                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                        LoggedIn()),);
+                                                  });
+
+                                                });
+                                              },)
+                                    ).toList(),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          );
-        }
+                );
+              }
 
-    );
+          );
+        });
   }
 }

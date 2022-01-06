@@ -169,9 +169,31 @@ class _RegisterPage2 extends State<RegisterPage> {
 
                             List<String> indexList = [];
 
+                            username = username.toLowerCase().trim();
+
                             for(int i = 1; i <= username.length; i++){
                               indexList.add(username.substring(0, i).toLowerCase());
                             }
+
+                            final _user = await FirebaseAuth.instance.currentUser;
+
+                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
+                              'username' : username,
+                              'searchKey': indexList,
+                              'userId': _user!.uid,
+                              'isPrivate': 'public',
+                              'followers': [],
+                              'followerCount': 0,
+                              'following': [],
+                              'followingCount': 0,
+                              "school" : '',
+                              "major" : '',
+                              "age" : '',
+                              "interest": '',
+                              "bio": '',
+                              "profile_pic": '',
+                              'follow_requests': [],
+                            });
 
                             //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
 

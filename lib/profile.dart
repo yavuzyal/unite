@@ -40,21 +40,18 @@ class _ProfileState extends State<Profile> {
 
   Future getPosts() async{
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+    DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
-    DocumentSnapshot<Map<String, dynamic>> username = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
-    displayName = username.data()!.values.last;
+    displayName = mes.get('username');
     print(displayName);
 
-    for(var mes in profile_info.docs){
-      user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
-    }
+
+    user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').orderBy('datetime', descending: true).get();
 
     for(var message in snapshot.docs){
-      //print("POST ID: ");
-      //print(message.id);
+
       likeCount = message.get('likeCount');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
@@ -196,7 +193,8 @@ class _ProfileState extends State<Profile> {
                                                 {
                                                   'message' : 'You deleted a post!',
                                                   'datetime': DateTime.now(),
-                                                  'url': post.image_url
+                                                  'url': post.image_url,
+                                                  'uid': _user!.uid,
                                                 });
 
                                           });

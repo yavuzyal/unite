@@ -90,6 +90,12 @@ class _PostTileState extends State<PostTile> {
         post.likeCount = post.likeCount + 1;
       });
 
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({
+        'message' : 'You Received a Like!',
+        'datetime': DateTime.now(),
+        'url' : widget.post.image_url,
+      });
+
       return success;
     }
 

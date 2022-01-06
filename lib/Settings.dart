@@ -32,7 +32,7 @@ class _Settings2 extends State<Settings> {
   Future makePrivate() async{
 
     if(isPrivate == 'public'){
-      await FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('account_info').doc('isPrivate').set({
+      await FirebaseFirestore.instance.collection("users").doc(_user!.uid).update({
         'isPrivate': 'private',
       });
 
@@ -43,7 +43,7 @@ class _Settings2 extends State<Settings> {
     }
 
     else if(isPrivate == 'private'){
-      await FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('account_info').doc('isPrivate').set({
+      await FirebaseFirestore.instance.collection("users").doc(_user!.uid).update({
         'isPrivate': 'public',
       });
 
@@ -57,7 +57,7 @@ class _Settings2 extends State<Settings> {
 
   Future ifPrivate() async {
 
-    DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('account_info').doc('isPrivate').get();
+    DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).get();
 
     isPrivate = info.get('isPrivate');
 

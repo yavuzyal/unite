@@ -134,7 +134,19 @@ class _SearchedProfile extends State<SearchedProfile> {
         'message' : 'Follow Request!',
         'datetime': DateTime.now(),
         'url' : '',
+        'follow_request': 'yes',
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Follow request has been sent!"),
+      ));
+
+    }
+
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("You have already sent a follow request!"),
+      ));
     }
 
   }

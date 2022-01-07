@@ -94,6 +94,8 @@ class _PostTileState extends State<PostTile> {
         'message' : 'You Received a Like!',
         'datetime': DateTime.now(),
         'url' : widget.post.image_url,
+        'uid': _user!.uid,
+        'follow_request': 'no',
       });
 
       return success;

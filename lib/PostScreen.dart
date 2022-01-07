@@ -79,6 +79,7 @@ class _PostScreen extends State {
           'datetime': DateTime.now(),
           'url' : url,
           'uid': '',
+          'follow_request': 'no',
         }) :
     firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
         {
@@ -86,6 +87,7 @@ class _PostScreen extends State {
           'datetime': DateTime.now(),
           'url' : url,
           'uid': '',
+          'follow_request': 'no',
         });
 
   }

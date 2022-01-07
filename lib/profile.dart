@@ -195,6 +195,7 @@ class _ProfileState extends State<Profile> {
                                                   'datetime': DateTime.now(),
                                                   'url': post.image_url,
                                                   'uid': _user!.uid,
+                                                  'follow_request': 'no',
                                                 });
 
                                           });

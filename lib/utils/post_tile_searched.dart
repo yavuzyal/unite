@@ -74,8 +74,8 @@ class _PostTileSearched extends State<PostTileSearched> {
         'datetime': DateTime.now(),
         'url' : widget.post.image_url,
         'uid': _user!.uid,
+        'follow_request': 'no',
       });
-
       return success;
     }
 

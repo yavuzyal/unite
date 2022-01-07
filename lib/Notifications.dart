@@ -32,10 +32,11 @@ class NotificationCard{
   String date = '';
   String url = '';
   String uid = '';
+  String followReq  = '';
 
   String notificationId = '';
 
-  NotificationCard({required this.message, required this.date, required this.url, required this.uid, required this.notificationId});
+  NotificationCard({required this.message, required this.date, required this.url, required this.uid, required this.notificationId, required this.followReq});
 }
 
 class Notifications extends StatefulWidget {
@@ -66,7 +67,7 @@ class _Notifications extends State<Notifications> {
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      NotificationCard notify = NotificationCard(message: not.get('message').toString(), date: date, url: not.get('url').toString(), uid: not.get('uid'), notificationId: not.id);
+      NotificationCard notify = NotificationCard(message: not.get('message').toString(), date: date, url: not.get('url').toString(), uid: not.get('uid'), notificationId: not.id, followReq: not.get('follow_request'));
       notifications.add(notify);
     }
 
@@ -94,7 +95,7 @@ class _Notifications extends State<Notifications> {
     });
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').doc(notifId).update({
-      'uid': '',
+      'follow_request': 'accepted',
     });
 
     setState(() {
@@ -116,7 +117,7 @@ class _Notifications extends State<Notifications> {
     });
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').doc(notifId).update({
-    'uid': '',
+      'follow_request': 'rejected',
     });
 
     setState(() {
@@ -159,7 +160,7 @@ class _Notifications extends State<Notifications> {
                               Text(notifications[index].message, style: TextStyle(fontSize: 22),),
                               SizedBox(height: 5,),
                               Text(notifications[index].date, style: TextStyle(fontSize: 15),),
-                              notifications[index].uid != '' ? Row(
+                              notifications[index].followReq == 'yes' ? Row(
                                 children: [
                                   SizedBox(height: 5,),
                                   ElevatedButton(

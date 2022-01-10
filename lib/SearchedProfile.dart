@@ -65,8 +65,11 @@ class _SearchedProfile extends State<SearchedProfile> {
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
       likeCount = message.get('likeCount');
+      List comments = message.get('comment');
+      print('TYPE');
+      print(comments.runtimeType);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: comments, postId: message.id);
       myPosts.add(post);
     }
   }

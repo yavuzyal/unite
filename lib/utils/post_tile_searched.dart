@@ -157,6 +157,10 @@ class _PostTileSearched extends State<PostTileSearched> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
+
+                    print('post tile search comment');
+                    print(widget.post.comments);
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(

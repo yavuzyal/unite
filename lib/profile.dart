@@ -57,7 +57,7 @@ class _ProfileState extends State<Profile> {
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: message.get('comment'), postId: message.id);  //buna post_id de çek.
       myPosts.add(post);
     }
   }

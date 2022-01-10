@@ -157,15 +157,11 @@ class _PostTileSearched extends State<PostTileSearched> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
-
-                    print('post tile search comment');
-                    print(widget.post.comments);
-
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: widget.userId,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -220,7 +216,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                                                   SizedBox(width: 15),
                                                   Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                                   SizedBox(width: 5),
-                                                  Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                                  Text('${widget.post.comments.length}', style: AppStyles.postText)
                                                 ],
                                               ),
                                               SizedBox(height : 15),
@@ -275,7 +271,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: widget.userId,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -330,7 +326,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                                                   SizedBox(width: 15),
                                                   Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                                   SizedBox(width: 5),
-                                                  Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                                  Text('${widget.post.comments.length}', style: AppStyles.postText)
                                                 ],
                                               ),
                                               SizedBox(height : 15),

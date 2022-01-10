@@ -141,7 +141,7 @@ class _PostTileState extends State<PostTile> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: _user!.uid,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -227,7 +227,7 @@ class _PostTileState extends State<PostTile> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: _user!.uid,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },

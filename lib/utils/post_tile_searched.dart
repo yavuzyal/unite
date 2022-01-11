@@ -209,7 +209,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      reshared != '' ? Text('Reshared From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                      reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Row(
@@ -331,7 +331,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                               //Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                               Column(
                                 children: [
-                                  reshared != '' ? Text('Reshared From ' + reshared,style: TextStyle(color: Colors.white, )): Text(''),
+                                  reshared != '' ? Text('ReUNited From ' + reshared,style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

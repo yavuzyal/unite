@@ -59,11 +59,17 @@ class _PostTileState extends State<PostTile> {
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.get('likedBy');
+
+    print('LIST OF LIKES');
+    print(listOfLikes);
+    print(_user!.uid);
+
     String reshared_id = liked.get('sharedFrom');
 
     final name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
     reshared = name.get('username');
 
+    print(widget.post.text);
     print(listOfLikes.contains(_user!.uid));
 
     if(listOfLikes.contains(_user!.uid)){
@@ -181,6 +187,8 @@ class _PostTileState extends State<PostTile> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
+                    //print(widget.post.text);
+                    //print(liked_already);
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -197,7 +205,7 @@ class _PostTileState extends State<PostTile> {
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             children: [
-                              reshared != '' ? Text('Reshared From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                              reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -279,6 +287,8 @@ class _PostTileState extends State<PostTile> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
+                    print(widget.post.text);
+                    print(liked_already);
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -298,7 +308,7 @@ class _PostTileState extends State<PostTile> {
                             children: [
                               Column(
                                 children: [
-                                  reshared != '' ? Text('Reshared From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                                  reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [

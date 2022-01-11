@@ -157,108 +157,108 @@ class _PostPageState extends State<PostPage> {
       child: FutureBuilder(
           future: MappingOperation().then((result) => liked_already = result),
           builder: (context, snaphot){
-                    withUsername.forEach((user,comment) => CommentCards.add(
-                      Card(
-                        color: AppColors.postBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(child: Text(user.substring(3), style: AppStyles.commentName,)),
-                              SizedBox(width: 10),
-                              Expanded(child: Text(comment, style: AppStyles.commentName,)),
-                            ],
+            withUsername.forEach((user,comment) => CommentCards.add(
+              Card(
+                color: AppColors.postBackgroundColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(child: Text(user.substring(3), style: AppStyles.commentName,)),
+                      SizedBox(width: 10),
+                      Expanded(child: Text(comment, style: AppStyles.commentName,)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            );
+
+            return Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text('Post Page'),
+              ),
+              body:
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/unite_logo.png', height: 50, width: 50,),
+                      SizedBox(height: 20.0,),
+                      widget.post.image_url == '' ?
+                      Text('') : Image.network(widget.post.image_url, height: 200, width: 200, fit: BoxFit.fitHeight),
+                      SizedBox(height: 10.0,),
+                      Text(widget.post.text, style: AppStyles.profileText,),
+                      SizedBox(height: 10.0,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LikeButton(
+                            isLiked: liked_already,
+                            onTap: (isLiked) async {
+                              return onLikeButtonTapped(liked_already);
+                            },
                           ),
+                          SizedBox(width: 5),
+                          Text('${widget.post.likeCount}', style: AppStyles.profileText),
+                          SizedBox(width: 15),
+                          Icon(Icons.chat_bubble_outline, color: AppColors.appTextColor),
+                          SizedBox(width: 5),
+                          Text('${widget.post.comments.length}', style: AppStyles.profileText)
+                        ],
+                      ),
+
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: CommentCards.length,
+                          itemBuilder: (context, index) {
+                            return CommentCards[index];
+                          },
                         ),
                       ),
-                    ),
-                    );
-
-                    return Scaffold(
-                      appBar: AppBar(
-                        centerTitle: true,
-                        title: Text('Post Page'),
-                      ),
-                      body:
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/unite_logo.png', height: 50, width: 50,),
-                              SizedBox(height: 20.0,),
-                              widget.post.image_url == '' ?
-                              Text('') : Image.network(widget.post.image_url, height: 200, width: 200, fit: BoxFit.fitHeight),
-                              SizedBox(height: 10.0,),
-                              Text(widget.post.text, style: AppStyles.profileText,),
-                              SizedBox(height: 10.0,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  LikeButton(
-                                    isLiked: liked_already,
-                                    onTap: (isLiked) async {
-                                      return onLikeButtonTapped(liked_already);
-                                    },
+                      Form(
+                        key: _formKey,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                textAlign: TextAlign.center,
+                                decoration: new InputDecoration(
+                                  hintText: "Add a comment...",
+                                  fillColor: Colors.black,
+                                  border: new OutlineInputBorder(
+                                    borderRadius: new BorderRadius.circular(0.0),
+                                    borderSide: new BorderSide(),
                                   ),
-                                  SizedBox(width: 5),
-                                  Text('${widget.post.likeCount}', style: AppStyles.profileText),
-                                  SizedBox(width: 15),
-                                  Icon(Icons.chat_bubble_outline, color: AppColors.appTextColor),
-                                  SizedBox(width: 5),
-                                  Text('${widget.post.comments.length}', style: AppStyles.profileText)
-                                ],
-                              ),
-
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: CommentCards.length,
-                                  itemBuilder: (context, index) {
-                                    return CommentCards[index];
-                                  },
                                 ),
+                                validator: (String? value) {
+                                  print('Value: ');
+                                  print(value);
+                                  comment = value!;
+                                },
                               ),
-                              Form(
-                                key: _formKey,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        textAlign: TextAlign.center,
-                                        decoration: new InputDecoration(
-                                          hintText: "Add a comment...",
-                                          fillColor: Colors.black,
-                                          border: new OutlineInputBorder(
-                                            borderRadius: new BorderRadius.circular(0.0),
-                                            borderSide: new BorderSide(),
-                                          ),
-                                        ),
-                                        validator: (String? value) {
-                                          print('Value: ');
-                                          print(value);
-                                          comment = value!;
-                                        },
-                                      ),
-                                    ),
-                                    FloatingActionButton(
-                                        onPressed: () async {
-                                          if(_formKey.currentState!.validate()){
-                                            onPostComment();
-                                          }
-                                        },
-                                        child: Text('Post'))
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            FloatingActionButton(
+                                onPressed: () async {
+                                  if(_formKey.currentState!.validate()){
+                                    onPostComment();
+                                  }
+                                },
+                                child: Text('Post'))
+                          ],
                         ),
                       ),
-                    );
+                    ],
+                  ),
+                ),
+              ),
+            );
 
           }
       ),

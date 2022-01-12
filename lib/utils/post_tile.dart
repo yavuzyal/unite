@@ -53,24 +53,23 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
-  Future <bool >alreadyLiked() async {
+  Future <bool> alreadyLiked() async {
+
     DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+
+    String reshared_id = liked.get('sharedFrom');
+
+    if(reshared_id != '' || reshared_id != null){
+      DocumentSnapshot name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
+      reshared = name.get('username');
+    }
 
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.get('likedBy');
 
-    print('LIST OF LIKES');
-    print(listOfLikes);
-    print(_user!.uid);
-
-    String reshared_id = liked.get('sharedFrom');
-
-    final name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
-    reshared = name.get('username');
-
     print(widget.post.text);
-    print(listOfLikes.contains(_user!.uid));
+    print(listOfLikes);
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -93,7 +92,7 @@ class _PostTileState extends State<PostTile> {
           "likedBy": [],
           "sharedFrom": sharedFrom,
         }).then((value){
-      print(value.id);
+      //print(value.id);
     });
 
     url != "" ?
@@ -185,10 +184,12 @@ class _PostTileState extends State<PostTile> {
   Widget build(BuildContext context) {
             if(widget.post.image_url != ''){
               return FutureBuilder(
-                  future: alreadyLiked().then((result) => liked_already = result),
+                  future: alreadyLiked().then((value) => liked_already = value,) ,
                   builder: (context, snapshot){
+
                     //print(widget.post.text);
                     //print(liked_already);
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -287,8 +288,8 @@ class _PostTileState extends State<PostTile> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
-                    print(widget.post.text);
-                    print(liked_already);
+                    //print(widget.post.text);
+                    //print(liked_already);
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(

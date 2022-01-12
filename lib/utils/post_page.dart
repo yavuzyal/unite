@@ -53,7 +53,7 @@ class _PostPageState extends State<PostPage> {
 
     List<dynamic> listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
     print(listOfLikes.contains(_user!.uid));
 
@@ -105,7 +105,7 @@ class _PostPageState extends State<PostPage> {
 
     List<dynamic> listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
     if(isLiked == false){
       listOfLikes.add(_user!.uid);

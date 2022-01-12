@@ -106,6 +106,8 @@ class _PostTileSearched extends State<PostTileSearched> {
     listOfLikes = liked.get('likedBy');
     String reshared_id = liked.get('sharedFrom');
 
+    print(reshared_id);
+
     final name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
     reshared = name.get('username');
 
@@ -209,7 +211,8 @@ class _PostTileSearched extends State<PostTileSearched> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                      SizedBox(height: 10,),
+                      reshared != '' ? Text('ReUnited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Row(
@@ -331,7 +334,7 @@ class _PostTileSearched extends State<PostTileSearched> {
                               //Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                               Column(
                                 children: [
-                                  reshared != '' ? Text('ReUNited From ' + reshared,style: TextStyle(color: Colors.white, )): Text(''),
+                                  reshared != '' ? Text('ReUnited From ' + reshared,style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

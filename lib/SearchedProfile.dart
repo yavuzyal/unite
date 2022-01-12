@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/post_tile_searched.dart';
 import 'LoggedIn.dart';
+import 'ShowImageFullSlider.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
@@ -38,7 +39,7 @@ class Username {
   Username(this.username);
 }
 
-class _SearchedProfile extends State<SearchedProfile> {
+class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMixin{
 
   final String userId;
 
@@ -71,6 +72,11 @@ class _SearchedProfile extends State<SearchedProfile> {
 
       Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: comments, postId: message.id);
       myPosts.add(post);
+
+      if(post.image_url != '') {
+        myImages.add(Image.network(post.image_url));
+      }
+
     }
   }
   
@@ -182,7 +188,9 @@ class _SearchedProfile extends State<SearchedProfile> {
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
+  List<Image> myImages = [];
   final _user = FirebaseAuth.instance.currentUser;
+  late TabController _tabController = new TabController(length: 2, vsync: this);
 
   @override
   Widget build(BuildContext context) {
@@ -205,122 +213,156 @@ class _SearchedProfile extends State<SearchedProfile> {
                     child: Icon(Icons.close, color: AppColors.postTextColor,),
                   ),
                   body:
-                  SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: AppDimensions.padding8,
-                            child: Column(
-                              children: [
-                                Image.asset('assets/unite_logo.png', height: 50, width: 50,),
-                                SizedBox(height: 30.0,),
-                                CircleAvatar(
-                                  backgroundColor: AppColors.logoColor,
-                                  child: ClipOval(
-                                    child:
-                                    user_profile.profile_pic == '' ?
-                                    Image.asset('assets/usericon.png') :
-                                    Image.network(user_profile.profile_pic),
-                                    //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
-                                  ),
-                                  radius: 70,
-                                ),
-                                SizedBox(height : 15),
-                                Text(user, style: AppStyles.profileName,),
-                                //user!.displayName!
-
-                                Padding(
-                                  padding: AppDimensions.paddingltrb,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                      Expanded(child: Text(user_profile.school == '' ?
-                                      "No information was given!" :
-                                      user_profile.school
-                                        , style: AppStyles.profileText, textAlign: TextAlign.left,))
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: AppDimensions.paddingltrb,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                      Expanded(child: Text(user_profile.major == '' ?
-                                      "No information was given!" :
-                                      user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: AppDimensions.paddingltrb,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                      Expanded(child: Text(user_profile.age == '' ?
-                                      "No information was given!" :
-                                      user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: AppDimensions.paddingltrb,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                      Expanded(child: Text(user_profile.interest == '' ?
-                                      "No information was given!" :
-                                      user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                                    ],
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: AppDimensions.paddingltrb,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
-                                      Expanded(child: Text(user_profile.bio == '' ?
-                                      "No information was given!" :
-                                      user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
-                                    ],
-                                  ),
-                                ),
-
-                                SizedBox(height: 10),
-
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    RefreshIndicator(
+                      onRefresh: getPosts,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding: AppDimensions.padding8,
+                                child: Column(
                                   children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        following == true ? addFollower() : senFollowRequest();
-                                      },
-                                      child: following==true ? Text('Unfollow', style: TextStyle(fontSize: 20),) : Text('Follow', style: TextStyle(fontSize: 20),),
-                                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                    Image.asset('assets/unite_logo.png', height: 50, width: 50,),
+                                    SizedBox(height: 30.0,),
+                                    ClipRRect(
+                                      child: InkWell(
+                                        onTap: () {
+                                          if (user_profile.profile_pic != '') {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(builder: (context) =>
+                                                    SliderShowFullmages(listImagesModel: [user_profile.profile_pic])));
+                                          }
+                                        },
+                                        child: CircleAvatar(
+                                          backgroundColor: AppColors.logoColor,
+                                          child: ClipOval(
+                                            child:
+                                            user_profile.profile_pic == '' ?
+                                            Image.asset('assets/usericon.png') :
+                                            Image.network(user_profile.profile_pic),
+                                            //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
+                                          ),
+                                          radius: 70,
+                                        ),
+                                      ),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: (){
+                                    SizedBox(height : 15),
+                                    Text(user, style: AppStyles.profileName,),
+                                    //user!.displayName!
 
-                                      },
-                                      child: Text('Message', style: TextStyle(fontSize: 20),),
-                                      style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                    Padding(
+                                      padding: AppDimensions.paddingltrb,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                          Expanded(child: Text(user_profile.school == '' ?
+                                          "No information was given!" :
+                                          user_profile.school
+                                            , style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
+                                    Padding(
+                                      padding: AppDimensions.paddingltrb,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                          Expanded(child: Text(user_profile.major == '' ?
+                                          "No information was given!" :
+                                          user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                        ],
+                                      ),
+                                    ),
 
-                                SizedBox(height: 10),
-                                ispriv == true && following == false ?
+                                    Padding(
+                                      padding: AppDimensions.paddingltrb,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                          Expanded(child: Text(user_profile.age == '' ?
+                                          "No information was given!" :
+                                          user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                        ],
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: AppDimensions.paddingltrb,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                          Expanded(child: Text(user_profile.interest == '' ?
+                                          "No information was given!" :
+                                          user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                        ],
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: AppDimensions.paddingltrb,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
+                                          Expanded(child: Text(user_profile.bio == '' ?
+                                          "No information was given!" :
+                                          user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                        ],
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 10),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            following == true ? addFollower() : senFollowRequest();
+                                          },
+                                          child: following==true ? Text('Unfollow', style: TextStyle(fontSize: 20),) : Text('Follow', style: TextStyle(fontSize: 20),),
+                                          style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: (){
+
+                                          },
+                                          child: Text('Message', style: TextStyle(fontSize: 20),),
+                                          style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                                        ),
+                                      ],
+                                    ),
+
+                                    TabBar(
+                                      isScrollable: true,
+                                      unselectedLabelColor: AppColors.appTextColor,
+                                      unselectedLabelStyle: AppStyles.profileText,
+                                      labelColor: AppColors.appTextColor,
+                                      labelStyle: AppStyles.profileText,
+                                      indicatorColor: AppColors.logoColor,
+                                      indicatorWeight: 3,
+
+                                      tabs: [
+                                        Tab(
+                                          text: 'Posts',
+                                        ),
+                                        Tab(
+                                          text: 'Media',
+                                        )
+                                      ],
+                                      controller: _tabController,
+                                      indicatorSize: TabBarIndicatorSize.tab,
+                                    ),
+
+                                    SizedBox(height: 10),
+                                    ispriv == true && following == false ?
                                     Container(
                                       child: Center(
                                         child: Column(
@@ -333,43 +375,70 @@ class _SearchedProfile extends State<SearchedProfile> {
                                         ),
                                       ),
                                     )
-                                    : Container(
-                                  child: Column(
-                                    children: myPosts.map(
-                                            (post) =>
-                                            PostTileSearched(
-                                              userId: userId,
-                                              post: post,
-                                              delete: () {
-                                                setState(() {
-                                                  myPosts.remove(post);
-                                                });
-                                              },
-                                              like: () {
-                                                setState(() async {
-                                                  //post.likeCount++;
+                                        : SizedBox(
+                                      height: 500,
+                                      child: TabBarView(
+                                        children: [
+                                          Container(child: SingleChildScrollView(
+                                            child: Center(child: Container(
+                                              child: Column(
+                                                children: myPosts.map(
+                                                        (post) =>
+                                                        PostTile(
+                                                          //userId: _user!.uid,
+                                                          post: post,
+                                                          delete: () {
+                                                            setState(() {
+                                                              myPosts.remove(post);
+                                                            });
+                                                          },
+                                                          like: () {
+                                                            setState(() async {
+//post.likeCount++;
 
-                                                  await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
-                                                    'like': likeCount + 1,
-                                                  });
+                                                              await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
+                                                                'like': likeCount + 1,
+                                                              });
 
-                                                  setState(() {
-                                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                                        LoggedIn()),);
-                                                  });
+                                                              setState(() {
+                                                                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                                    LoggedIn()),);
+                                                              });
 
-                                                });
-                                              },)
-                                    ).toList(),
-                                  ),
+                                                            });
+                                                          }
+                                                          ,)
+                                                ).toList(),
+                                              ),
+                                            ),
+                                            ),
+                                          ),
+                                          ),
+                                          CustomScrollView(
+                                            primary: false,
+                                            slivers: <Widget>[
+                                              SliverPadding(
+                                                padding: const EdgeInsets.all(3.0),
+                                                sliver: SliverGrid.count(
+                                                    mainAxisSpacing: 1, //horizontal space
+                                                    crossAxisSpacing: 1, //vertical space
+                                                    crossAxisCount: 3, //number of images for a row
+                                                    children: myImages
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                        controller: _tabController,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),),
                 );
               }
 
@@ -377,3 +446,29 @@ class _SearchedProfile extends State<SearchedProfile> {
         });
   }
 }
+
+
+/*
+PostTileSearched(
+userId: userId,
+post: post,
+delete: () {
+setState(() {
+myPosts.remove(post);
+});
+},
+like: () {
+setState(() async {
+//post.likeCount++;
+
+await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
+'like': likeCount + 1,
+});
+
+setState(() {
+Navigator.push(context, MaterialPageRoute(builder: (context) =>
+LoggedIn()),);
+});
+
+});
+},)*/

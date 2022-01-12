@@ -11,3 +11,4 @@ class AppColors{
   static const Color postTextColor = Colors.white;
 
 }
+

@@ -5,9 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:unite/Login.dart';
+import 'package:unite/Messaging.dart';
 import 'package:unite/Notifications.dart';
 import 'package:unite/PostScreen.dart';
 import 'package:unite/RegisterPage.dart';
+import 'package:unite/RoomsPage.dart';
 import 'package:unite/Search.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
@@ -46,7 +48,7 @@ class _LoggedIn extends State<LoggedIn> {
     Profile(),
     Search(),
     PostScreen(),
-    Text('Message'),
+    RoomsPage(),
     Settings(),
   ];
 

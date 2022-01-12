@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,16 +42,107 @@ class _LoginPage2 extends State<LoginPage> {
     );
   }
 
+  Future <String?> facebookSignUp(profile)async {
+
+    final _user = FirebaseAuth.instance.currentUser;
+
+    List<String> indexList = [];
+
+    String name = profile!.firstName.toString().toLowerCase().trim();
+
+    for(int i = 1; i <= name.length; i++){
+      indexList.add(name.substring(0, i).toLowerCase());
+    }
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
+      'username' : profile!.name,
+      'searchKey': indexList,
+      'userId': _user!.uid,
+      'isPrivate': 'public',
+      'followers': [],
+      'followerCount': 0,
+      'following': [],
+      'followingCount': 0,
+      "school" : '',
+      "major" : '',
+      "age" : '',
+      "interest": '',
+      "bio": '',
+      "profile_pic": '',
+      'follow_requests': '',
+    });
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({});
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').add({});
+
+  }
+
+
+  signInWithFacebook() async {
+    final fb = FacebookLogin();
+    // Log in
+    final res = await fb.logIn(permissions: [
+      FacebookPermission.publicProfile,
+      FacebookPermission.email,
+    ]);
+    // Check result status
+    switch (res.status) {
+      case FacebookLoginStatus.success:
+      // The user is suceessfully logged in
+      // Send access token to server for validation and auth
+        final FacebookAccessToken accessToken = res.accessToken!;
+        final AuthCredential authCredential = FacebookAuthProvider.credential(accessToken.token);
+        final result = await FirebaseAuth.instance.signInWithCredential(authCredential);
+        // Get profile data from facebook for use in the app
+        final profile = await fb.getUserProfile();
+        print('Hello, ${profile!.name}! You ID: ${profile.userId}');
+        // Get user profile image url
+        final imageUrl = await fb.getProfileImageUrl(width: 100);
+        print('Your profile image: $imageUrl');
+        // fetch user email
+        final email = await fb.getUserEmail();
+        // But user can decline permission
+        if (email != null) print('And your email is $email');
+
+        final _user = FirebaseAuth.instance.currentUser;
+
+        QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').where("userId", isEqualTo: _user!.uid).get();
+
+        if (snapshot.docs.isEmpty){
+          facebookSignUp(profile);
+          print('AAAA');
+        }
+
+        break;
+
+      case FacebookLoginStatus.cancel:
+      // In case the user cancels the login process
+        break;
+      case FacebookLoginStatus.error:
+      // Login procedure failed
+        print('Error while log in: ${res.error}');
+        break;
+    }
+  }
   Future GoogleLogin() async {
 
     DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
+    //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
+    //FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
+  }
+
+  Future facebooklogin() async {
+
+    //DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
     //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
     //FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
+
 
   User? _user = FirebaseAuth.instance.currentUser;
   final _formKey = GlobalKey<FormState>();
@@ -164,7 +254,6 @@ class _LoginPage2 extends State<LoginPage> {
                                 }).catchError((onError)=>{
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email or password is wrong!')),)
                                 });;
-
                                 //setLoggedIn();
                               }
                             },
@@ -195,6 +284,16 @@ class _LoginPage2 extends State<LoginPage> {
                               },
                             label: Text("Sign In with Google", style: TextStyle(fontSize: 16),),
                             icon: FaIcon(FontAwesomeIcons.google),
+                          ),
+                          SizedBox(height: 5.0,),
+                          ElevatedButton.icon(
+                            style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
+                            onPressed: () {
+                              signInWithFacebook();
+                              facebooklogin();
+                            },
+                            label: Text("Sign In with Facebook", style: TextStyle(fontSize: 16),),
+                            icon: FaIcon(FontAwesomeIcons.facebook),
                           ),
                           SizedBox(height: 10.0,),
                           Row(

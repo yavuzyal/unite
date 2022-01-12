@@ -31,8 +31,12 @@ class NotificationCard{
   String message = '';
   String date = '';
   String url = '';
+  String uid = '';
+  String followReq  = '';
 
-  NotificationCard({required this.message, required this.date, required this.url});
+  String notificationId = '';
+
+  NotificationCard({required this.message, required this.date, required this.url, required this.uid, required this.notificationId, required this.followReq});
 }
 
 class Notifications extends StatefulWidget {
@@ -48,6 +52,8 @@ class Notifications extends StatefulWidget {
 class _Notifications extends State<Notifications> {
 
   List<NotificationCard> notifications = [];
+  final _user = FirebaseAuth.instance.currentUser;
+  bool answered = false;
 
   Future<bool> getNotifications() async {
 
@@ -61,11 +67,63 @@ class _Notifications extends State<Notifications> {
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      NotificationCard notify = NotificationCard(message: not.get('message').toString(), date: date, url: not.get('url').toString());
+      NotificationCard notify = NotificationCard(message: not.get('message').toString(), date: date, url: not.get('url').toString(), uid: not.get('uid'), notificationId: not.id, followReq: not.get('follow_request'));
       notifications.add(notify);
     }
 
     return true;
+  }
+
+  Future accept(uid, notifId) async {
+    DocumentSnapshot followList = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    List followRequests = [];
+    followRequests = followList.get('follow_requests');
+
+    List followers = [];
+    followers = followList.get('followers');
+
+    int followerCount = followList.get('followerCount');
+
+    followRequests.remove(uid);
+    followers.add(uid);
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+      'follow_requests': followRequests,
+      'followers' : followers,
+      'followerCount': followerCount+1,
+    });
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').doc(notifId).update({
+      'follow_request': 'accepted',
+    });
+
+    setState(() {
+      answered = true;
+    });
+
+  }
+
+  Future reject(uid, notifId) async {
+    DocumentSnapshot followList = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    List followRequests = [];
+    followRequests = followList.get('follow_requests');
+
+    followRequests.remove(uid);
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+      'follow_requests': followRequests,
+    });
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').doc(notifId).update({
+      'follow_request': 'rejected',
+    });
+
+    setState(() {
+      answered = true;
+    });
+
   }
 
   @override
@@ -81,8 +139,6 @@ class _Notifications extends State<Notifications> {
         builder: (context, snapshot){
           if(!snapshot.hasData) return CircularProgressIndicator();
           else{
-            print('SNAPSHOT: ');
-            print(notifications[0].message);
             return ListView.builder(
                 reverse: true,
                 itemCount: notifications.length,
@@ -95,7 +151,7 @@ class _Notifications extends State<Notifications> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          notifications[index].url != "" ?
+                          notifications[index].url != '' ?
                           Image.network(notifications[index].url, height: 80, width: 80, fit: BoxFit.cover) :
                           Text(''),
                           Column(
@@ -104,6 +160,26 @@ class _Notifications extends State<Notifications> {
                               Text(notifications[index].message, style: TextStyle(fontSize: 22),),
                               SizedBox(height: 5,),
                               Text(notifications[index].date, style: TextStyle(fontSize: 15),),
+                              notifications[index].followReq == 'yes' ? Row(
+                                children: [
+                                  SizedBox(height: 5,),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        accept(notifications[index].uid, notifications[index].notificationId);
+                                      },
+                                    child: Text('Accept', style: TextStyle(fontSize: 20),),
+                                    style: ElevatedButton.styleFrom(minimumSize: Size(75, 35), primary: Colors.lightBlue),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      reject(notifications[index].uid, notifications[index].notificationId);
+                                    },
+                                    child: Text('Reject', style: TextStyle(fontSize: 20),),
+                                    style: ElevatedButton.styleFrom(minimumSize: Size(75, 35), primary: Colors.lightBlue),
+                                  ),
+                                  SizedBox(height: 5,),
+                                ],
+                              ) : Text(''),
                             ],
                           ),
                         ],

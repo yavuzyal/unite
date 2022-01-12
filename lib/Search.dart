@@ -61,12 +61,12 @@ class _Search extends State<Search> {
                       children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                         return  ListTile(
-                          leading: Icon(Icons.account_circle),
+                          leading: document['isPrivate'] == 'private' ?  Icon(Icons.lock) : Icon(Icons.account_circle),
                           //trailing: Icon(Icons.arrow_forward),
                           //selectedTileColor: Colors.yellow,
                           horizontalTitleGap: 0,
                           onTap: (){
-                            print(document['userId']);
+                            //print(document['userId']);
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                 SearchedProfile(userId: document['userId'])),);
                           },

@@ -59,8 +59,6 @@ class _PostScreen extends State {
   Future uploadPost(uid, like, comment, url, caption) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
-    //firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').orderBy('datetime').get();
-
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -70,6 +68,7 @@ class _PostScreen extends State {
           "datetime": DateTime.now(),
           "location": location,
           "likedBy": [],
+          "sharedFrom": '',
         }).then((value){
       print(value.id);
     });
@@ -80,12 +79,16 @@ class _PostScreen extends State {
           'message' : 'You uploaded a post!',
           'datetime': DateTime.now(),
           'url' : url,
+          'uid': '',
+          'follow_request': 'no',
         }) :
     firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
         {
           'message' : 'You shared a message!',
           'datetime': DateTime.now(),
           'url' : url,
+          'uid': '',
+          'follow_request': 'no',
         });
 
   }

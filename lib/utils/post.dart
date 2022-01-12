@@ -4,7 +4,7 @@ class Post {
   String date;
   int likeCount;
   int commentCount;
-  Map<String, String> comments;
+  List<dynamic> comments;
   String postId;
 
   Post({

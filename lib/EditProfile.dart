@@ -72,10 +72,6 @@ class _EditProfile extends State {
     });
   }
 
-  Future deneme() async{
-    print('deneme girdim');
-  }
-
   Future uploadImageToFirebase(BuildContext context) async {
     String fileName = basename(_imageFile!.path);
     firebase_storage.Reference ref =
@@ -113,62 +109,31 @@ class _EditProfile extends State {
 
     final firestoreInstance = FirebaseFirestore.instance;
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
-    //QuerySnapshot users = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('username').get();
+    DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
     List<String> indexList = [];
     for(int i = 1; i <= username.length; i++){
       indexList.add(username.substring(0, i).toLowerCase());
     }
 
-    DocumentSnapshot<Map<String, dynamic>> getUserName = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
-    print(getUserName.data()!.values);
-    String name = getUserName.data()!.values.last;
-    final key = getUserName.data()!.values.first;
+    String name = mes.get('username');
+    List key = mes.get('searchKey');
 
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-      'username' : username == "" ? name : username,
-      'searchKey': indexList == []? key : indexList,
-      'userId': _user!.uid});
+    user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
-    if(profile_info.docs.isEmpty){    //If profile_info part is empty and we want to set the values of it
-      firestoreInstance.collection("users").doc(_user!.uid).collection('profile_info').doc('info').set(    //.add(
-          {
-            "school" : school,
-            "major" : major,
-            "age" : age,
-            "interest": interest,
-            "bio": bio,
-            "profile_pic": profile_pic,
-          }).then((value){
-        //print(value.id);
-      });
-    }
-
-    else{     //If profile_info is not empty, but we want to update it
-      for(var mes in profile_info.docs){
-          user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
-
-          firestoreInstance.collection("users").doc(_user!.uid ).collection('profile_info').doc('info').update(    //.add(
-              {
-                "school" : (school == '') ? user_profile.school : school,
-                "major" : (major == '') ? user_profile.major : major,
-                "age" : (age == '') ? user_profile.age : age,
-                "interest": (interest == '') ? user_profile.interest : interest,
-                "bio": (bio == '') ? user_profile.bio : bio,
-                "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
-              }).then((value){
-            //print(value.id);
-          });
-      }
-    }
-  }
-
-  Future addUserId() async {
-    QuerySnapshot userId = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('userId').get();
-
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-      'userId' : _user!.uid,
+    await FirebaseFirestore.instance.collection("users").doc(_user!.uid ).update(
+        {
+          'username' : username == "" ? name : username,
+          'searchKey': indexList.isEmpty ? key : indexList,
+          'userId': _user!.uid,
+          "school" : (school == '') ? user_profile.school : school,
+          "major" : (major == '') ? user_profile.major : major,
+          "age" : (age == '') ? user_profile.age : age,
+          "interest": (interest == '') ? user_profile.interest : interest,
+          "bio": (bio == '') ? user_profile.bio : bio,
+          "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
+        }).then((value){
+      //print(value.id);
     });
 
   }
@@ -347,7 +312,6 @@ class _EditProfile extends State {
               ),
             ),
           ),
-
         ],
       ),
     );

@@ -32,30 +32,15 @@ class _PostTileSearched extends State<PostTileSearched> {
   bool liked_already = false;
   String comment = '';
 
-  Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
-
-    List<dynamic> listOfLikes = [];
-
-    listOfLikes = liked.data()!.cast().values.toList()[1];
-
-    print(listOfLikes.contains(_user!.uid));
-
-    if(listOfLikes.contains(_user!.uid)){
-      return true;
-    }
-    return false;
-  }
-
   Future<bool> onLikeButtonTapped(bool isLiked) async{
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
@@ -69,6 +54,13 @@ class _PostTileSearched extends State<PostTileSearched> {
         widget.post.likeCount = widget.post.likeCount + 1;
       });
 
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('notifications').add({
+        'message' : 'You Received a Like!',
+        'datetime': DateTime.now(),
+        'url' : widget.post.image_url,
+        'uid': _user!.uid,
+        'follow_request': 'no',
+      });
       return success;
     }
 
@@ -93,25 +85,38 @@ class _PostTileSearched extends State<PostTileSearched> {
 
     List<dynamic> listOfComments = [];
 
-    print(comments.data()!.cast().values.toList());
+    //print(comments.data()!.cast().values.toList());
 
-    listOfComments = comments.data()!.cast().values.toList()[4];
+    print(comments.get('comment'));
 
-    listOfComments.add(comment);
+    listOfComments = comments.get('comment');
+
+    listOfComments.add(_user!.uid + comment);
 
     await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
       'comment': listOfComments,
     });
   }
 
-  Future<bool> isThereImage () async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+  Future <bool> alreadyLiked() async {
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
-    if(liked.data()!.cast().values.toList()[2] == "" || liked.data()!.cast().values.toList()[2] == null){
-      return false;
+    List<dynamic> listOfLikes = [];
+
+    listOfLikes = liked.get('likedBy');
+    String reshared_id = liked.get('sharedFrom');
+
+    print(reshared_id);
+
+    final name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
+    reshared = name.get('username');
+
+    print(listOfLikes.contains(_user!.uid));
+
+    if(listOfLikes.contains(_user!.uid)){
+      return true;
     }
-
-    return true;
+    return false;
   }
 
   Future <void>report(Post post)async {
@@ -136,228 +141,321 @@ class _PostTileSearched extends State<PostTileSearched> {
     }
   }
 
-  bool there_is_image = true;
+  Future reShare(url, like, comment, caption, location, sharedFrom, ) async {
+
+      final firestoreInstance = FirebaseFirestore.instance;
+
+      firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
+          {
+            "image_url" : url,
+            "likeCount" : like,
+            "comment" : [],
+            "caption": caption,
+            "datetime": DateTime.now(),
+            "location": location,
+            "likedBy": [],
+            "sharedFrom": sharedFrom,
+          }).then((value){
+        print(value.id);
+      });
+
+      url != "" ?
+      firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
+          {
+            'message' : 'You uploaded a post!',
+            'datetime': DateTime.now(),
+            'url' : url,
+            'uid': '',
+            'follow_request': 'no',
+          }) :
+      firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
+          {
+            'message' : 'You shared a message!',
+            'datetime': DateTime.now(),
+            'url' : url,
+            'uid': '',
+            'follow_request': 'no',
+          });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("You have ReUnited!"),
+      ));
+
+  }
+
+  bool there_is_image = false;
+  final _formKey = GlobalKey<FormState>();
+  String reshared = '';
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: isThereImage().then((value) => there_is_image = value),
+
+        future: alreadyLiked().then((value) => liked_already = value),
         builder: (context, snapshot){
-            if(there_is_image){
-              return FutureBuilder(
-                  future: alreadyLiked().then((result) => liked_already = result),
-                  builder: (context, snapshot){
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
-                        );
-                        FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
-                      },
-                      child: Card(
-                          margin: EdgeInsets.all(10),
-                          color: AppColors.postBackgroundColor,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
+
+          if(widget.post.image_url != ''){
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: widget.userId,)),
+                );
+                FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
+              },
+              child: Form(
+                key: _formKey,
+                child: Card(
+                  margin: EdgeInsets.all(10),
+                  color: AppColors.postBackgroundColor,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 10,),
+                      reshared != '' ? Text('ReUnited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                            //SizedBox(width: 55,),
+                            Column(
+                              children: [
+                                Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
-                                    SizedBox(width: 55,),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(widget.post.date,style: TextStyle(color: Colors.white, )),
-                                            IconButton(
-                                              alignment: Alignment.topRight,
-                                              onPressed: () => report(widget.post),
-                                              iconSize: 20,
-                                              splashRadius: 24,
-                                              color: AppColors.postTextColor,
-                                              icon: Icon(
-                                                Icons.report,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            SizedBox(height :5),
-                                            Text(widget.post.text, style: AppStyles.postText),
-                                            SizedBox(height : 15),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                LikeButton(
-                                                  isLiked: liked_already,
-                                                  onTap: (isLiked) async {
-                                                    return onLikeButtonTapped(liked_already);
-                                                  },
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text('${widget.post.likeCount}', style: AppStyles.postText),
-                                                SizedBox(width: 15),
-                                                Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                                SizedBox(width: 5),
-                                                Text('${widget.post.commentCount}', style: AppStyles.postText)
-                                              ],
-                                            ),
-                                            SizedBox(height : 15),
-                                          ],
-                                        ),
-                                      ],
+                                    Text(widget.post.date,style: TextStyle(color: Colors.white, )),
+                                    IconButton(
+                                      alignment: Alignment.topRight,
+                                      onPressed: () => report(widget.post),
+                                      iconSize: 20,
+                                      splashRadius: 24,
+                                      color: AppColors.postTextColor,
+                                      icon: Icon(
+                                        Icons.report,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      textAlign: TextAlign.center,
-                                      decoration: new InputDecoration(
-                                        hintText: "Add a comment...",
-                                        fillColor: Colors.black,
-                                        border: new OutlineInputBorder(
-                                          borderRadius: new BorderRadius.circular(0.0),
-                                          borderSide: new BorderSide(),
-                                        ),
-                                      ),
-                                      validator: (String? value) {
-                                        if(value!.isEmpty || value == ''){
-                                          comment = '';
-                                        }
-                                        else
-                                          comment = value!;
-                                      },
-                                    ),
-                                  ),
-                                  FloatingActionButton(
-                                      onPressed: () async {
-                                        onPostComment();
-                                      },
-                                      child: Text('Post'))
-                                ],
-                              ),
-                            ],
-                          )
-                      ),
-                    );
-                  });
-            }
-            else{
-              return FutureBuilder(
-                  future: alreadyLiked().then((result) => liked_already = result),
-                  builder: (context, snapshot){
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
-                        );
-                        FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
-                      },
-                      child: Card(
-                          margin: EdgeInsets.all(10),
-                          color: AppColors.postBackgroundColor,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                Column(
                                   children: [
-                                    //Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
-                                    Column(
+                                    SizedBox(height :5),
+                                    Text(widget.post.text, style: AppStyles.postText),
+                                    SizedBox(height : 15),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(widget.post.date,style: TextStyle(color: Colors.white, )),
-                                            SizedBox(width :55),
-                                            IconButton(
-                                              alignment: Alignment.topRight,
-                                              onPressed: () => report(widget.post),
-                                              iconSize: 20,
-                                              splashRadius: 24,
-                                              color: AppColors.postTextColor,
-                                              icon: Icon(
-                                                Icons.report,
-                                              ),
-                                            ),
-                                          ],
+                                        LikeButton(
+                                          isLiked: liked_already,
+                                          onTap: (isLiked) async {
+                                            return onLikeButtonTapped(liked_already);
+                                          },
                                         ),
-                                        Column(
-                                          children: [
-                                            SizedBox(height :5),
-                                            Text(widget.post.text, style: AppStyles.postText),
-                                            SizedBox(height : 15),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                LikeButton(
-                                                  isLiked: liked_already,
-                                                  onTap: (isLiked) async {
-                                                    return onLikeButtonTapped(liked_already);
-                                                  },
-                                                ),
-                                                SizedBox(width: 5),
-                                                Text('${widget.post.likeCount}', style: AppStyles.postText),
-                                                SizedBox(width: 15),
-                                                Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                                SizedBox(width: 5),
-                                                Text('${widget.post.commentCount}', style: AppStyles.postText)
-                                              ],
-                                            ),
-                                            SizedBox(height : 15),
-                                          ],
-                                        ),
+                                        SizedBox(width: 5),
+                                        Text('${widget.post.likeCount}', style: AppStyles.postText),
+                                        SizedBox(width: 15),
+                                        Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                        SizedBox(width: 5),
+                                        Text('${widget.post.comments.length}', style: AppStyles.postText),
+                                        SizedBox(width: 5),
+                                        IconButton(
+                                          icon: Icon(Icons.refresh),
+                                          color: AppColors.postTextColor,
+                                          onPressed: () {
+                                            reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', widget.userId);
+                                          },),
                                       ],
                                     ),
+                                    SizedBox(height : 15),
                                   ],
                                 ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              textAlign: TextAlign.center,
+                              decoration: new InputDecoration(
+                                hintText: "Add a comment...",
+                                fillColor: Colors.black,
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(0.0),
+                                  borderSide: new BorderSide(),
+                                ),
                               ),
-                              Row(
+                              validator: (String? value) {
+                                print('Value: ');
+                                print(value);
+                                comment = value!;
+                              },
+                            ),
+                          ),
+                          FloatingActionButton(
+                              onPressed: () async {
+                                if(_formKey.currentState!.validate()){
+                                  onPostComment();
+                                }
+                              },
+                              child: Text('Post'))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+          else{
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: widget.userId,)),
+                );
+                FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
+              },
+              child: Form(
+                key: _formKey,
+                child: Card(
+                    margin: EdgeInsets.all(10),
+                    color: AppColors.postBackgroundColor,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              //Image.network(post.image_url, height: 150, width: 150, fit: BoxFit.cover),
+                              Column(
                                 children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      textAlign: TextAlign.center,
-                                      decoration: new InputDecoration(
-                                        hintText: "Add a comment...",
-                                        fillColor: Colors.black,
-                                        border: new OutlineInputBorder(
-                                          borderRadius: new BorderRadius.circular(0.0),
-                                          borderSide: new BorderSide(),
+                                  reshared != '' ? Text('ReUnited From ' + reshared,style: TextStyle(color: Colors.white, )): Text(''),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(widget.post.date,style: TextStyle(color: Colors.white, )),
+                                      //SizedBox(width :55),
+                                      IconButton(
+                                        alignment: Alignment.topRight,
+                                        onPressed: () => report(widget.post),
+                                        iconSize: 20,
+                                        splashRadius: 24,
+                                        color: AppColors.postTextColor,
+                                        icon: Icon(
+                                          Icons.report,
                                         ),
                                       ),
-                                      validator: (String? value) {
-                                        if(value!.isEmpty || value == ''){
-                                          comment = '';
-                                        }
-                                        else
-                                          comment = value!;
-                                      },
-                                    ),
+                                    ],
                                   ),
-                                  FloatingActionButton(
-                                      onPressed: () async {
-                                        onPostComment();
-                                      },
-                                      child: Text('Post'))
+                                  Column(
+                                    children: [
+                                      SizedBox(height :5),
+                                      Text(widget.post.text, style: AppStyles.postText),
+                                      SizedBox(height : 15),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          LikeButton(
+                                            isLiked: liked_already,
+                                            onTap: (isLiked) async {
+                                              return onLikeButtonTapped(liked_already);
+                                            },
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text('${widget.post.likeCount}', style: AppStyles.postText),
+                                          SizedBox(width: 15),
+                                          Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                          SizedBox(width: 5),
+                                          Text('${widget.post.comments.length}', style: AppStyles.postText),
+                                          SizedBox(width: 5),
+                                          IconButton(
+                                            icon: Icon(Icons.refresh),
+                                            color: AppColors.postTextColor,
+                                            onPressed: () {
+                                              reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', widget.userId);
+                                            },),
+                                        ],
+                                      ),
+                                      SizedBox(height : 15),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
-                          )
-                      ),
-                    );
-                  });
-            }
-    }
-    );
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                textAlign: TextAlign.center,
+                                decoration: new InputDecoration(
+                                  hintText: "Add a comment...",
+                                  fillColor: Colors.black,
+                                  border: new OutlineInputBorder(
+                                    borderRadius: new BorderRadius.circular(0.0),
+                                    borderSide: new BorderSide(),
+                                  ),
+                                ),
+                                validator: (String? value) {
+                                  print('Value: ');
+                                  print(value);
+                                  comment = value!;
+                                },
+                              ),
+                            ),
+                            FloatingActionButton(
+                                onPressed: () async {
+                                  if(_formKey.currentState!.validate()){
+                                    onPostComment();
+                                  }
+                                },
+                                child: Text('Post'))
+                          ],
+                        ),
+                      ],
+                    )
+                ),
+              ),
+            );
+          }
+        });
   }
 }
+
+
+/*  Future<List> isThereImage () async {
+    DocumentSnapshot img = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+
+    print('URL');
+    print(img.get('image_url'));
+
+    if(img.get('image_url') == "" || img.get('image_url') == null){
+      there_is_image =  false;
+    }
+
+    there_is_image = true;
+
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+
+    List<dynamic> listOfLikes = [];
+
+    listOfLikes = liked.data()!.cast().values.toList()[1];
+
+    print(listOfLikes.contains(_user!.uid));
+
+    if(listOfLikes.contains(_user!.uid)){
+      liked_already = true;
+    }
+    liked_already = false;
+
+    List bools = [there_is_image, liked_already];
+
+    return bools;
+
+  }*/

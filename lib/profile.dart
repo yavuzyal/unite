@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'ShowImageFullSlider.dart';
 import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'utils/post_tile.dart';
 import 'utils/post.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'ShowImageFullSlider.dart';
 
 class Profile extends StatefulWidget {
 
@@ -30,8 +30,7 @@ class User_info {
   User_info(this.school, this.major, this.age, this.interest, this.bio, this.profile_pic);
 }
 
-
-class _ProfileState extends State<Profile> with TickerProviderStateMixin {
+class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
   late TabController _tabController = new TabController(length: 2, vsync: this);
 
@@ -44,27 +43,25 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
 
   Future getPosts() async{
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+    DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
-    DocumentSnapshot<Map<String, dynamic>> username = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
-    displayName = username.data()!.values.last;
+    displayName = mes.get('username');
     print(displayName);
 
-    for(var mes in profile_info.docs){
-      user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
-    }
+
+    user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').orderBy('datetime', descending: true).get();
 
     for(var message in snapshot.docs){
-      //print("POST ID: ");
-      //print(message.id);
+
       likeCount = message.get('likeCount');
+      List comment = message.get('comment');
       Timestamp t = message.get('datetime');
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: {}, postId: message.id);  //buna post_id de çek.
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: message.id);
       myPosts.add(post);
 
       if(post.image_url != '') {
@@ -89,10 +86,15 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
             return  Center(child: CircularProgressIndicator());
           }
           return Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: (){FirebaseCrashlytics.instance.crash();},
+              backgroundColor: AppColors.logoColor,
+              child: Icon(Icons.close, color: AppColors.postTextColor,),
+            ),
             body:
-            RefreshIndicator(
-              onRefresh: getPosts,
-              child: SingleChildScrollView(
+              RefreshIndicator(
+                onRefresh: getPosts,
+                child:  SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +121,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                                     child:
                                     user_profile.profile_pic == '' ?
                                     Image.asset('assets/usericon.png') :
-                                        Image.network(user_profile.profile_pic),
+                                    Image.network(user_profile.profile_pic),
                                     //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                                   ),
                                   radius: 70,
@@ -138,8 +140,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                                 children: [
                                   Icon(Icons.school, color: AppColors.appTextColor),
                                   Expanded(child: Text(user_profile.school == '' ?
-                                    "No information was given!" :
-                                    user_profile.school
+                                  "No information was given!" :
+                                  user_profile.school
                                     , style: AppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
@@ -197,6 +199,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                             ),
 
                             SizedBox(height: 20),
+
                             TabBar(
                               isScrollable: true,
                               unselectedLabelColor: AppColors.appTextColor,
@@ -217,45 +220,48 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                               controller: _tabController,
                               indicatorSize: TabBarIndicatorSize.tab,
                             ),
+
                             SizedBox(
                               height: 500,
                               child: TabBarView(
                                 children: [
                                   Container(child: SingleChildScrollView(
                                     child: Center(child: Container(
-                                        child: Column(
-                                          children: myPosts.map(
-                                                  (post) =>
-                                                  PostTile(
-                                                    //userId: _user!.uid,
-                                                    post: post,
-                                                    delete: () {
+                                      child: Column(
+                                        children: myPosts.map(
+                                                (post) =>
+                                                PostTile(
+                                                  //userId: _user!.uid,
+                                                  post: post,
+                                                  delete: () {
 
-                                                      setState(() async {
-                                                        //myPosts.remove(post);
+                                                    setState(() async {
+                                                      //myPosts.remove(post);
 
-                                                        await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
+                                                      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
 
-                                                        FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
-                                                            {
-                                                              'message' : 'You deleted a post!',
-                                                              'datetime': DateTime.now(),
-                                                              'url': post.image_url
-                                                            });
+                                                      FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
+                                                          {
+                                                          'message' : 'You deleted a post!',
+                                                          'datetime': DateTime.now(),
+                                                          'url': post.image_url,
+                                                          'uid': _user!.uid,
+                                                          'follow_request': 'no',
+                                                          });
 
-                                                      });
+                                                    });
 
-                                                    },
-                                                    like: () {
-                                                      setState(()  {
-                                                        //post.likeCount++;
-                                                        dummy = dummy + 1;
-                                                      });
-                                                    },)
-                                          ).toList(),
-                                        ),
+                                                  },
+                                                  like: () {
+                                                    setState(()  {
+                                                      //post.likeCount++;
+                                                      dummy = dummy + 1;
+                                                    });
+                                                  },)
+                                        ).toList(),
                                       ),
-                                      ),
+                                    ),
+                                    ),
                                   ),
                                   ),
                                   CustomScrollView(
@@ -283,10 +289,17 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-            ),
+              ),
           );
         }
 
     );
   }
 }
+
+/*
+'message' : 'You deleted a post!',
+'datetime': DateTime.now(),
+'url': post.image_url,
+'uid': _user!.uid,
+'follow_request': 'no',*/

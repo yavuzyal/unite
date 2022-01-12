@@ -45,13 +45,11 @@ class _LoginPage2 extends State<LoginPage> {
 
   Future GoogleLogin() async {
 
-    QuerySnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('profile_info').get();
+    DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
-    for(var mes in profile_info.docs){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);
 
-    }
     //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
     //FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }

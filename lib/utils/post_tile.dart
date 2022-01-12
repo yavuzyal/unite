@@ -53,14 +53,23 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
-  Future <bool >alreadyLiked() async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+  Future <bool> alreadyLiked() async {
+
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+
+    String reshared_id = liked.get('sharedFrom');
+
+    if(reshared_id != '' || reshared_id != null){
+      DocumentSnapshot name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
+      reshared = name.get('username');
+    }
 
     List<dynamic> listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy');
 
-    print(listOfLikes.contains(_user!.uid));
+    print(widget.post.text);
+    print(listOfLikes);
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -68,15 +77,57 @@ class _PostTileState extends State<PostTile> {
     return false;
   }
 
+  Future reShare(url, like, comment, caption, location, sharedFrom, ) async {
+
+    final firestoreInstance = FirebaseFirestore.instance;
+
+    firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
+        {
+          "image_url" : url,
+          "likeCount" : like,
+          "comment" : [],
+          "caption": caption,
+          "datetime": DateTime.now(),
+          "location": location,
+          "likedBy": [],
+          "sharedFrom": sharedFrom,
+        }).then((value){
+      //print(value.id);
+    });
+
+    url != "" ?
+    firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
+        {
+          'message' : 'You uploaded a post!',
+          'datetime': DateTime.now(),
+          'url' : url,
+          'uid': '',
+          'follow_request': 'no',
+        }) :
+    firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
+        {
+          'message' : 'You shared a message!',
+          'datetime': DateTime.now(),
+          'url' : url,
+          'uid': '',
+          'follow_request': 'no',
+        });
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("You have ReUnited!"),
+    ));
+
+  }
+
   Future<bool> onLikeButtonTapped(context, bool isLiked, post) async{
 
     bool success = false;
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
-    listOfLikes = liked.data()!.cast().values.toList()[1];
+    listOfLikes = liked.get('likedBy'); 
 
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
@@ -88,6 +139,14 @@ class _PostTileState extends State<PostTile> {
 
       setState(() {
         post.likeCount = post.likeCount + 1;
+      });
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({
+        'message' : 'You Received a Like!',
+        'datetime': DateTime.now(),
+        'url' : widget.post.image_url,
+        'uid': _user!.uid,
+        'follow_request': 'no',
       });
 
       return success;
@@ -110,30 +169,32 @@ class _PostTileState extends State<PostTile> {
   }
 
   Future<bool> isThereImage () async {
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
 
-    if(liked.data()!.cast().values.toList()[2] == "" || liked.data()!.cast().values.toList()[2] == null){
+    if(liked.get('image_url') == "" || liked.get('image_url') == null){
       return false;
     }
 
     return true;
   }
 
+  String reshared = '';
+
   @override
   Widget build(BuildContext context) {
-    isThereImage();
-    return FutureBuilder(
-        future: isThereImage().then((value) => there_is_image = value),
-        builder: (context, snapshot){
-            if(there_is_image){
+            if(widget.post.image_url != ''){
               return FutureBuilder(
-                  future: alreadyLiked().then((result) => liked_already = result),
+                  future: alreadyLiked().then((value) => liked_already = value,) ,
                   builder: (context, snapshot){
+
+                    //print(widget.post.text);
+                    //print(liked_already);
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: _user!.uid,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -143,63 +204,75 @@ class _PostTileState extends State<PostTile> {
                         child:
                         Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
                             children: [
-                              Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
-                              Column(
+                              reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(widget.post.date, style: AppStyles.postText),
-                                      //SizedBox(width :5),
-                                      IconButton(
-                                        alignment: Alignment.topRight,
-                                        onPressed: widget.delete,
-                                        iconSize: 20,
-                                        splashRadius: 24,
-                                        color: AppColors.postTextColor,
-                                        icon: Icon(
-                                          Icons.delete_outline,
-                                        ),
-                                      ),
-                                      //SizedBox(width :5),
-                                      IconButton(
-                                        alignment: Alignment.topRight,
-                                        onPressed: () => report(widget.post),
-                                        iconSize: 20,
-                                        splashRadius: 24,
-                                        color: AppColors.postTextColor,
-                                        icon: Icon(
-                                          Icons.report,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  Image.network(widget.post.image_url, height: 150, width: 150, fit: BoxFit.cover),
                                   Column(
                                     children: [
-                                      SizedBox(height :5),
-                                      Text(widget.post.text, style: AppStyles.postText),
-                                      SizedBox(height : 15),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          LikeButton(
-                                            isLiked: liked_already,
-                                            onTap: (isLiked) {
-                                              return onLikeButtonTapped(context, liked_already, widget.post);
-                                            },
+                                          Text(widget.post.date, style: AppStyles.postText),
+                                          //SizedBox(width :5),
+                                          IconButton(
+                                            alignment: Alignment.topRight,
+                                            onPressed: widget.delete,
+                                            iconSize: 20,
+                                            splashRadius: 24,
+                                            color: AppColors.postTextColor,
+                                            icon: Icon(
+                                              Icons.delete_outline,
+                                            ),
                                           ),
-                                          SizedBox(width: 5),
-                                          Text('${widget.post.likeCount}', style: AppStyles.postText),
-                                          SizedBox(width: 15),
-                                          Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
-                                          SizedBox(width: 5),
-                                          Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                          //SizedBox(width :5),
+                                          IconButton(
+                                            alignment: Alignment.topRight,
+                                            onPressed: () => report(widget.post),
+                                            iconSize: 20,
+                                            splashRadius: 24,
+                                            color: AppColors.postTextColor,
+                                            icon: Icon(
+                                              Icons.report,
+                                            ),
+                                          ),
                                         ],
                                       ),
-                                      SizedBox(height : 45),
+                                      Column(
+                                        children: [
+                                          SizedBox(height :5),
+                                          Text(widget.post.text, style: AppStyles.postText),
+                                          SizedBox(height : 15),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              LikeButton(
+                                                isLiked: liked_already,
+                                                onTap: (isLiked) {
+                                                  return onLikeButtonTapped(context, liked_already, widget.post);
+                                                },
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text('${widget.post.likeCount}', style: AppStyles.postText),
+                                              SizedBox(width: 15),
+                                              Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
+                                              SizedBox(width: 5),
+                                              Text('${widget.post.commentCount}', style: AppStyles.postText),
+                                              SizedBox(width: 5),
+                                              IconButton(
+                                                icon: Icon(Icons.refresh),
+                                                color: AppColors.postTextColor,
+                                                onPressed: () {
+                                                  reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', _user!.uid);
+                                                },),
+                                            ],
+                                          ),
+                                          SizedBox(height : 45),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -215,11 +288,13 @@ class _PostTileState extends State<PostTile> {
               return FutureBuilder(
                   future: alreadyLiked().then((result) => liked_already = result),
                   builder: (context, snapshot){
+                    //print(widget.post.text);
+                    //print(liked_already);
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post)),
+                          MaterialPageRoute(builder: (context) => PostPage(post: widget.post, userId: _user!.uid,)),
                         );
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
@@ -234,6 +309,7 @@ class _PostTileState extends State<PostTile> {
                             children: [
                               Column(
                                 children: [
+                                  reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
@@ -280,7 +356,14 @@ class _PostTileState extends State<PostTile> {
                                       SizedBox(width: 15),
                                       Icon(Icons.chat_bubble_outline, color: AppColors.postTextColor),
                                       SizedBox(width: 5),
-                                      Text('${widget.post.commentCount}', style: AppStyles.postText)
+                                      Text('${widget.post.commentCount}', style: AppStyles.postText),
+                                      SizedBox(width: 5),
+                                      IconButton(
+                                        icon: Icon(Icons.refresh),
+                                        color: AppColors.postTextColor,
+                                        onPressed: () {
+                                          reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', _user!.uid);
+                                        },),
                                     ],
                                   ),
                                   SizedBox(height : 45),
@@ -294,7 +377,5 @@ class _PostTileState extends State<PostTile> {
                     );
                   });
             }
-
-        });
   }
 }

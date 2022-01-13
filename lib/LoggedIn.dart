@@ -42,7 +42,7 @@ class LoggedIn extends StatefulWidget {
 
 class _LoggedIn extends State<LoggedIn> {
 
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),
@@ -74,7 +74,7 @@ class _LoggedIn extends State<LoggedIn> {
             },),
         ],
         automaticallyImplyLeading: false,
-        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.blue[700],
+        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
         title: const Text('UNIte'), centerTitle: true,
       ),
       body: Center(

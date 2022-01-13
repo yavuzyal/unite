@@ -10,10 +10,11 @@ import 'package:unite/Login.dart';
 import 'package:unite/PostScreen.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/Search.dart';
+import 'package:unite/SearchedProfile.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'profile.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -57,6 +58,8 @@ class _Notifications extends State<Notifications> {
 
   Future<bool> getNotifications() async {
 
+    notifications = [];
+
     final _user = FirebaseAuth.instance.currentUser;
 
     QuerySnapshot snapshot =  await FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').orderBy('datetime').get();
@@ -96,6 +99,19 @@ class _Notifications extends State<Notifications> {
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').doc(notifId).update({
       'follow_request': 'accepted',
+    });
+
+    DocumentSnapshot followList2 = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    List following2 = followList2.get('following');
+
+    int followingCount2 = followList2.get('followingCount');
+
+    following2.add(_user!.uid);
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'following' : following2,
+      'followingCount': followingCount2+1,
     });
 
     setState(() {
@@ -140,7 +156,7 @@ class _Notifications extends State<Notifications> {
           if(!snapshot.hasData) return CircularProgressIndicator();
           else{
             return ListView.builder(
-                reverse: true,
+                reverse: false,
                 itemCount: notifications.length,
                 itemBuilder: (context, index){
                   return Card(
@@ -149,15 +165,18 @@ class _Notifications extends State<Notifications> {
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           notifications[index].url != '' ?
-                          Image.network(notifications[index].url, height: 80, width: 80, fit: BoxFit.cover) :
-                          Text(''),
+                          IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                              SearchedProfile(userId: notifications[index].uid)),), icon: Image.network(notifications[index].url, width: 80, fit: BoxFit.fill,), iconSize: 100,) :
+                          SizedBox.shrink(),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Text(notifications[index].message, style: TextStyle(fontSize: 22),),
+                              Container(
+                                  width: MediaQuery.of(context).size.width*0.4,
+                                  child: Text(notifications[index].message, style: TextStyle(fontSize: 22),)),
                               SizedBox(height: 5,),
                               Text(notifications[index].date, style: TextStyle(fontSize: 15),),
                               notifications[index].followReq == 'yes' ? Row(
@@ -179,7 +198,7 @@ class _Notifications extends State<Notifications> {
                                   ),
                                   SizedBox(height: 5,),
                                 ],
-                              ) : Text(''),
+                              ) : SizedBox.shrink(),
                             ],
                           ),
                         ],

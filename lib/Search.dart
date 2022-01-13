@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:unite/LoggedIn.dart';
 import 'package:unite/SearchedProfile.dart';
+import 'package:unite/profile.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -28,6 +31,8 @@ class _Search extends State<Search> {
 
     print(allData);
   }
+
+  final _user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +72,11 @@ class _Search extends State<Search> {
                           horizontalTitleGap: 0,
                           onTap: (){
                             //print(document['userId']);
+                            document['userId'] != _user!.uid ?
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                SearchedProfile(userId: document['userId'])),);
+                                SearchedProfile(userId: document['userId'])),) :
+                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                LoggedIn()));
                           },
                           title: name != "" && name != null ? new Text(document['username']) : Text(document['username']),
                         );

@@ -10,6 +10,7 @@ import 'utils/post_tile.dart';
 import 'utils/post.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'SearchedProfile.dart';
 
 class Profile extends StatefulWidget {
 
@@ -71,16 +72,198 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     }
   }
 
+  Future ifPrivate() async {
+
+    followers = [];
+    following = [];
+
+    DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).get();
+
+    isPrivate = info.get('isPrivate');
+    List list_followers = info.get('followers');
+
+    for(var i = 0; i < list_followers.length; i++) {
+      var follower = list_followers[i];
+      DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(follower).get();
+      List details = [info['username'], info['profile_pic'], info['userId']];
+      followers.add(details);
+    }
+
+    List list_following = info.get('following');
+
+    for(var i = 0; i < list_following.length; i++) {
+      var follower = list_following[i];
+      DocumentSnapshot info = await FirebaseFirestore.instance.collection(
+          "users").doc(follower).get();
+      List details = [info['username'], info['profile_pic'], info['userId']];
+      following.add(details);
+    }
+  }
+
+  Widget _buildPopupDialogFollowing(BuildContext context) {
+
+    return new AlertDialog(
+      title: const Text('Following'),
+      content: new Container(child: SingleChildScrollView(
+        child: Center(child: Container(
+          child: Column(
+            children: following.map(
+                    (follower) =>
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            TextButton(child: Row(
+                              children: [
+                                follower[1] != '' ?
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Image.network(follower[1], width: 50),
+                                )
+                                    :
+                                Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Image.asset('assets/usericon.png', width: 50),
+                                ),
+
+                                Container(
+                                  width: MediaQuery.of(context).size.width*0.4,
+                                  child: Text(follower[0],
+                                    style: AppStyles.profileText,
+                                  ),
+                                ),
+                              ],
+                            ),
+                                onPressed: (){
+                                  follower[2] != _user!.uid ?
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                      SearchedProfile(userId: follower[2])),) :
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                      LoggedIn()));
+                                }),
+                          ],
+                        ),
+                      ),
+                    )
+            ).toList(),
+          ),
+        ),
+        ),
+      ),
+      ),
+    );
+  }
+
+
+  Widget _buildPopupDialogFollowers(BuildContext context) {
+
+    return new AlertDialog(
+      title: const Text('Followers'),
+      content: new Container(child: SingleChildScrollView(
+        child: Center(child: Container(
+          child: Column(
+            children: followers.map(
+                    (follower) =>
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                            TextButton(child: Row(
+                                children: [
+                                  follower[1] != '' ?
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Image.network(follower[1], width: 50),
+                                  )
+                                  :
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Image.asset('assets/usericon.png', width: 50),
+                                  ),
+
+                                  Container(
+                                    width: MediaQuery.of(context).size.width*0.4,
+                                    child: Text(follower[0],
+                                      style: AppStyles.profileText,
+                                    ),
+                                  ),
+                                ],
+                            ),
+                                onPressed: (){
+                                  follower[2] != _user!.uid ?
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                      SearchedProfile(userId: follower[2])),) :
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                      LoggedIn()));
+                                }),
+                          ],
+                        ),
+                      ),
+                    )
+            ).toList(),
+          ),
+        ),
+        ),
+      ),
+      ),
+    );
+  }
+
+  Widget getFollowers(){
+
+    if(isPrivate == "private"){
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 20),
+          TextButton(onPressed: (){showDialog(
+        context: context,
+        builder: (BuildContext context) => _buildPopupDialogFollowers(context),
+      );
+      },
+        child: Text("${followers.length} followers", style: AppStyles.profileText),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+        ),
+      ),
+
+      SizedBox(width: 20),
+
+      TextButton(onPressed: (){showDialog(
+        context: context,
+        builder: (BuildContext context) => _buildPopupDialogFollowing(context),
+      );},
+        child: Text("${following.length} following", style: AppStyles.profileText),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+        ),
+      ),
+          SizedBox(height: 20),
+        ],
+      );
+  };
+    return SizedBox.shrink();
+  }
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
   List<Image> myImages = [];
+  String isPrivate = '';
+  List followers = [];
+  List following = [];
 
   @override
   Widget build(BuildContext context) {
 
     return FutureBuilder(
-        future: getPosts(),
+        future: Future.wait([ifPrivate(), getPosts()]),
         builder: (context, snapshot){
           if( snapshot.connectionState == ConnectionState.waiting){
             return  Center(child: CircularProgressIndicator());
@@ -124,12 +307,12 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                     Image.network(user_profile.profile_pic),
                                     //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                                   ),
-                                  radius: 70,
+                                  radius: 60,
                                 ),
                               ),
                             ),
                             SizedBox(height : 15),
-                            Text(displayName , style: AppStyles.profileName,),
+                            Text(displayName , style: AppStyles.profileName, textAlign: TextAlign.center),
                             //Text(_user!.displayName==null ? displayName : _user!.displayName!, style: AppStyles.profileName,),
                             //user!.displayName!
 
@@ -198,7 +381,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               ),
                             ),
 
-                            SizedBox(height: 20),
+                            getFollowers(),
 
                             TabBar(
                               isScrollable: true,
@@ -234,12 +417,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                   //userId: _user!.uid,
                                                   post: post,
                                                   delete: () {
-
                                                     setState(() async {
                                                       //myPosts.remove(post);
-
                                                       await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
-
                                                       FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
                                                           {
                                                           'message' : 'You deleted a post!',
@@ -248,9 +428,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                           'uid': _user!.uid,
                                                           'follow_request': 'no',
                                                           });
-
                                                     });
-
                                                   },
                                                   like: () {
                                                     setState(()  {

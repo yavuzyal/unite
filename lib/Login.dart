@@ -69,7 +69,7 @@ class _LoginPage2 extends State<LoginPage> {
       "interest": '',
       "bio": '',
       "profile_pic": '',
-      'follow_requests': '',
+      'follow_requests': [],
     });
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({});
@@ -110,7 +110,6 @@ class _LoginPage2 extends State<LoginPage> {
 
         if (snapshot.docs.isEmpty){
           facebookSignUp(profile);
-          print('AAAA');
         }
 
         break;

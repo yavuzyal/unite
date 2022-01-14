@@ -13,6 +13,8 @@ import 'utils/colors.dart';
 import 'utils/styles.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+
 
 class Settings extends StatefulWidget {
   @override
@@ -60,6 +62,16 @@ class _Settings2 extends State<Settings> {
     DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).get();
 
     isPrivate = info.get('isPrivate');
+
+  }
+
+  Future deleteAccount() async {
+
+    User _user = await FirebaseAuth.instance.currentUser!;
+
+    FirebaseFirestore.instance.collection("users").doc(_user!.uid).delete().then((_){
+      _user!.delete();
+    });
 
   }
 
@@ -138,6 +150,8 @@ class _Settings2 extends State<Settings> {
                               final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
                               provider.googleLogout();
 
+                              await FacebookLogin().logOut();
+
                               setState(() {
                                 Navigator.push(
                                   context,
@@ -166,6 +180,16 @@ class _Settings2 extends State<Settings> {
                               });
                             },
                             child: Text(isPrivate == 'public' ? 'Make Private' : 'Make Public', style:  TextStyle(fontSize: 20),),
+                          ),
+                          SizedBox(height: 10,),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                            onPressed: () {
+                              setState(() async {
+                                deleteAccount();
+                              });
+                            },
+                            child: Text("Delete account", style:  TextStyle(fontSize: 20),),
                           ),
                         ],
                       ),

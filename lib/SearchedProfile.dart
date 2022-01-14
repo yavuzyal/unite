@@ -53,6 +53,10 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
   Future getPosts() async{
 
+    myPosts = [];
+    myImages = [];
+    myLocations = [];
+
     DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     user = mes.get('username');
@@ -70,11 +74,17 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
       print('TYPE');
       print(comments.runtimeType);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: comments, postId: message.id);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: comments, postId: message.id, owner: userId);
       myPosts.add(post);
 
       if(post.image_url != '') {
         myImages.add(Image.network(post.image_url));
+      }
+
+      String locat = message['location'];
+
+      if(locat != '' && locat != 'Reshared' && myLocations.indexOf(locat) == -1) {
+        myLocations.add(locat);
       }
 
     }
@@ -83,6 +93,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
   Future addFollower () async {
 
     if(following == false){
+
       DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
       List followerArray = [];
@@ -92,10 +103,21 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
       followerArray.add(_user!.uid);
 
-
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'followers': followerArray,
         'followerCount': followerCount + 1,
+      });
+
+      DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+      List followingArray = user_info.get('followers');
+      int followingx = follower.get('followingCount');
+
+      followingArray.add(userId);
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'following': followingArray,
+        'followingCount': followingx + 1,
       });
 
       setState(() {
@@ -104,7 +126,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
     }
 
-    else if(following == true){
+    else if(following == true ){
       DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
       List followerArray = [];
@@ -138,11 +160,14 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
         'follow_requests': followRequests,
       });
 
+      DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).get();
+      String username = info['username'];
+
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('notifications').add({
         'uid': _user!.uid,
-        'message' : 'Follow Request from ${_user!.displayName}!',
+        'message' : 'Follow Request from ${username}!',
         'datetime': DateTime.now(),
-        'url' : _user!.photoURL,
+        'url' : info['profile_pic'],
         'follow_request': 'yes',
       });
 
@@ -362,17 +387,18 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
         ],
       );
     };
-    return SizedBox.shrink();
+   return SizedBox.shrink();
   }
 
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
   List<Image> myImages = [];
+  List<String> myLocations = [];
   List followersList = [];
   List followingList = [];
   final _user = FirebaseAuth.instance.currentUser;
-  late TabController _tabController = new TabController(length: 2, vsync: this);
+  late TabController _tabController = new TabController(length: 3, vsync: this);
 
   @override
   Widget build(BuildContext context) {
@@ -507,7 +533,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                       children: [
                                         ElevatedButton(
                                           onPressed: () async {
-                                            following == true ? addFollower() : senFollowRequest();
+                                            following == true ? addFollower() : ispriv ? senFollowRequest() : addFollower();
                                           },
                                           child: following==true ? Text('Unfollow', style: AppStyles.profileText,) : Text('Follow', style: AppStyles.profileText,),
                                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor)),
@@ -538,6 +564,9 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                         ),
                                         Tab(
                                           text: 'Media',
+                                        ),
+                                        Tab(
+                                          text: 'Locations'
                                         )
                                       ],
                                       controller: _tabController,
@@ -571,13 +600,9 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                                           //userId: _user!.uid,
                                                           post: post,
                                                           delete: () {
-                                                            setState(() {
-                                                              myPosts.remove(post);
-                                                            });
                                                           },
                                                           like: () {
                                                             setState(() async {
-//post.likeCount++;
 
                                                               await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
                                                                 'like': likeCount + 1,
@@ -590,7 +615,8 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
                                                             });
                                                           }
-                                                          ,)
+                                                          ,
+                                                        searched: true)
                                                 ).toList(),
                                               ),
                                             ),
@@ -610,6 +636,28 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                                 ),
                                               ),
                                             ],
+                                          ),
+                                          Container(child: SingleChildScrollView(
+                                            child: Center(child: Container(
+                                              child: Column(
+                                                children: myLocations.map((location) =>
+                                                    Container(
+                                                      width: MediaQuery.of(context).size.width*0.8,
+                                                      height: 50,
+                                                      child: Card(
+                                                        color: AppColors.postBackgroundColor,
+                                                        child : Padding(
+                                                          padding: const EdgeInsets.all(8.0),
+                                                          child: Text(location, style: AppStyles.postText, textAlign: TextAlign.center),
+                                                        ),
+                                                      ),
+                                                    )
+                                                ).toList(),
+
+                                              ),
+                                            ),
+                                            ),
+                                          ),
                                           ),
                                         ],
                                         controller: _tabController,

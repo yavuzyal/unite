@@ -33,7 +33,7 @@ class User_info {
 
 class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
-  late TabController _tabController = new TabController(length: 2, vsync: this);
+  late TabController _tabController = new TabController(length: 3, vsync: this);
 
   User_info user_profile = new User_info('','','','','', '');
   String displayName = '';
@@ -44,11 +44,13 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
   Future getPosts() async{
 
+    myPosts = [];
+    myLocations = [];
+
     DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
     displayName = mes.get('username');
     print(displayName);
-
 
     user_profile = User_info(mes.get('school'), mes.get('major'), mes.get('age'), mes.get('interest'), mes.get('bio'), mes.get('profile_pic'));
 
@@ -62,13 +64,18 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: message.id);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: message.id, owner: _user!.uid);
       myPosts.add(post);
 
       if(post.image_url != '') {
         myImages.add(Image.network(post.image_url));
       }
 
+      String locat = message['location'];
+
+      if(locat != '' && locat != 'Reshared' && myLocations.indexOf(locat) == -1) {
+        myLocations.add(locat);
+      }
     }
   }
 
@@ -130,7 +137,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                 ),
 
                                 Container(
-                                  width: MediaQuery.of(context).size.width*0.4,
+                                  width: MediaQuery.of(context).size.width*0.3,
                                   child: Text(follower[0],
                                     style: AppStyles.profileText,
                                   ),
@@ -138,12 +145,14 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               ],
                             ),
                                 onPressed: (){
+                                  Navigator.pop(context);
                                   follower[2] != _user!.uid ?
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       SearchedProfile(userId: follower[2])),) :
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       LoggedIn()));
                                 }),
+                            IconButton(onPressed: () => {removeFollowing(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: AppColors.appTextColor,))
                           ],
                         ),
                       ),
@@ -157,6 +166,89 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     );
   }
 
+  Future<void> removeFollowing(follower) async {
+
+    following.remove(follower[2]);
+
+    DocumentSnapshot followingInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    int FollowingCount = followingInfo.get("followingCount");
+
+    if(FollowingCount != 1) {
+      await FirebaseFirestore.instance.collection('users')
+          .doc(_user!.uid)
+          .update({
+        'following': followingInfo.get('following').remove(follower[2]),
+        'followingCount': FollowingCount - 1,
+      });
+    }
+    else{
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'following': [""],
+        'followingCount': FollowingCount - 1,
+      });
+    }
+
+    DocumentSnapshot followerInfo = await FirebaseFirestore.instance.collection('users').doc(follower[2]).get();
+
+    List followersInfo = followerInfo.get('followers');
+
+    if(followersInfo.length <= 1) {
+      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
+        'followers': [""],
+        'followerCount': followersInfo.length - 1,
+      });
+    }
+    else{
+      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
+        'followers': followerInfo.get('followers').remove(_user!.uid),
+        'followerCount': followersInfo.length - 1,
+      });
+    }
+
+  }
+
+  Future<void> removeFollower(follower) async {
+
+    followers.remove(follower[2]);
+
+    DocumentSnapshot followerInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    int FollowerCount = followerInfo.get("followerCount");
+
+    if(FollowerCount != 1) {
+      await FirebaseFirestore.instance.collection('users')
+          .doc(_user!.uid)
+          .update({
+        'following': followerInfo.get('followers').remove(follower[2]),
+        'followerCount': FollowerCount - 1,
+      });
+    }
+    else{
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'following': [""],
+        'followerCount': FollowerCount - 1,
+      });
+    }
+
+    DocumentSnapshot followingInfo = await FirebaseFirestore.instance.collection('users').doc(follower[2]).get();
+
+    List followInfo = followingInfo.get('following');
+
+    if(followInfo.length <= 1) {
+      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
+        'following': [""],
+        'followingCount': followInfo.length - 1,
+      });
+    }
+    else{
+      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
+        'following': followerInfo.get('followng').remove(_user!.uid),
+        'followingCount': followInfo.length - 1,
+      });
+    }
+
+  }
 
   Widget _buildPopupDialogFollowers(BuildContext context) {
 
@@ -188,7 +280,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                   ),
 
                                   Container(
-                                    width: MediaQuery.of(context).size.width*0.4,
+                                    width: MediaQuery.of(context).size.width*0.3,
                                     child: Text(follower[0],
                                       style: AppStyles.profileText,
                                     ),
@@ -196,13 +288,15 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                 ],
                             ),
                                 onPressed: (){
+                                  Navigator.pop(context);
                                   follower[2] != _user!.uid ?
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       SearchedProfile(userId: follower[2])),) :
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       LoggedIn()));
                                 }),
-                          ],
+                              IconButton(onPressed: () => {removeFollower(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: AppColors.appTextColor,))
+                            ],
                         ),
                       ),
                     )
@@ -249,11 +343,28 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
         ],
       );
   };
-    return SizedBox.shrink();
+
+    return  Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton(onPressed: (){showDialog(
+          context: context,
+          builder: (BuildContext context) => _buildPopupDialogFollowing(context),
+        );},
+          child: Text("${following.length} following", style: AppStyles.profileText),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+          ),
+        ),
+        SizedBox(height: 20),
+      ],
+    );
   }
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
+  List<String> myLocations = [];
   List<Image> myImages = [];
   String isPrivate = '';
   List followers = [];
@@ -269,15 +380,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
             return  Center(child: CircularProgressIndicator());
           }
           return Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: (){FirebaseCrashlytics.instance.crash();},
-              backgroundColor: AppColors.logoColor,
-              child: Icon(Icons.close, color: AppColors.postTextColor,),
-            ),
             body:
-              RefreshIndicator(
-                onRefresh: getPosts,
-                child:  SingleChildScrollView(
+                SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -398,6 +502,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                 ),
                                 Tab(
                                   text: 'Media',
+                                ),
+                                Tab(
+                                  text: 'Locations',
                                 )
                               ],
                               controller: _tabController,
@@ -430,12 +537,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                           });
                                                     });
                                                   },
-                                                  like: () {
-                                                    setState(()  {
-                                                      //post.likeCount++;
-                                                      dummy = dummy + 1;
-                                                    });
-                                                  },)
+                                                  like: () {},
+                                                searched: false,)
                                         ).toList(),
                                       ),
                                     ),
@@ -456,6 +559,28 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                       ),
                                     ],
                                   ),
+                                  Container(child: SingleChildScrollView(
+                                    child: Center(child: Container(
+                                      child: Column(
+                                        children: myLocations.map((location) =>
+                                            Container(
+                                              width: MediaQuery.of(context).size.width*0.8,
+                                              height: 50,
+                                              child: Card(
+                                                color: AppColors.postBackgroundColor,
+                                              child : Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(location, style: AppStyles.postText, textAlign: TextAlign.center),
+                                              ),
+                                              ),
+                                            )
+                                        ).toList(),
+
+                                      ),
+                                    ),
+                                    ),
+                                  ),
+                                  ),
                                 ],
                                 controller: _tabController,
                               ),
@@ -466,7 +591,6 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                     ),
                   ],
                 ),
-              ),
               ),
           );
         }

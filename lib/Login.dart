@@ -112,17 +112,19 @@ class _LoginPage2 extends State<LoginPage> {
           facebookSignUp(profile);
         }
 
+        facebooklogin();
         break;
 
       case FacebookLoginStatus.cancel:
-      // In case the user cancels the login process
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()),);
         break;
       case FacebookLoginStatus.error:
       // Login procedure failed
-        print('Error while log in: ${res.error}');
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()),);
         break;
     }
   }
+
   Future GoogleLogin() async {
 
     DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
@@ -289,7 +291,6 @@ class _LoginPage2 extends State<LoginPage> {
                             style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                             onPressed: () {
                               signInWithFacebook();
-                              facebooklogin();
                             },
                             label: Text("Sign In with Facebook", style: TextStyle(fontSize: 16),),
                             icon: FaIcon(FontAwesomeIcons.facebook),

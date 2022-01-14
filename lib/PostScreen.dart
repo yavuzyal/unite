@@ -254,8 +254,6 @@ class _PostScreen extends State {
                           uploadImageToFirebase(context, post_message);
                         }
 
-
-
                         //setState(() {
                          // ScaffoldMessenger.of(context).showSnackBar(
                          //   const SnackBar(

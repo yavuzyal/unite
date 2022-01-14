@@ -16,9 +16,10 @@ class PostTile extends StatefulWidget {
   final Post post;
   final VoidCallback delete;
   final VoidCallback like;
+  bool searched;
   int dummy = 0;
 
-  PostTile({required this.post, required this.delete, required this.like});
+  PostTile({required this.post, required this.delete, required this.like, required this.searched});
 
   @override
   _PostTileState createState() => _PostTileState();
@@ -60,16 +61,21 @@ class _PostTileState extends State<PostTile> {
     String reshared_id = liked.get('sharedFrom');
 
     if(reshared_id != '' || reshared_id != null){
-      DocumentSnapshot name = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
-      reshared = name.get('username');
+      DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
+      String name = snap['username'];
+
+      setState(() {
+        reshared = name;
+        if_reshared = liked.get('location');
+      });
     }
 
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.get('likedBy');
 
-    print(widget.post.text);
-    print(listOfLikes);
+    //print(widget.post.text);
+    //print(listOfLikes);
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -77,7 +83,7 @@ class _PostTileState extends State<PostTile> {
     return false;
   }
 
-  Future reShare(url, like, comment, caption, location, sharedFrom, ) async {
+  Future reShare(url, like, comment, caption, location, sharedFrom ) async {
 
     final firestoreInstance = FirebaseFirestore.instance;
 
@@ -90,7 +96,7 @@ class _PostTileState extends State<PostTile> {
           "datetime": DateTime.now(),
           "location": location,
           "likedBy": [],
-          "sharedFrom": sharedFrom,
+          "sharedFrom": widget.post.owner,
         }).then((value){
       //print(value.id);
     });
@@ -123,7 +129,7 @@ class _PostTileState extends State<PostTile> {
 
     bool success = false;
 
-    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -132,7 +138,7 @@ class _PostTileState extends State<PostTile> {
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
         'likeCount': widget.post.likeCount + 1,
         'likedBy': listOfLikes,
       }).then((value) => success = true);
@@ -141,13 +147,16 @@ class _PostTileState extends State<PostTile> {
         post.likeCount = post.likeCount + 1;
       });
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({
-        'message' : 'You Received a Like!',
+      DocumentSnapshot info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('notifications').add({
+        'message' : 'You received a like from ${info['username']}!',
         'datetime': DateTime.now(),
         'url' : widget.post.image_url,
         'uid': _user!.uid,
         'follow_request': 'no',
       });
+
 
       return success;
     }
@@ -164,6 +173,7 @@ class _PostTileState extends State<PostTile> {
         post.likeCount = post.likeCount - 1;
       });
 
+
       return success;
     }
   }
@@ -178,18 +188,15 @@ class _PostTileState extends State<PostTile> {
     return true;
   }
 
+  String if_reshared = '';
   String reshared = '';
 
   @override
   Widget build(BuildContext context) {
-            if(widget.post.image_url != ''){
+    if(widget.post.image_url != ''){
               return FutureBuilder(
-                  future: alreadyLiked().then((value) => liked_already = value,) ,
+                  future: alreadyLiked().then((value) => liked_already = value),
                   builder: (context, snapshot){
-
-                    //print(widget.post.text);
-                    //print(liked_already);
-
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -206,7 +213,7 @@ class _PostTileState extends State<PostTile> {
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             children: [
-                              reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                              if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -218,6 +225,7 @@ class _PostTileState extends State<PostTile> {
                                         children: [
                                           Text(widget.post.date, style: AppStyles.postText),
                                           //SizedBox(width :5),
+                                          widget.searched == false ?
                                           IconButton(
                                             alignment: Alignment.topRight,
                                             onPressed: widget.delete,
@@ -227,7 +235,7 @@ class _PostTileState extends State<PostTile> {
                                             icon: Icon(
                                               Icons.delete_outline,
                                             ),
-                                          ),
+                                          ) : SizedBox.shrink(),
                                           //SizedBox(width :5),
                                           IconButton(
                                             alignment: Alignment.topRight,
@@ -266,7 +274,7 @@ class _PostTileState extends State<PostTile> {
                                                 icon: Icon(Icons.refresh),
                                                 color: AppColors.postTextColor,
                                                 onPressed: () {
-                                                  reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', _user!.uid);
+                                                  reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', widget.post.owner);
                                                 },),
                                             ],
                                           ),
@@ -309,12 +317,13 @@ class _PostTileState extends State<PostTile> {
                             children: [
                               Column(
                                 children: [
-                                  reshared != '' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                                  if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(widget.post.date, style: AppStyles.postText),
                                       //SizedBox(width :5),
+                                      widget.searched == false ?
                                       IconButton(
                                         alignment: Alignment.topRight,
                                         onPressed: widget.delete,
@@ -324,7 +333,7 @@ class _PostTileState extends State<PostTile> {
                                         icon: Icon(
                                           Icons.delete_outline,
                                         ),
-                                      ),
+                                      ) : SizedBox.shrink(),
                                       //SizedBox(width :5),
                                       IconButton(
                                         alignment: Alignment.topRight,
@@ -362,7 +371,7 @@ class _PostTileState extends State<PostTile> {
                                         icon: Icon(Icons.refresh),
                                         color: AppColors.postTextColor,
                                         onPressed: () {
-                                          reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', _user!.uid);
+                                          reShare(widget.post.image_url, 0, [] , widget.post.text, 'Reshared', widget.post.owner);
                                         },),
                                     ],
                                   ),

@@ -49,6 +49,24 @@ class _PostPageState extends State<PostPage> {
       }
     }
 
+    withUsername.forEach((user,comment) => CommentCards.add(
+      Card(
+        color: AppColors.postBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(child: Text(user.substring(3), style: AppStyles.commentName,)),
+              SizedBox(width: 10),
+              Expanded(child: Text(comment, style: AppStyles.commentName,)),
+            ],
+          ),
+        ),
+      ),
+    ),
+    );
+
     DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
@@ -65,6 +83,7 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future onPostComment() async{
+
     DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfComments = [];
@@ -80,6 +99,19 @@ class _PostPageState extends State<PostPage> {
     await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
       'comment': listOfComments,
     });
+
+    final firestoreInstance = FirebaseFirestore.instance;
+    DocumentSnapshot info = await firestoreInstance.collection('users').doc(_user!.uid).get();
+
+    firestoreInstance.collection("users").doc(widget.userId).collection('notifications').add(
+        {
+          'message' : 'You received a comment from ${info['username']}: \"${comment}\"',
+          'datetime': DateTime.now(),
+          'url' : widget.post.image_url,
+          'uid': _user!.uid,
+          'follow_request': 'no',
+        });
+
   }
 
   Future <bool >alreadyLiked() async {
@@ -149,6 +181,7 @@ class _PostPageState extends State<PostPage> {
   final _formKey = GlobalKey<FormState>();
   String comment = '';
   bool liked_already = false;
+  final _textFormController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -157,23 +190,6 @@ class _PostPageState extends State<PostPage> {
       child: FutureBuilder(
           future: MappingOperation().then((result) => liked_already = result),
           builder: (context, snaphot){
-            withUsername.forEach((user,comment) => CommentCards.add(
-              Card(
-                color: AppColors.postBackgroundColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(child: Text(user.substring(3), style: AppStyles.commentName,)),
-                      SizedBox(width: 10),
-                      Expanded(child: Text(comment, style: AppStyles.commentName,)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            );
 
             return Scaffold(
               appBar: AppBar(
@@ -228,6 +244,7 @@ class _PostPageState extends State<PostPage> {
                           children: [
                             Expanded(
                               child: TextFormField(
+                                controller: _textFormController,
                                 textAlign: TextAlign.center,
                                 decoration: new InputDecoration(
                                   hintText: "Add a comment...",
@@ -249,6 +266,8 @@ class _PostPageState extends State<PostPage> {
                                   if(_formKey.currentState!.validate()){
                                     onPostComment();
                                   }
+                                  _textFormController.clear();
+
                                 },
                                 child: Text('Post'))
                           ],

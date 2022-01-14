@@ -74,6 +74,8 @@ class _Notifications extends State<Notifications> {
       notifications.add(notify);
     }
 
+    notifications = notifications.reversed.toList();
+
     return true;
   }
 
@@ -175,7 +177,7 @@ class _Notifications extends State<Notifications> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Container(
-                                  width: MediaQuery.of(context).size.width*0.4,
+                                  width: notifications[index].url != '' ? MediaQuery.of(context).size.width*0.4 : MediaQuery.of(context).size.width*0.8,
                                   child: Text(notifications[index].message, style: TextStyle(fontSize: 22),)),
                               SizedBox(height: 5,),
                               Text(notifications[index].date, style: TextStyle(fontSize: 15),),

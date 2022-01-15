@@ -164,7 +164,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
         'likeCount': widget.post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);

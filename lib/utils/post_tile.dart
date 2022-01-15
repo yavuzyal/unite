@@ -59,7 +59,7 @@ class _PostTileState extends State<PostTile> {
     DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     String reshared_id = liked.get('sharedFrom');
-    
+
     if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
       String name = snap['username'];

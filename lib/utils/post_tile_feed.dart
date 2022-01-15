@@ -60,7 +60,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
     String reshared_id = liked.get('sharedFrom');
 
-    if(reshared_id != '' || reshared_id != null){
+    if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
       String name = snap['username'];
 

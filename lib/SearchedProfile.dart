@@ -70,11 +70,11 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
       likeCount = message.get('likeCount');
-      List comments = message.get('comment');
+      List comment = message.get('comment');
       print('TYPE');
-      print(comments.runtimeType);
+      print(comment.runtimeType);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: 0, comments: comments, postId: message.id, owner: userId);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, owner_name : user, comments: comment, postId: message.id, owner: userId);
       myPosts.add(post);
 
       if(post.image_url != '') {
@@ -629,16 +629,13 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                                           },
                                                           like: () {
                                                             setState(() async {
-
                                                               await FirebaseFirestore.instance.collection('users').doc(userId).collection('posts').doc(post.postId).update({
                                                                 'like': likeCount + 1,
                                                               });
-
                                                               setState(() {
                                                                 Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                                                     LoggedIn()),);
                                                               });
-
                                                             });
                                                           }
                                                           ,

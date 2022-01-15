@@ -114,7 +114,9 @@ class _PostPageState extends State<PostPage> {
 
   }
 
-  Future <bool >alreadyLiked() async {
+  Future <bool> alreadyLiked() async {
+
+
     DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
@@ -210,8 +212,14 @@ class _PostPageState extends State<PostPage> {
                       widget.post.image_url == '' ?
                       Text('') : Image.network(widget.post.image_url, height: 200, width: 200, fit: BoxFit.fitHeight),
                       SizedBox(height: 10.0,),
-                      Text(widget.post.text, style: AppStyles.profileText,),
-                      SizedBox(height: 10.0,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(widget.post.owner_name, style: AppStyles.profileTextName),
+                          SizedBox(width: 20),
+                          Text(widget.post.text, style: AppStyles.profileText, overflow: TextOverflow.fade,),
+                        ],
+                      ),                      SizedBox(height: 10.0,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

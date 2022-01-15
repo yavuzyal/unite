@@ -64,7 +64,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
       DateTime d = t.toDate();
       String date = d.toString().substring(0,10);
 
-      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: message.id, owner: _user!.uid);
+      Post post = Post(text: message.get('caption').toString(), image_url: message.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, owner_name : displayName, comments: comment, postId: message.id, owner: _user!.uid);
       myPosts.add(post);
 
       if(post.image_url != '') {
@@ -508,7 +508,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                       });
                                                   },
                                                   like: () {},
-                                                searched: false,)
+                                                searched: false)
                                         ).toList(),
                                       ),
                                     ),

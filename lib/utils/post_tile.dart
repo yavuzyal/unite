@@ -56,11 +56,11 @@ class _PostTileState extends State<PostTile> {
 
   Future <bool> alreadyLiked() async {
 
-    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     String reshared_id = liked.get('sharedFrom');
-
-    if(reshared_id != '' || reshared_id != null){
+    
+    if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
       String name = snap['username'];
 
@@ -147,6 +147,7 @@ class _PostTileState extends State<PostTile> {
         post.likeCount = post.likeCount + 1;
       });
 
+
       DocumentSnapshot info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
       await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('notifications').add({
@@ -157,14 +158,13 @@ class _PostTileState extends State<PostTile> {
         'follow_request': 'no',
       });
 
-
       return success;
     }
 
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(widget.post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
         'likeCount': widget.post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);

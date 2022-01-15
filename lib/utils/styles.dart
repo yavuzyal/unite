@@ -37,6 +37,13 @@ class AppStyles{
     fontSize: 18,
   );
 
+  static final profileTextName = GoogleFonts.signika(
+    color: AppColors.appTextColor,
+    fontWeight: FontWeight.w700,
+
+    fontSize: 18,
+  );
+
   static final commentName = GoogleFonts.signika(
     color: AppColors.appTextColor,
     fontWeight: FontWeight.bold,

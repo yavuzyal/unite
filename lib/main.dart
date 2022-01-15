@@ -18,8 +18,10 @@ import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/profile.dart';
+import 'package:unite/utils/colors.dart';
 import 'package:unite/utils/post_page.dart';
 import 'Walkthrough.dart';
+import 'feedPage.dart';
 import 'utils/post.dart';
 
 import 'Greeting.dart';
@@ -63,6 +65,7 @@ Future<void> main() async {
           '/pageOne': (context) => LoginPage(),
           '/profile': (context) => Profile(),
           '/walkthrough': (context) => WalkthroughScreen(),
+          '/feed': (context) => feedPage()
         },
       ),)
   );

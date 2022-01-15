@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:unite/utils/colors.dart';
 
 ThemeData _darkTheme = ThemeData(
   accentColor: Colors.red,
@@ -12,5 +13,5 @@ ThemeData _darkTheme = ThemeData(
 ThemeData _lightTheme = ThemeData(
     accentColor: Colors.pink,
     brightness: Brightness.light,
-    primaryColor: Colors.blue
+    primaryColor: AppColors.logoColor
 );

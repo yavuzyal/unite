@@ -7,6 +7,7 @@ class Post {
   List<dynamic> comments;
   String postId;
   String owner = '';
+  String owner_name = '';
 
   Post({
     required this.postId,
@@ -17,6 +18,7 @@ class Post {
     required this.commentCount,
     required this.comments,
     this.owner = '',
+    this.owner_name = ''
   });
 
   @override

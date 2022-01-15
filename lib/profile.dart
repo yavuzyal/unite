@@ -166,88 +166,75 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
     );
   }
 
-  Future<void> removeFollowing(follower) async {
+  Future<void> removeFollowing(followerList) async {
 
-    following.remove(follower[2]);
+    following.remove(followerList[2]);
 
-    DocumentSnapshot followingInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerList[2]).get();
 
-    int FollowingCount = followingInfo.get("followingCount");
+    List followerArray = [];
 
-    if(FollowingCount != 1) {
-      await FirebaseFirestore.instance.collection('users')
-          .doc(_user!.uid)
-          .update({
-        'following': followingInfo.get('following').remove(follower[2]),
-        'followingCount': FollowingCount - 1,
-      });
-    }
-    else{
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
-        'following': [""],
-        'followingCount': FollowingCount - 1,
-      });
-    }
+    followerArray = follower.get('followers');
+    int followerCount = follower.get('followerCount');
 
-    DocumentSnapshot followerInfo = await FirebaseFirestore.instance.collection('users').doc(follower[2]).get();
+    followerArray.remove(_user!.uid);
 
-    List followersInfo = followerInfo.get('followers');
+    await FirebaseFirestore.instance.collection('users').doc(followerList[2]).update({
+      'followers': followerArray,
+      'followerCount': followerCount - 1,
+    });
 
-    if(followersInfo.length <= 1) {
-      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
-        'followers': [""],
-        'followerCount': followersInfo.length - 1,
-      });
-    }
-    else{
-      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
-        'followers': followerInfo.get('followers').remove(_user!.uid),
-        'followerCount': followersInfo.length - 1,
-      });
-    }
+    DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    List followersArray = user_info.get('following');
+    int followerx = user_info.get('followingCount');
+
+    followersArray.remove(followerList[2]);
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+      'following': followersArray,
+      'followingCount': followerx - 1,
+    });
+
+    setState(() {
+
+    });
 
   }
 
-  Future<void> removeFollower(follower) async {
+  Future<void> removeFollower(followerList) async {
 
-    followers.remove(follower[2]);
+    followers.remove(followerList[2]);
 
-    DocumentSnapshot followerInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerList[2]).get();
 
-    int FollowerCount = followerInfo.get("followerCount");
+    List followerArray = [];
 
-    if(FollowerCount != 1) {
-      await FirebaseFirestore.instance.collection('users')
-          .doc(_user!.uid)
-          .update({
-        'following': followerInfo.get('followers').remove(follower[2]),
-        'followerCount': FollowerCount - 1,
-      });
-    }
-    else{
-      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
-        'following': [""],
-        'followerCount': FollowerCount - 1,
-      });
-    }
+    followerArray = follower.get('following');
+    int followerCount = follower.get('followingCount');
 
-    DocumentSnapshot followingInfo = await FirebaseFirestore.instance.collection('users').doc(follower[2]).get();
+    followerArray.remove(_user!.uid);
 
-    List followInfo = followingInfo.get('following');
+    await FirebaseFirestore.instance.collection('users').doc(followerList[2]).update({
+      'following': followerArray,
+      'followingCount': followerCount - 1,
+    });
 
-    if(followInfo.length <= 1) {
-      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
-        'following': [""],
-        'followingCount': followInfo.length - 1,
-      });
-    }
-    else{
-      await FirebaseFirestore.instance.collection('users').doc(follower[2]).update({
-        'following': followerInfo.get('followng').remove(_user!.uid),
-        'followingCount': followInfo.length - 1,
-      });
-    }
+    DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
+    List followersArray = user_info.get('followers');
+    int followerx = user_info.get('followerCount');
+
+    followersArray.remove(followerList[2]);
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+      'followers': followersArray,
+      'followerCount': followerx - 1,
+    });
+
+    setState(() {
+
+    });
   }
 
   Widget _buildPopupDialogFollowers(BuildContext context) {
@@ -311,7 +298,6 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
   Widget getFollowers(){
 
-    if(isPrivate == "private"){
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -342,24 +328,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
           SizedBox(height: 20),
         ],
       );
-  };
 
-    return  Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextButton(onPressed: (){showDialog(
-          context: context,
-          builder: (BuildContext context) => _buildPopupDialogFollowing(context),
-        );},
-          child: Text("${following.length} following", style: AppStyles.profileText),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
-          ),
-        ),
-        SizedBox(height: 20),
-      ],
-    );
   }
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 

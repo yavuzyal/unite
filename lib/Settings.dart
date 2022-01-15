@@ -67,9 +67,51 @@ class _Settings2 extends State<Settings> {
 
   Future deleteAccount() async {
 
-    User _user = await FirebaseAuth.instance.currentUser!;
+    final _user = FirebaseAuth.instance.currentUser;
 
-    FirebaseFirestore.instance.collection("users").doc(_user!.uid).delete().then((_){
+    DocumentSnapshot userInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    List followers = userInfo.get('followers');
+    List following = userInfo.get('following');
+
+    for(int i = 0; i < followers.length; i++){
+
+      String followerId = followers[i];
+
+      DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+      List followingArray = [];
+
+      followingArray = follower.get('following');
+      int followingCount = follower.get('followingCount');
+
+      followingArray.remove(_user!.uid);
+
+      await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+        'following': followingArray,
+        'followingCount': followingCount - 1,
+      });
+    }
+
+    for(int i = 0; i < following.length; i++){
+
+      String followerId = following[i];
+
+      DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+      List followerArray = [];
+
+      followerArray = follower.get('followers');
+      int followerCount = follower.get('followerCount');
+
+      followerArray.remove(_user!.uid);
+
+      await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+        'followers': followerArray,
+        'followerCount': followerCount - 1,
+      });
+    }
+
+    await FirebaseFirestore.instance.collection("users").doc(_user!.uid).delete().then((_){
       _user!.delete();
     });
 

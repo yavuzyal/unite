@@ -14,7 +14,7 @@ import 'package:unite/Search.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'feedPage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -47,13 +47,14 @@ class _LoggedIn extends State<LoggedIn> {
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),
     Search(),
+    feedPage(),
     PostScreen(),
     RoomsPage(),
     Settings(),
   ];
 
   static List<String> page_names = [
-    "Account", "Search", "Add_post", "Messages", "Settings"
+    "Account", "Search", "Feed", "Add_post", "Messages", "Settings"
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -92,6 +93,11 @@ class _LoggedIn extends State<LoggedIn> {
             icon: Icon(Icons.search),
             label: 'Search',
             backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Feed',
+            backgroundColor: Colors.redAccent,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),

@@ -48,6 +48,12 @@ class AppStyles{
     fontSize: 18,
   );
 
+  static final postOwnerText = GoogleFonts.signika(
+    color: AppColors.postTextColor,
+    fontWeight: FontWeight.w700,
+    fontSize: 18,
+  );
+
   static final signUp = GoogleFonts.signika(
       color: AppColors.logoColor,
       fontSize: 17,

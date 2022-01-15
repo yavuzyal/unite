@@ -110,8 +110,8 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
       DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
-      List followingArray = user_info.get('followers');
-      int followingx = follower.get('followingCount');
+      List followingArray = user_info.get('following');
+      int followingx = user_info.get('followingCount');
 
       followingArray.add(userId);
 
@@ -141,48 +141,74 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
         'followerCount': followerCount - 1,
       });
 
+      DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+      List followersArray = user_info.get('following');
+      int followerx = user_info.get('followingCount');
+
+      followersArray.remove(userId);
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'following': followersArray,
+        'followingCount': followerx - 1,
+      });
+
       setState(() {
         following = false;
       });
-
     }
   }
 
   Future senFollowRequest() async {
-    DocumentSnapshot followList = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    List followRequests = [];
-    followRequests = followList.get('follow_requests');
-
-    if(!followRequests.contains(_user!.uid)){
-      followRequests.add(_user!.uid);
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'follow_requests': followRequests,
-      });
-
-      DocumentSnapshot info = await FirebaseFirestore.instance.collection("users").doc(_user!.uid).get();
-      String username = info['username'];
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('notifications').add({
-        'uid': _user!.uid,
-        'message' : 'Follow Request from ${username}!',
-        'datetime': DateTime.now(),
-        'url' : info['profile_pic'],
-        'follow_request': 'yes',
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Follow request has been sent!"),
-      ));
-
+    if(following){
+      addFollower();
     }
+    else {
+      DocumentSnapshot followList = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
-    else{
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("You have already sent a follow request!"),
-      ));
+      List followRequests = [];
+      followRequests = followList.get('follow_requests');
+
+      if (!followRequests.contains(_user!.uid)) {
+        followRequests.add(_user!.uid);
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .update({
+          'follow_requests': followRequests,
+        });
+
+        DocumentSnapshot info = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(_user!.uid)
+            .get();
+        String username = info['username'];
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('notifications')
+            .add({
+          'uid': _user!.uid,
+          'message': 'Follow Request from ${username}!',
+          'datetime': DateTime.now(),
+          'url': info['profile_pic'],
+          'follow_request': 'yes',
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Follow request has been sent!"),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("You have already sent a follow request!"),
+        ));
+      }
     }
-
   }
 
 
@@ -355,7 +381,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
   }
 
   Widget getFollowers(){
-    if(ispriv & following){
+    if((ispriv & following) || !ispriv){
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -533,7 +559,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                       children: [
                                         ElevatedButton(
                                           onPressed: () async {
-                                            following == true ? addFollower() : ispriv ? senFollowRequest() : addFollower();
+                                            ispriv ? senFollowRequest() : addFollower();
                                           },
                                           child: following==true ? Text('Unfollow', style: AppStyles.profileText,) : Text('Follow', style: AppStyles.profileText,),
                                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor)),

@@ -44,6 +44,8 @@ class _PostScreen extends State {
   String post_message = '';
   String location = '';
   final _formKey = GlobalKey<FormState>();
+  final _textFormController = TextEditingController();
+  final _textFormController2 = TextEditingController();
 
   final _picker = ImagePicker();
 
@@ -191,6 +193,7 @@ class _PostScreen extends State {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
+                        controller: _textFormController,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Write a caption...",
@@ -219,6 +222,7 @@ class _PostScreen extends State {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
+                        controller: _textFormController2,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Location...",
@@ -246,7 +250,6 @@ class _PostScreen extends State {
                   ElevatedButton(
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
-
                         if(_imageFile == null){
                           uploadPost(_user!.uid, 0, 0, '', post_message);
                         }
@@ -254,18 +257,10 @@ class _PostScreen extends State {
                           uploadImageToFirebase(context, post_message);
                         }
 
-                        //setState(() {
-                         // ScaffoldMessenger.of(context).showSnackBar(
-                         //   const SnackBar(
-                         //       content: Text('Added Post :D')),
-                         // );
-                          //Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //      builder: (context) => LoggedIn()),
-                          //);
-                        //});
                       }
+                      _textFormController.clear();
+                      _textFormController2.clear();
+
                     },
                     child: Text(
                       "Add Post",

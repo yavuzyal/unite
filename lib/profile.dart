@@ -493,9 +493,8 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                   //userId: _user!.uid,
                                                   post: post,
                                                   delete: () {
-                                                    setState(() async {
                                                       //myPosts.remove(post);
-                                                      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
+                                                    FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').doc(post.postId).delete();
                                                       FirebaseFirestore.instance.collection("users").doc(_user!.uid).collection('notifications').add(
                                                           {
                                                           'message' : 'You deleted a post!',
@@ -504,7 +503,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                           'uid': _user!.uid,
                                                           'follow_request': 'no',
                                                           });
-                                                    });
+                                                      setState(() {
+
+                                                      });
                                                   },
                                                   like: () {},
                                                 searched: false,)

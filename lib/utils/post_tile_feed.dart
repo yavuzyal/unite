@@ -101,6 +101,18 @@ class _PostTileFeedState extends State<PostTileFeed> {
       //print(value.id);
     });
 
+    DocumentSnapshot info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    String name = info.get('username');
+
+    firestoreInstance.collection("users").doc(widget.post.owner).collection('notifications').add(
+        {
+          'message' : '${name} reshared your post!',
+          'datetime': DateTime.now(),
+          'url' : widget.post.image_url,
+          'uid': '',
+          'follow_request': 'no',
+        });
+
     url != "" ?
     firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
         {

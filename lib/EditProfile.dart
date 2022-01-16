@@ -75,8 +75,7 @@ class _EditProfile extends State {
   Future uploadImageToFirebase(BuildContext context) async {
     String fileName = basename(_imageFile!.path);
     firebase_storage.Reference ref =
-    firebase_storage.FirebaseStorage.instance
-        .ref().child('posts').child(_user!.uid).child('/$fileName');
+    firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
     var url;
 
@@ -164,7 +163,6 @@ class _EditProfile extends State {
                         backgroundColor: AppColors.logoColor,
                         child: ClipOval(
                           child: _imageFile == null ? Image.asset('assets/usericon.png') : Image.file(_imageFile!),
-                          //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
                         ),
                         radius: 70,
                       ),

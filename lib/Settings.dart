@@ -14,7 +14,7 @@ import 'utils/styles.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
-
+import 'changePassword.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -56,6 +56,7 @@ class _Settings2 extends State<Settings> {
     }
 
   }
+
 
   Future ifPrivate() async {
 
@@ -157,7 +158,7 @@ class _Settings2 extends State<Settings> {
                           Text("UNIte", style: AppStyles.appNameMainPage,),
                           SizedBox(height: 20.0,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
                             //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                             onPressed: () {
                               setState(() {
@@ -169,7 +170,7 @@ class _Settings2 extends State<Settings> {
 
                           SizedBox(height: 10,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
                             onPressed: () {
                               setState(() {
                                 Navigator.push(
@@ -183,7 +184,30 @@ class _Settings2 extends State<Settings> {
 
                           SizedBox(height: 10.0,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
+                            onPressed: () {
+                              setState(()  {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => changePassword()),
+                                );
+                              });
+                            },
+                            child: Text("Change password", style:  TextStyle(fontSize: 20),),
+                          ),
+                          SizedBox(height: 10,),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
+                            onPressed: () {
+                              setState(() async {
+                                makePrivate();
+                              });
+                            },
+                            child: Text(isPrivate == 'public' ? 'Make Private' : 'Make Public', style:  TextStyle(fontSize: 20),),
+                          ),
+                          SizedBox(height: 10.0,),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
                             //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
                             onPressed: () async{
 
@@ -215,17 +239,7 @@ class _Settings2 extends State<Settings> {
 
                           SizedBox(height: 10,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
-                            onPressed: () {
-                              setState(() async {
-                                makePrivate();
-                              });
-                            },
-                            child: Text(isPrivate == 'public' ? 'Make Private' : 'Make Public', style:  TextStyle(fontSize: 20),),
-                          ),
-                          SizedBox(height: 10,),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(150, 50), primary: Colors.lightBlue),
+                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
                             onPressed: () {
                               setState(() async {
                                 deleteAccount();

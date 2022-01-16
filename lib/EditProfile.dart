@@ -68,7 +68,7 @@ class _EditProfile extends State {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
-      _imageFile = File(pickedFile!.path);
+      pickedFile != null ? _imageFile = File(pickedFile!.path) : _imageFile = null;
     });
   }
 
@@ -141,6 +141,10 @@ class _EditProfile extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar:
+      AppBar(
+
+      ),
       body: Stack(
         children: [
           Container(

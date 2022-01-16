@@ -50,6 +50,7 @@ dependencies:
   file_picker: ^4.3.1
   open_file: ^3.2.1
   carousel_slider: ^4.0.0
+  firebase_messaging: ^11.2.5
 
 
   # The following adds the Cupertino Icons font to your application.

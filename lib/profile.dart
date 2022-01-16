@@ -46,6 +46,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
     myPosts = [];
     myLocations = [];
+    myImages = [];
 
     DocumentSnapshot mes = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 

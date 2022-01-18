@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
 import 'post.dart';
 import 'styles.dart';
@@ -54,11 +55,69 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
+  Future <void>bookmark(Post post)async {
+    DocumentSnapshot user = await FirebaseFirestore.instance
+        .collection('users').doc(_user!.uid).get();
+
+    if (bookmarked == false) {
+
+      await FirebaseFirestore.instance.collection('users').doc(
+          _user!.uid).collection('bookmarks').doc(post.postId).set(
+          {
+            'postId' : post.postId,
+            'owner': post.owner,
+            'owner_name' : post.owner_name,
+            'like_count' : post.likeCount,
+            'comment_count' : post.commentCount,
+            'comments' : post.comments,
+            'url' : post.image_url,
+            'date' : post.date,
+            'text' : post.text,
+          });
+
+      setState(() {
+        bookmarked = true;
+      });
+    }
+    else{
+
+      await FirebaseFirestore.instance.collection('users').doc(
+          _user!.uid).collection('bookmarks').doc(post.postId).delete();
+
+      setState(() {
+        bookmarked = false;
+      });
+    }
+  }
+
   Future <bool> alreadyLiked() async {
 
     DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     String reshared_id = liked.get('sharedFrom');
+
+    if(reshared_id != ''){
+      DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
+      String name = snap['username'];
+
+      setState(() {
+        reshared = name;
+        if_reshared = liked.get('location');
+      });
+    }
+
+    QuerySnapshot user = await FirebaseFirestore.instance
+        .collection('users').doc(_user!.uid).collection('bookmarks').get();
+
+    List<dynamic> listOfBookmarks = [];
+
+    for(var check_post in user.docs){
+      if(check_post['postId'] == widget.post.postId){
+        setState(() {
+          bookmarked = true;
+        });
+      }
+    }
 
     if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
@@ -202,6 +261,7 @@ class _PostTileState extends State<PostTile> {
 
   String if_reshared = '';
   String reshared = '';
+  bool bookmarked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -218,11 +278,11 @@ class _PostTileState extends State<PostTile> {
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
                       child: Card(
-                        margin: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(8),
                         color: AppColors.postBackgroundColor,
                         child:
                         Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
@@ -235,25 +295,43 @@ class _PostTileState extends State<PostTile> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Text(widget.post.date, style: AppStyles.postText),
-                                          //SizedBox(width :5),
+                                          SizedBox(width: 5),
+                                          Text(widget.post.date,
+                                            style: GoogleFonts.signika(
+                                              color: AppColors.postTextColor,
+                                              fontSize: 16,
+                                            ),
+                                          ),
                                           widget.searched == false ?
                                           IconButton(
-                                            alignment: Alignment.topRight,
+                                            padding: EdgeInsets.all(0),
+                                            visualDensity: VisualDensity.compact,
+                                            alignment: Alignment.center,
                                             onPressed: widget.delete,
                                             iconSize: 20,
-                                            splashRadius: 24,
+                                            splashRadius: 20,
                                             color: AppColors.postTextColor,
                                             icon: Icon(
                                               Icons.delete_outline,
                                             ),
                                           ) : SizedBox.shrink(),
-                                          //SizedBox(width :5),
                                           IconButton(
-                                            alignment: Alignment.topRight,
+                                            padding: EdgeInsets.all(0),
+                                            alignment: Alignment.center,
+                                            visualDensity: VisualDensity.compact,
+                                            onPressed: () => bookmark(widget.post),
+                                            iconSize: 20,
+                                            splashRadius: 20,
+                                            color: AppColors.postTextColor,
+                                            icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
+                                          ),
+                                          IconButton(
+                                            padding: EdgeInsets.all(0),
+                                            alignment: Alignment.center,
+                                            visualDensity: VisualDensity.compact,
                                             onPressed: () => report(widget.post),
                                             iconSize: 20,
-                                            splashRadius: 24,
+                                            splashRadius: 20,
                                             color: AppColors.postTextColor,
                                             icon: Icon(
                                               Icons.report,
@@ -337,7 +415,7 @@ class _PostTileState extends State<PostTile> {
                                       //SizedBox(width :5),
                                       widget.searched == false ?
                                       IconButton(
-                                        alignment: Alignment.topRight,
+                                        alignment: Alignment.center,
                                         onPressed: widget.delete,
                                         iconSize: 20,
                                         splashRadius: 24,
@@ -346,9 +424,18 @@ class _PostTileState extends State<PostTile> {
                                           Icons.delete_outline,
                                         ),
                                       ) : SizedBox.shrink(),
-                                      //SizedBox(width :5),
                                       IconButton(
-                                        alignment: Alignment.topRight,
+                                        padding: EdgeInsets.all(0),
+                                        alignment: Alignment.center,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () => bookmark(widget.post),
+                                        iconSize: 20,
+                                        splashRadius: 20,
+                                        color: AppColors.postTextColor,
+                                        icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
+                                      ),
+                                      IconButton(
+                                        alignment: Alignment.center,
                                         onPressed: () => report(widget.post),
                                         iconSize: 20,
                                         splashRadius: 24,

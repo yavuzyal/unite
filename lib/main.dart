@@ -78,6 +78,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 
   static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+
 }
 
 class _MainPageState extends State<MainPage> {

@@ -70,10 +70,12 @@ class _LoginPage2 extends State<LoginPage> {
       "bio": '',
       "profile_pic": '',
       'follow_requests': [],
+      'bookmarks' : []
     });
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({});
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').add({});
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').add({});
 
   }
 

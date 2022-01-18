@@ -49,7 +49,11 @@ class AuthenticationService{
         "bio": '',
         "profile_pic": '',
         'follow_requests': '',
+        'bookmarks' : []
       });
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').add({});
+
 
       return "Signed In";
     }

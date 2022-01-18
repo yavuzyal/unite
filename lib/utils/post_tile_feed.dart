@@ -10,6 +10,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:unite/valueListenables.dart';
 
 class PostTileFeed extends StatefulWidget {
 
@@ -23,6 +24,7 @@ class PostTileFeed extends StatefulWidget {
 
   @override
   _PostTileFeedState createState() => _PostTileFeedState();
+
 
 }
 
@@ -54,6 +56,44 @@ class _PostTileFeedState extends State<PostTileFeed> {
     }
   }
 
+  Future <void>bookmark(Post post)async {
+    DocumentSnapshot user = await FirebaseFirestore.instance
+        .collection('users').doc(_user!.uid).get();
+
+    if (bookmarked == false) {
+
+      await FirebaseFirestore.instance.collection('users').doc(
+          _user!.uid).collection('bookmarks').doc(post.postId).set(
+          {
+            'postId' : post.postId,
+            'owner': post.owner,
+            'owner_name' : post.owner_name,
+            'like_count' : post.likeCount,
+            'comment_count' : post.commentCount,
+            'comments' : post.comments,
+            'url' : post.image_url,
+            'date' : post.date,
+            'text' : post.text,
+          });
+
+      setState(() {
+        bookmarked = true;
+      });
+    }
+    else{
+
+      await FirebaseFirestore.instance.collection('users').doc(
+          _user!.uid).collection('bookmarks').doc(post.postId).delete();
+
+      setState(() {
+        bookmarked = false;
+      });
+    }
+
+    valueListenables.bookmarkedPost.value= !valueListenables.bookmarkedPost.value;
+
+  }
+
   Future <bool> alreadyLiked() async {
 
     DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
@@ -68,6 +108,19 @@ class _PostTileFeedState extends State<PostTileFeed> {
         reshared = name;
         if_reshared = liked.get('location');
       });
+    }
+
+    QuerySnapshot user = await FirebaseFirestore.instance
+        .collection('users').doc(_user!.uid).collection('bookmarks').get();
+
+    List<dynamic> listOfBookmarks = [];
+
+    for(var check_post in user.docs){
+      if(check_post['postId'] == widget.post.postId){
+        setState(() {
+          bookmarked = true;
+        });
+      }
     }
 
     List<dynamic> listOfLikes = [];
@@ -202,6 +255,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
   String if_reshared = '';
   String reshared = '';
+  bool bookmarked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -238,9 +292,20 @@ class _PostTileFeedState extends State<PostTileFeed> {
                                           Text(widget.post.date, style: AppStyles.postText),
                                           //SizedBox(width :5),
                                           SizedBox.shrink(),
-                                          //SizedBox(width :5),
                                           IconButton(
-                                            alignment: Alignment.topRight,
+                                            padding: EdgeInsets.all(0),
+                                            alignment: Alignment.center,
+                                            visualDensity: VisualDensity.compact,
+                                            onPressed: () => {
+                                            bookmark(widget.post),
+                                          },
+                                            iconSize: 20,
+                                            splashRadius: 20,
+                                            color: AppColors.postTextColor,
+                                            icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
+                                          ),
+                                          IconButton(
+                                            alignment: Alignment.center,
                                             onPressed: () => report(widget.post),
                                             iconSize: 20,
                                             splashRadius: 24,
@@ -253,12 +318,12 @@ class _PostTileFeedState extends State<PostTileFeed> {
                                       ),
                                       Column(
                                         children: [
-                                          SizedBox(height :5),
+                                          SizedBox(height : 5),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Text(widget.post.owner_name, style: AppStyles.postOwnerText),
-                                              SizedBox(width: 20),
+                                              SizedBox(width: 10),
                                               Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
                                             ],
                                           ),
@@ -333,9 +398,18 @@ class _PostTileFeedState extends State<PostTileFeed> {
                                       Text(widget.post.date, style: AppStyles.postText),
                                       //SizedBox(width :5),
                                       SizedBox.shrink(),
-                                      //SizedBox(width :5),
                                       IconButton(
-                                        alignment: Alignment.topRight,
+                                        padding: EdgeInsets.all(0),
+                                        alignment: Alignment.center,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () => bookmark(widget.post),
+                                        iconSize: 20,
+                                        splashRadius: 20,
+                                        color: AppColors.postTextColor,
+                                        icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
+                                      ),
+                                      IconButton(
+                                        alignment: Alignment.center,
                                         onPressed: () => report(widget.post),
                                         iconSize: 20,
                                         splashRadius: 24,

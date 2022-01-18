@@ -16,7 +16,7 @@ import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'feedPage.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:unite/bookmarkPage.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
@@ -36,15 +36,14 @@ class LoggedIn extends StatefulWidget {
   @override
   State<LoggedIn> createState() => _LoggedIn();
 
-  static final ValueNotifier<ThemeMode> themeNotifier =
-  ValueNotifier(ThemeMode.light);
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 }
 
 class _LoggedIn extends State<LoggedIn> {
 
   final _user = FirebaseAuth.instance.currentUser;
 
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Profile(),
@@ -69,6 +68,12 @@ class _LoggedIn extends State<LoggedIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.bookmarks),
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => bookmarkPage()),);
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.notifications),

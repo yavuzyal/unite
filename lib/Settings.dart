@@ -156,14 +156,16 @@ class _Settings2 extends State<Settings> {
                         children: [
                           Image.asset('assets/unite_logo.png', height: 150, width: 150,),
                           SizedBox(height: 20.0,),
-                          Text("UNIte", style: AppStyles.appNameMainPage,),
+                          Text("UNIte", style: globals.light ? AppStyles.appNameMainPage : darkAppStyles.appNameMainPage,),
                           SizedBox(height: 20.0,),
                           ElevatedButton(
                             style: ButtonStyle(
                               backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
                                 minimumSize: MaterialStateProperty.all(Size(200,50))
                             ),                            //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
-                            onPressed: () {
+                            onPressed: () async {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setBool('isLight', !globals.light);
                               setState(() {
                                 globals.light = !globals.light;
                                 valueListenables.theme.value= !valueListenables.theme.value;

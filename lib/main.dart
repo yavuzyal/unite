@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
@@ -31,7 +32,8 @@ import 'Settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Future<FirebaseApp> _fbapp = Firebase.initializeApp();
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  globals.light = prefs.getBool('isLight') ?? true;
   runApp(
     ChangeNotifierProvider(
       create: (context) => GoogleSignInProvider(),
@@ -70,7 +72,8 @@ Future<void> main() async {
           '/walkthrough': (context) => WalkthroughScreen(),
           '/feed': (context) => feedPage()
         },
-      ),)
+      ),
+    ),
   );
 }
 

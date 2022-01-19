@@ -99,7 +99,7 @@ class darkAppStyles{
   );
 
   static final appNameMainPage = GoogleFonts.signika(
-    color: darkAppColors.logoColor,
+    color: Colors.black26,
     fontSize: 80,
   );
 

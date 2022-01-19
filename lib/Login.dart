@@ -162,9 +162,9 @@ class _LoginPage2 extends State<LoginPage> {
       MaterialState.dragged,
     };
     if (states.any(interactiveStates.contains)) {
-      return AppColors.buttonColorPressed;
+      return globals.light ? AppColors.buttonColorPressed : darkAppColors.buttonColorPressed;
     }
-    return AppColors.buttonColor;
+    return globals.light ? AppColors.buttonColor : darkAppColors.buttonColor;
   }
 
   Widget build(BuildContext context) {
@@ -191,9 +191,11 @@ class _LoginPage2 extends State<LoginPage> {
                           Text("UNIte", style: AppStyles.appNameMainPage,),
                           SizedBox(height: 20.0,),
                           TextFormField(
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             textAlign: TextAlign.center,
                             decoration: new InputDecoration(
                               hintText: "Enter Email",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               fillColor: Colors.black,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
@@ -216,10 +218,12 @@ class _LoginPage2 extends State<LoginPage> {
                           ),
                           SizedBox(height: 20.0,),
                           TextFormField(
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             obscureText: true,
                             textAlign: TextAlign.center,
                             decoration: new InputDecoration(
                               hintText: "Enter Password",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               fillColor: Colors.black,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
@@ -244,8 +248,9 @@ class _LoginPage2 extends State<LoginPage> {
                           ),
                           SizedBox(height: 20.0,),
                           ElevatedButton(
-                            style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
-                            onPressed: () async {
+                            style: ButtonStyle(
+                              backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                            ),                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
 
                                 await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((currentUser) => {
@@ -278,8 +283,9 @@ class _LoginPage2 extends State<LoginPage> {
                           ),
                           SizedBox(height: 5.0,),
                           ElevatedButton.icon(
-                            style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
-                              onPressed: (){
+                            style: ButtonStyle(
+                              backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                            ),                              onPressed: (){
                                 final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
                                 provider.googleLogin();
 
@@ -290,8 +296,9 @@ class _LoginPage2 extends State<LoginPage> {
                           ),
                           SizedBox(height: 5.0,),
                           ElevatedButton.icon(
-                            style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
-                            onPressed: () {
+                            style: ButtonStyle(
+                              backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                            ),                            onPressed: () {
                               signInWithFacebook();
                             },
                             label: Text("Sign In with Facebook", style: TextStyle(fontSize: 16),),

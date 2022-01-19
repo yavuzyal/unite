@@ -11,10 +11,13 @@ import 'utils/post.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'SearchedProfile.dart';
+import 'usables/config.dart' as globals;
 
 class Profile extends StatefulWidget {
 
   const Profile({Key? key}) : super(key: key);
+
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -153,7 +156,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       LoggedIn()));
                                 }),
-                            IconButton(onPressed: () => {removeFollowing(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: AppColors.appTextColor,))
+                            IconButton(onPressed: () => {removeFollowing(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: globals.light ? AppColors.appTextColor : AppColors.bottomBarLogoColor,))
                           ],
                         ),
                       ),
@@ -283,7 +286,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                   Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                       LoggedIn()));
                                 }),
-                              IconButton(onPressed: () => {removeFollower(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: AppColors.appTextColor,))
+                              IconButton(onPressed: () => {removeFollower(follower), Navigator.pop(context)}, icon: Icon(Icons.cancel, color: globals.light ? AppColors.appTextColor : AppColors.bottomBarLogoColor,))
                             ],
                         ),
                       ),
@@ -304,14 +307,15 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 20),
-          TextButton(onPressed: (){showDialog(
+          TextButton(
+            onPressed: (){showDialog(
         context: context,
         builder: (BuildContext context) => _buildPopupDialogFollowers(context),
       );
       },
-        child: Text("${followers.length} followers", style: AppStyles.profileText),
+        child: Text("${followers.length} followers", style: globals.light ? AppStyles.profileText : darkAppStyles.profileText),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+          backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
         ),
       ),
 
@@ -321,9 +325,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
         context: context,
         builder: (BuildContext context) => _buildPopupDialogFollowing(context),
       );},
-        child: Text("${following.length} following", style: AppStyles.profileText),
+        child: Text("${following.length} following", style: globals.light ? AppStyles.profileText : darkAppStyles.profileText),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+          backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
         ),
       ),
           SizedBox(height: 20),
@@ -342,14 +346,19 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
         future: Future.wait([ifPrivate(), getPosts()]),
         builder: (context, snapshot){
           if( snapshot.connectionState == ConnectionState.waiting){
-            return  Center(child: CircularProgressIndicator());
+            return  Scaffold(
+              backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+              body: Center(
+                child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+              ),
+            );
           }
           return Scaffold(
+            backgroundColor: globals.light ? Colors.white: Colors.grey[700],
             body:
                 SingleChildScrollView(
                 child: Column(
@@ -386,7 +395,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               ),
                             ),
                             SizedBox(height : 15),
-                            Text(displayName , style: AppStyles.profileName, textAlign: TextAlign.center),
+                            Text(displayName , style: globals.light ? AppStyles.profileName : darkAppStyles.profileName, textAlign: TextAlign.center),
                             //Text(_user!.displayName==null ? displayName : _user!.displayName!, style: AppStyles.profileName,),
                             //user!.displayName!
 
@@ -395,11 +404,11 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.school, color: AppColors.appTextColor),
+                                  Icon(Icons.school, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                                   Expanded(child: Text(user_profile.school == '' ?
                                   "No information was given!" :
                                   user_profile.school
-                                    , style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                    , style: globals.light ? AppStyles.profileText : darkAppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
                             ),
@@ -408,10 +417,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.note, color: AppColors.appTextColor),
+                                  Icon(Icons.note, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                                   Expanded(child: Text(user_profile.major == '' ?
                                   "No information was given!" :
-                                  user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                  user_profile.major, style: globals.light ? AppStyles.profileText : darkAppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
                             ),
@@ -421,10 +430,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.family_restroom, color: AppColors.appTextColor),
+                                  Icon(Icons.family_restroom, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                                   Expanded(child: Text(user_profile.age == '' ?
                                   "No information was given!" :
-                                  user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                  user_profile.age, style: globals.light ? AppStyles.profileText : darkAppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
                             ),
@@ -434,10 +443,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.check_circle, color: AppColors.appTextColor),
+                                  Icon(Icons.check_circle, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                                   Expanded(child: Text(user_profile.interest == '' ?
                                   "No information was given!" :
-                                  user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                  user_profile.interest, style: globals.light ? AppStyles.profileText : darkAppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
                             ),
@@ -447,10 +456,10 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_box_rounded, color: AppColors.appTextColor),
+                                  Icon(Icons.add_box_rounded, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                                   Expanded(child: Text(user_profile.bio == '' ?
                                   "No information was given!" :
-                                  user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                  user_profile.bio, style: globals.light ? AppStyles.profileText : darkAppStyles.profileText, textAlign: TextAlign.left,))
                                 ],
                               ),
                             ),
@@ -459,11 +468,11 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
 
                             TabBar(
                               isScrollable: true,
-                              unselectedLabelColor: AppColors.appTextColor,
+                              unselectedLabelColor: globals.light ? AppColors.appTextColor :darkAppColors.appTextColor,
                               unselectedLabelStyle: AppStyles.profileText,
-                              labelColor: AppColors.appTextColor,
+                              labelColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
                               labelStyle: AppStyles.profileText,
-                              indicatorColor: AppColors.logoColor,
+                              indicatorColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
                               indicatorWeight: 3,
 
                               tabs: [

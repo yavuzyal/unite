@@ -14,6 +14,7 @@ import 'package:unite/SearchedProfile.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:unite/utils/colors.dart';
 import 'profile.dart';
 import 'package:http/http.dart' as http;
 
@@ -147,8 +148,9 @@ class _Notifications extends State<Notifications> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+        appBar: AppBar(
+          backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
         title: Text('Notifications'),
         centerTitle: true,
       ),
@@ -162,7 +164,7 @@ class _Notifications extends State<Notifications> {
                 itemCount: notifications.length,
                 itemBuilder: (context, index){
                   return Card(
-                    color: Colors.lightBlueAccent,
+                    color: globals.light ? Colors.lightBlueAccent : darkAppColors.postBackgroundColor,
                     margin: EdgeInsets.all(10),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -178,9 +180,9 @@ class _Notifications extends State<Notifications> {
                             children: [
                               Container(
                                   width: notifications[index].url != '' ? MediaQuery.of(context).size.width*0.4 : MediaQuery.of(context).size.width*0.8,
-                                  child: Text(notifications[index].message, style: TextStyle(fontSize: 22),)),
+                                  child: Text(notifications[index].message, style: TextStyle(fontSize: 22, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor),)),
                               SizedBox(height: 5,),
-                              Text(notifications[index].date, style: TextStyle(fontSize: 15),),
+                              Text(notifications[index].date, style: TextStyle(fontSize: 15, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor),),
                               notifications[index].followReq == 'yes' ? Row(
                                 children: [
                                   SizedBox(height: 5,),
@@ -188,15 +190,21 @@ class _Notifications extends State<Notifications> {
                                       onPressed: () async {
                                         accept(notifications[index].uid, notifications[index].notificationId);
                                       },
-                                    child: Text('Accept', style: TextStyle(fontSize: 20),),
-                                    style: ElevatedButton.styleFrom(minimumSize: Size(75, 35), primary: Colors.lightBlue),
+                                    child: Text('Accept', style: TextStyle(fontSize: 20, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor),),
+                                    style: ButtonStyle(
+                                      elevation: MaterialStateProperty.all(10),
+                                      backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                    ),
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
                                       reject(notifications[index].uid, notifications[index].notificationId);
                                     },
-                                    child: Text('Reject', style: TextStyle(fontSize: 20),),
-                                    style: ElevatedButton.styleFrom(minimumSize: Size(75, 35), primary: Colors.lightBlue),
+                                    child: Text('Reject', style: TextStyle(fontSize: 20, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor),),
+                                    style: ButtonStyle(
+                                      elevation: MaterialStateProperty.all(10),
+                                      backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                    ),
                                   ),
                                   SizedBox(height: 5,),
                                 ],

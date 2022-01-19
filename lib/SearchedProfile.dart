@@ -12,6 +12,7 @@ import 'utils/post_tile.dart';
 import 'utils/post.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'usables/config.dart' as globals;
 
 class SearchedProfile extends StatefulWidget {
 
@@ -297,7 +298,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                 Container(
                                   width: MediaQuery.of(context).size.width*0.4,
                                   child: Text(follower[0],
-                                    style: AppStyles.profileText,
+                                    style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,
                                   ),
                                 ),
                               ],
@@ -355,7 +356,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                 Container(
                                   width: MediaQuery.of(context).size.width*0.4,
                                   child: Text(follower[0],
-                                    style: AppStyles.profileText,
+                                    style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,
                                   ),
                                 ),
                               ],
@@ -392,9 +393,9 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
             builder: (BuildContext context) => _buildPopupDialogFollowers(context),
           );
           },
-            child: Text("${followersList.length} followers", style: AppStyles.profileText),
+            child: Text("${followersList.length} followers", style: globals.light ? AppStyles.profileText: darkAppStyles.profileText),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+              backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor),
             ),
           ),
 
@@ -404,9 +405,9 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
             context: context,
             builder: (BuildContext context) => _buildPopupDialogFollowing(context),
           );},
-            child: Text("${followingList.length} following", style: AppStyles.profileText),
+            child: Text("${followingList.length} following", style: globals.light ? AppStyles.profileText: darkAppStyles.profileText),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor),
+              backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor),
             ),
           ),
           SizedBox(height: 20),
@@ -437,14 +438,16 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                 if( snapshot.connectionState == ConnectionState.waiting){
                   return  Center(child: CircularProgressIndicator());}
                 return Scaffold(
+                  backgroundColor: globals.light ? Colors.white: Colors.grey[700],
                   appBar: AppBar(
+                    backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
                     title: Text(user),
                     centerTitle: true,
                   ),
                   floatingActionButton: FloatingActionButton(
                     onPressed: (){FirebaseCrashlytics.instance.crash();},
-                    backgroundColor: AppColors.logoColor,
-                    child: Icon(Icons.close, color: AppColors.postTextColor,),
+                    backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
+                    child: Icon(Icons.close, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor,),
                   ),
                   body:
                     RefreshIndicator(
@@ -471,7 +474,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           }
                                         },
                                         child: CircleAvatar(
-                                          backgroundColor: AppColors.logoColor,
+                                          backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
                                           child: ClipOval(
                                             child:
                                             user_profile.profile_pic == '' ?
@@ -484,7 +487,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                       ),
                                     ),
                                     SizedBox(height : 15),
-                                    Text(user, style: AppStyles.profileName, textAlign: TextAlign.center,),
+                                    Text(user, style: globals.light ? AppStyles.profileName: darkAppStyles.profileName, textAlign: TextAlign.center,),
                                     //user!.displayName!
 
                                     Padding(
@@ -496,7 +499,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           Expanded(child: Text(user_profile.school == '' ?
                                           "No information was given!" :
                                           user_profile.school
-                                            , style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                            , style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.left,))
                                         ],
                                       ),
                                     ),
@@ -508,7 +511,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
                                           Expanded(child: Text(user_profile.major == '' ?
                                           "No information was given!" :
-                                          user_profile.major, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                          user_profile.major, style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.left,))
                                         ],
                                       ),
                                     ),
@@ -521,7 +524,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
                                           Expanded(child: Text(user_profile.age == '' ?
                                           "No information was given!" :
-                                          user_profile.age, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                          user_profile.age, style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.left,))
                                         ],
                                       ),
                                     ),
@@ -534,7 +537,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
                                           Expanded(child: Text(user_profile.interest == '' ?
                                           "No information was given!" :
-                                          user_profile.interest, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                          user_profile.interest, style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.left,))
                                         ],
                                       ),
                                     ),
@@ -547,7 +550,7 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           Icon(Icons.location_on_outlined, color: AppColors.appTextColor),
                                           Expanded(child: Text(user_profile.bio == '' ?
                                           "No information was given!" :
-                                          user_profile.bio, style: AppStyles.profileText, textAlign: TextAlign.left,))
+                                          user_profile.bio, style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.left,))
                                         ],
                                       ),
                                     ),
@@ -561,27 +564,27 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                           onPressed: () async {
                                             ispriv ? senFollowRequest() : addFollower();
                                           },
-                                          child: following==true ? Text('Unfollow', style: AppStyles.profileText,) : Text('Follow', style: AppStyles.profileText,),
-                                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor)),
+                                          child: following==true ? Text('Unfollow', style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,) : Text('Follow', style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,),
+                                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor)),
                                         ),
                                         SizedBox(width: 20),
                                         ElevatedButton(
                                           onPressed: (){
 
                                           },
-                                          child: Text('Message', style: AppStyles.profileText),
-                                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(AppColors.logoColor)),
+                                          child: Text('Message', style: globals.light ? AppStyles.profileText: darkAppStyles.profileText),
+                                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor)),
                                         ),
                                       ],
                                     ),
 
                                     TabBar(
                                       isScrollable: true,
-                                      unselectedLabelColor: AppColors.appTextColor,
+                                      unselectedLabelColor: globals.light ? AppColors.appTextColor :darkAppColors.appTextColor,
                                       unselectedLabelStyle: AppStyles.profileText,
-                                      labelColor: AppColors.appTextColor,
+                                      labelColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
                                       labelStyle: AppStyles.profileText,
-                                      indicatorColor: AppColors.logoColor,
+                                      indicatorColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
                                       indicatorWeight: 3,
 
                                       tabs: [

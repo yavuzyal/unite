@@ -12,6 +12,9 @@ import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/colors.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'usables/config.dart' as globals;
+import 'utils/styles.dart';
+import 'utils/colors.dart';
 
 class Post {
   late final image;
@@ -140,9 +143,10 @@ class _EditProfile extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-      AppBar(
-
+      backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+      appBar: AppBar(
+        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
+        title: const Text('Edit profile'), centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -160,7 +164,7 @@ class _EditProfile extends State {
                         pickImage();
                       },
                       child: CircleAvatar(
-                        backgroundColor: AppColors.logoColor,
+                        backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
                         child: ClipOval(
                           child: _imageFile == null ? Image.asset('assets/usericon.png') : Image.file(_imageFile!),
                         ),
@@ -169,9 +173,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 20,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Username",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -188,9 +194,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Your University",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -207,9 +215,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Your Major",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -226,9 +236,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Your Age",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -245,9 +257,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Your Interests",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -264,9 +278,11 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     TextFormField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                       textAlign: TextAlign.center,
                       decoration: new InputDecoration(
                         hintText: "Enter Your Bio",
+                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         fillColor: Colors.black,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(0.0),
@@ -283,6 +299,9 @@ class _EditProfile extends State {
                     ),
                     SizedBox(height: 10,),
                     ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                      ),
                       onPressed: () {
                         if(_formKey.currentState!.validate()){
 
@@ -305,7 +324,7 @@ class _EditProfile extends State {
                       },
                       child: Text(
                         "Update Profile",
-                        style: TextStyle(fontSize: 20,color: Colors.white),
+                        style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
                       ),
                     ),
                     //addPostButton(context, post_message),

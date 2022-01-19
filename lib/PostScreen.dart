@@ -11,6 +11,9 @@ import 'package:path/path.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'usables/config.dart' as globals;
+import 'utils/colors.dart';
+import 'utils/styles.dart';
 
 class Post {
   late final image;
@@ -140,6 +143,7 @@ class _PostScreen extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: globals.light ? Colors.white: Colors.grey[700],
       body: Stack(
         children: [
           Container(
@@ -178,7 +182,7 @@ class _PostScreen extends State {
                                 : FlatButton(
                               child: Icon(
                                 Icons.add_a_photo,
-                                color: Colors.lightBlueAccent,
+                                color: globals.light ? Colors.lightBlueAccent : Colors.black,
                                 size: 50,
                               ),
                               onPressed: pickImage,
@@ -194,9 +198,11 @@ class _PostScreen extends State {
                     child: Expanded(
                       child: TextFormField(
                         controller: _textFormController,
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Write a caption...",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(5.0),
@@ -222,10 +228,12 @@ class _PostScreen extends State {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         controller: _textFormController2,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Location...",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(5.0),
@@ -248,6 +256,9 @@ class _PostScreen extends State {
                   ),
                   SizedBox(height: 10,),
                   ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                    ),
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
                         if(_imageFile == null){
@@ -264,7 +275,7 @@ class _PostScreen extends State {
                     },
                     child: Text(
                       "Add Post",
-                      style: TextStyle(fontSize: 20,color: Colors.white),
+                      style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
                     ),
                   ),
                   SizedBox(height: 15,),

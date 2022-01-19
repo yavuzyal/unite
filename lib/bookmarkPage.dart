@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'valueListenables.dart';
 import 'package:unite/SearchedProfile.dart';
-
+import 'usables/config.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
@@ -68,8 +68,9 @@ class _bookmarkPage extends State<bookmarkPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: globals.light ? Colors.white: Colors.grey[700],
         appBar: AppBar(
-          backgroundColor: Colors.lightBlueAccent,
+          backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
           title: Text('Bookmarked posts'),
           centerTitle: true,
         ),

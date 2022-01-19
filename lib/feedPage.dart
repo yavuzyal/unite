@@ -12,6 +12,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'SearchedProfile.dart';
 import 'utils/post_tile_feed.dart';
+import 'usables/config.dart' as globals;
 
 class feedPage extends StatefulWidget {
   const feedPage({Key? key}) : super(key: key);
@@ -60,7 +61,6 @@ class _feedPageState extends State<feedPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -73,7 +73,16 @@ class _feedPageState extends State<feedPage> {
               return dt2.compareTo(dt1);
             }
         );
+        if( snapshot.connectionState == ConnectionState.waiting){
+          return  Scaffold(
+            backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+            body: Center(
+              child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+            ),
+          );
+        }
         return Container(
+          color: globals.light ? Colors.white: Colors.grey[700],
           child: SingleChildScrollView(
             child: Center(child: Container(
               child: Column(

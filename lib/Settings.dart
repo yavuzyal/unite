@@ -15,6 +15,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'changePassword.dart';
+import 'valueListenables.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -143,7 +144,7 @@ class _Settings2 extends State<Settings> {
         future: ifPrivate(),
         builder: (context, snapshot){
           return Scaffold(
-            backgroundColor: globals.light ? Colors.white: Colors.black,
+            backgroundColor: globals.light ? Colors.white: Colors.grey[700],
             body: Center(
                 child: Padding(
                   padding: AppDimensions.padding20,
@@ -158,19 +159,25 @@ class _Settings2 extends State<Settings> {
                           Text("UNIte", style: AppStyles.appNameMainPage,),
                           SizedBox(height: 20.0,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
-                            //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
+                            style: ButtonStyle(
+                              backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),                            //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck)),
                             onPressed: () {
                               setState(() {
                                 globals.light = !globals.light;
+                                valueListenables.theme.value= !valueListenables.theme.value;
                               });
                             },
-                            child: globals.light ? Text('Dark Mode', style: TextStyle(fontSize: 20, ),) : Text('Light Mode', style: TextStyle(fontSize: 20, ),),
+                            child: globals.light ? Text('Dark Mode', style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,) : Text('Light Mode', style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
 
                           SizedBox(height: 10,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),
                             onPressed: () {
                               setState(() {
                                 Navigator.push(
@@ -180,11 +187,14 @@ class _Settings2 extends State<Settings> {
                                 //FirebaseAnalytics.instance.logScreenView(screenClass: "LoginPage", screenName: "LoginPage");
                               });
                             },
-                            child: Text('Edit Profile', style:  TextStyle(fontSize: 20),),),
+                            child: Text('Edit Profile', style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),),
 
                           SizedBox(height: 10.0,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),
                             onPressed: () {
                               setState(()  {
                                 Navigator.push(
@@ -193,22 +203,26 @@ class _Settings2 extends State<Settings> {
                                 );
                               });
                             },
-                            child: Text("Change password", style:  TextStyle(fontSize: 20),),
+                            child: Text("Change password", style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
                           SizedBox(height: 10,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
-                            onPressed: () {
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),                             onPressed: () {
                               setState(() async {
                                 makePrivate();
                               });
                             },
-                            child: Text(isPrivate == 'public' ? 'Make Private' : 'Make Public', style:  TextStyle(fontSize: 20),),
+                            child: Text(isPrivate == 'public' ? 'Make Private' : 'Make Public', style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
                           SizedBox(height: 10.0,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
-                            //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),                             //ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith(buttonColorCheck), ),
                             onPressed: () async{
 
                               await FirebaseAuth.instance.signOut();
@@ -234,18 +248,20 @@ class _Settings2 extends State<Settings> {
                               //setLogOut();
 
                             },
-                            child: Text('Log Out', style: TextStyle(fontSize: 20, ),),
+                            child: Text('Log Out', style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
 
                           SizedBox(height: 10,),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(minimumSize: Size(200, 50), primary: Colors.lightBlue),
-                            onPressed: () {
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),                             onPressed: () {
                               setState(() async {
                                 deleteAccount();
                               });
                             },
-                            child: Text("Delete account", style:  TextStyle(fontSize: 20),),
+                            child: Text("Delete account", style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
                         ],
                       ),

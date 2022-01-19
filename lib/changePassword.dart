@@ -13,6 +13,8 @@ import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/colors.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:unite/utils/styles.dart';
+import 'usables/config.dart' as globals;
 
 class changePassword extends StatefulWidget {
   const changePassword({Key? key}) : super(key: key);
@@ -50,8 +52,11 @@ class _changePasswordState extends State<changePassword> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
+        backgroundColor: globals.light ? Colors.white: Colors.grey[700],
         appBar:
         AppBar(
+          backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
+          title: const Text('Change password'), centerTitle: true,
         ),
         body: Stack(
           children: [
@@ -70,8 +75,10 @@ class _changePasswordState extends State<changePassword> {
                           SizedBox(height: 20,),
                           TextFormField(
                             textAlign: TextAlign.center,
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             decoration: new InputDecoration(
                               hintText: "Enter email",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               fillColor: Colors.black,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
@@ -95,8 +102,10 @@ class _changePasswordState extends State<changePassword> {
                           TextFormField(
                             textAlign: TextAlign.center,
                             obscureText: true,
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             decoration: new InputDecoration(
                               hintText: "Enter your current password",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               fillColor: Colors.black,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
@@ -123,9 +132,10 @@ class _changePasswordState extends State<changePassword> {
                           TextFormField(
                             textAlign: TextAlign.center,
                             obscureText: true,
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             decoration: new InputDecoration(
                               hintText: "Enter new password",
-                              fillColor: Colors.black,
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
                                 borderSide: new BorderSide(),
@@ -150,8 +160,10 @@ class _changePasswordState extends State<changePassword> {
                           TextFormField(
                             textAlign: TextAlign.center,
                             obscureText: true,
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             decoration: new InputDecoration(
                               hintText: "Enter new password again",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                               fillColor: Colors.black,
                               border: new OutlineInputBorder(
                                 borderRadius: new BorderRadius.circular(0.0),
@@ -169,6 +181,9 @@ class _changePasswordState extends State<changePassword> {
                           ),
                           SizedBox(height: 10,),
                           ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                            ),
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
 
@@ -180,7 +195,7 @@ class _changePasswordState extends State<changePassword> {
                             },
                             child: Text(
                               "Update Profile",
-                              style: TextStyle(fontSize: 20, color: Colors.white),
+                              style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
                             ),
                           ),
                           //addPostButton(context, post_message),

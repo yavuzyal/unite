@@ -8,6 +8,9 @@ import 'package:unite/SearchedProfile.dart';
 import 'package:unite/profile.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'usables/config.dart' as globals;
+import 'utils/colors.dart';
+import 'utils/styles.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -37,12 +40,15 @@ class _Search extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: globals.light ? Colors.white: Colors.grey[700],
         body: Column(
           children: [
             Padding(
               padding: AppDimensions.padding20,
               child: TextField(
+                style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                 enableSuggestions: true,
+                cursorColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
                 onChanged: (val) => initiateSearch(val),
               ),
             ),
@@ -57,7 +63,7 @@ class _Search extends State<Search> {
                 if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return new Text('Loading...');
+                    return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
                   default:
                     return SingleChildScrollView(
                       child: ListView(
@@ -66,7 +72,7 @@ class _Search extends State<Search> {
                       children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
                         return  ListTile(
-                          leading: document['isPrivate'] == 'private' ?  Icon(Icons.lock) : Icon(Icons.account_circle),
+                          leading: document['isPrivate'] == 'private' ?  Icon(Icons.lock, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor) : Icon(Icons.account_circle, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
                           //trailing: Icon(Icons.arrow_forward),
                           //selectedTileColor: Colors.yellow,
                           horizontalTitleGap: 0,
@@ -78,7 +84,7 @@ class _Search extends State<Search> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                 LoggedIn()));
                           },
-                          title: name != "" && name != null ? new Text(document['username']) : Text(document['username']),
+                          title: name != "" && name != null ? new Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,) : Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,),
                         );
                       }).toList(),
                     ),);

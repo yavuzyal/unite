@@ -46,8 +46,11 @@ Future<void> main() async {
               return Greeting();
             }
             else{
-              return Center(
-                child: CircularProgressIndicator(),
+              return Scaffold(
+                backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+                body: Center(
+                  child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+                ),
               );
             }
             throw "You have thrown something";
@@ -117,7 +120,12 @@ class _MainPageState extends State<MainPage> {
         builder: (context, snapshot){
           if(snapshot.connectionState == ConnectionState.waiting){
             print("problem");
-            return Center(child: CircularProgressIndicator(),);
+            return Scaffold(
+              backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+              body: Center(
+                child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+              ),
+            );
           }
           else if(snapshot.hasData) {
             print(snapshot);

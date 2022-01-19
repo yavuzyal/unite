@@ -7,6 +7,7 @@ ThemeData _darkTheme = ThemeData(
   accentColor: Colors.red,
   brightness: Brightness.dark,
   primaryColor: Colors.amber,
+  backgroundColor: Colors.black,
 
 );
 

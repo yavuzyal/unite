@@ -99,27 +99,27 @@ class _LoggedIn extends State<LoggedIn> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
-            backgroundColor: Colors.green,
+            backgroundColor: globals.light ? Colors.green : Colors.green[700],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Feed',
-            backgroundColor: Colors.redAccent,
+            backgroundColor: globals.light ? Colors.redAccent: Colors.red[900],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
             label: 'Add Post',
-            backgroundColor: Colors.purple,
+            backgroundColor: globals.light ? Colors.purple : Colors.purple[700],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.email),
             label: 'Messages',
-            backgroundColor: Colors.orange,
+            backgroundColor: globals.light ?  Colors.orange : Colors.orange[900],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
-            backgroundColor: Colors.pink,
+            backgroundColor: globals.light ?  Colors.pink : Colors.pink[900],
           ),
         ],
         currentIndex: _selectedIndex,

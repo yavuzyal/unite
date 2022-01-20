@@ -88,11 +88,6 @@ class _EditProfile extends State {
         contentType: 'image/jpeg',
         customMetadata: {'picked-file-path': fileName});
     firebase_storage.UploadTask uploadTask;
-    //late StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
-
-    //TaskSnapshot taskSnapshot = await ref.putFile(io.File(_imageFile!.path)!, metadata);
-
-    //final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
     uploadTask =  ref.putFile(io.File(_imageFile!.path)!, metadata);
 

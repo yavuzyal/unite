@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
+import '../editPost.dart';
 import 'post.dart';
 import 'styles.dart';
 import 'colors.dart';
@@ -303,7 +304,24 @@ class _PostTileState extends State<PostTile> {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                              Row(
+                                children: [
+                                  Spacer(),
+                                  Center(child: if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text('')),
+                                  Spacer(),
+                                  _user!.uid == widget.post.owner ? IconButton(padding: EdgeInsets.all(0),
+                                      alignment: Alignment.center,
+                                      visualDensity: VisualDensity.compact,
+                                      iconSize: 15,
+                                      splashRadius: 20,
+                                      color: AppColors.postTextColor,
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => editPost(post: widget.post)),
+                                      ),
+                                      icon: Icon(Icons.edit)) : SizedBox.shrink()
+                                ],
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -463,6 +481,17 @@ class _PostTileState extends State<PostTile> {
                                           Icons.report,
                                         ),
                                       ),
+                                      _user!.uid == widget.post.owner ? IconButton(padding: EdgeInsets.all(0),
+                                          alignment: Alignment.center,
+                                          visualDensity: VisualDensity.compact,
+                                          iconSize: 20,
+                                          splashRadius: 20,
+                                          color: AppColors.postTextColor,
+                                          onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => editPost(post: widget.post)),
+                                          ),
+                                          icon: Icon(Icons.edit)) : SizedBox.shrink()
                                     ],
                                   ),
                                   Text(location,  style: AppStyles.postLocation),

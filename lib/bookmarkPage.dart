@@ -55,12 +55,17 @@ class _bookmarkPage extends State<bookmarkPage> {
 
     for(var message in snapshot.docs){
 
-      int likeCount = message.get('like_count');
-      List comment = message.get('comments');
-      String d = message.get('date');
-      String date = d.toString().substring(0,10);
+      String id = message.id;
+      String owner = message.get('owner');
 
-      Post post = Post(text: message.get('text').toString(), image_url: message.get('url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: message.get('postId'), owner_name: message.get('owner_name'), owner: message.get('owner'));
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(owner).collection('posts').doc(id).get();
+
+      int likeCount = snapshot.get('likeCount');
+
+      List comment = snapshot.get('comment');
+      String date = snapshot.get('datetime').toDate().toString().substring(0,10);
+
+      Post post = Post(text: snapshot.get('caption').toString(), image_url: snapshot.get('image_url').toString() , date: date, likeCount: likeCount, commentCount: comment.length, comments: comment, postId: id, owner: owner);
       bookmarks.add(post);
     }
   }

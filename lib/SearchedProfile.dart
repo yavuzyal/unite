@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:unite/ChatPage.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/post_tile_searched.dart';
 import 'LoggedIn.dart';
@@ -332,6 +333,8 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                         ),
                                         ElevatedButton(
                                           onPressed: (){
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                ChatPage(userId: widget.userId,)),);
 
                                           },
                                           child: Text('Message', style: TextStyle(fontSize: 20),),

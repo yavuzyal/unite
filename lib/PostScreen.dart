@@ -70,6 +70,12 @@ class _PostScreen extends State {
       indexList.add(location.substring(0, i).toLowerCase());
     }
 
+    List<String> indexListCaption = [];
+
+    for(int i = 1; i <= caption.length; i++){
+      indexListCaption.add(caption.substring(0, i).toLowerCase());
+    }
+
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -82,6 +88,7 @@ class _PostScreen extends State {
           "sharedFrom": '',
           'location_array' : indexList,
           "owner" : _user!.uid,
+          "text_array" : indexListCaption
         }).then((value){
       print(value.id);
     });

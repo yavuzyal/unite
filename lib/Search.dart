@@ -21,8 +21,10 @@ class Search extends StatefulWidget {
 
 class _Search extends State<Search> with TickerProviderStateMixin{
   String name = "";
-  late TabController _tabController = new TabController(length: 2, vsync: this);
+  String loc = "";
+  String cap = "";
 
+  late TabController _tabController = new TabController(length: 3, vsync: this);
 
   Future<void> getData() async {
 
@@ -56,16 +58,18 @@ class _Search extends State<Search> with TickerProviderStateMixin{
               indicatorWeight: 3,
               tabs: [
                 Tab(
-                  text: 'Users',
+                  text: 'User',
                 ),
                 Tab(
-                  text: 'Locations',
+                  text: 'Location',
+                ),
+                Tab(
+                  text: 'Caption',
                 ),
               ],
               controller: _tabController,
               indicatorSize: TabBarIndicatorSize.tab,
             ),
-
             Expanded(
               child: TabBarView(
                 children: [Column(
@@ -78,7 +82,6 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                     onChanged: (val) => initiateSearch(val),
                   ),
                 ),
-              //SizedBox(height: 20,),
               StreamBuilder<QuerySnapshot>(
                 stream: name != "" && name != null
                     ?
@@ -131,9 +134,9 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                     ),
                       //SizedBox(height: 20,),
                       StreamBuilder<QuerySnapshot>(
-                        stream: name != "" && name != null
+                        stream: loc != "" && loc != null
                             ?
-                        FirebaseFirestore.instance.collectionGroup('posts').where("location_array", arrayContains: name).snapshots()
+                        FirebaseFirestore.instance.collectionGroup('posts').where("location_array", arrayContains: loc).snapshots()
                             : FirebaseFirestore.instance.collectionGroup('posts').where("location_array", isNull: true).snapshots(),
                         builder:
                             (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -143,7 +146,69 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                             case ConnectionState.waiting:
                               return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
                             default:
-                              return Expanded(ci
+                              return Expanded(
+                                child: SingleChildScrollView(
+                                  child: ListView(
+                                    padding: AppDimensions.padding20,
+                                    shrinkWrap: true,
+                                    children:
+                                    snapshot.data!.docs.map((DocumentSnapshot document) {
+
+                                      print(document.id);
+
+                                      Post post = Post(text: document['caption'].toString(),
+                                          image_url: document['image_url'].toString() ,
+                                          date: document['datetime'].toDate().toString().substring(0,10),
+                                          likeCount: document['likeCount'],
+                                          commentCount: document['comment'].length,
+                                          comments: document['comment'],
+                                          postId: document.id,
+                                          owner: document['owner']);
+
+                                      return PostTileFeed(
+                                        //userId: _user!.uid,
+                                          post: post,
+                                          delete: () {
+                                            //myPosts.remove(post);
+                                          },
+                                          like: () {},
+                                          searched: true);
+                                    }
+                                    ).toList(),
+                                  ),
+                                ),
+                              );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+
+                  Column(
+                    children:
+                    [Padding(padding: AppDimensions.padding20,
+                      child: TextField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        enableSuggestions: true,
+                        cursorColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
+                        onChanged: (val) => initiateSearch(val),
+                      ),
+                    ),
+                      //SizedBox(height: 20,),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: cap != "" && cap != null
+                            ?
+                        FirebaseFirestore.instance.collectionGroup('posts').where("text_array", arrayContains: cap).snapshots()
+                            : FirebaseFirestore.instance.collectionGroup('posts').where("text_array", isNull: true).snapshots(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          print(snapshot.error);
+                          if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
+                            default:
+                              return Expanded(
                                 child: SingleChildScrollView(
                                   child: ListView(
                                     padding: AppDimensions.padding20,
@@ -192,6 +257,8 @@ class _Search extends State<Search> with TickerProviderStateMixin{
   void initiateSearch(String val) {
     setState(() {
       name = val.toLowerCase().trim();
+      loc = val.toLowerCase().trim();
+      cap = val.toLowerCase().trim();
     });
   }
 }

@@ -147,6 +147,20 @@ class _PostTileState extends State<PostTile> {
 
     DocumentSnapshot info1 = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
+    List<String> indexList = [];
+
+    String location = info1.get('location');
+
+    for(int i = 1; i <= location.length; i++){
+      indexList.add(location.substring(0, i).toLowerCase());
+    }
+
+    List<String> indexListCaption = [];
+
+    for(int i = 1; i <= caption.length; i++){
+      indexListCaption.add(caption.substring(0, i).toLowerCase());
+    }
+
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -154,10 +168,12 @@ class _PostTileState extends State<PostTile> {
           "comment" : [],
           "caption": caption,
           "datetime": DateTime.now(),
-          "location": info1.get('location'),
+          "location": location,
           "likedBy": [],
           "sharedFrom": widget.post.owner,
+          'location_array' : indexList,
           "owner" : _user!.uid,
+          "text_array" : indexListCaption
         }).then((value){
       //print(value.id);
     });

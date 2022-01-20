@@ -55,6 +55,11 @@ class AppStyles{
     fontSize: 18,
   );
 
+  static final postLocation = GoogleFonts.signika(
+    color: AppColors.locationTextColor,
+    fontSize: 15,
+  );
+
   static final postOwnerText = GoogleFonts.signika(
     color: AppColors.postTextColor,
     fontWeight: FontWeight.w700,
@@ -99,7 +104,7 @@ class darkAppStyles{
   );
 
   static final appNameMainPage = GoogleFonts.signika(
-    color: Colors.black26,
+    color: darkAppColors.appTextColor,
     fontSize: 80,
   );
 

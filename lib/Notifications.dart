@@ -164,7 +164,7 @@ class _Notifications extends State<Notifications> {
                 itemCount: notifications.length,
                 itemBuilder: (context, index){
                   return Card(
-                    color: globals.light ? Colors.lightBlueAccent : darkAppColors.postBackgroundColor,
+                    color: globals.light ? AppColors.postBackgroundColor : darkAppColors.postBackgroundColor,
                     margin: EdgeInsets.all(10),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),

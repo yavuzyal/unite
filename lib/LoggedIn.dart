@@ -14,6 +14,7 @@ import 'package:unite/Search.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/usables/config.dart' as globals;
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:unite/utils/colors.dart';
 import 'feedPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:unite/bookmarkPage.dart';
@@ -70,6 +71,7 @@ class _LoggedIn extends State<LoggedIn> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.bookmarks),
+          color: globals.light ? AppColors.postTextColor : darkAppColors.appTextColor,
           onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context) => bookmarkPage()),);
           },
@@ -77,6 +79,7 @@ class _LoggedIn extends State<LoggedIn> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.notifications),
+            color: globals.light ? AppColors.postTextColor : darkAppColors.appTextColor,
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications()),);
             },),
@@ -92,32 +95,62 @@ class _LoggedIn extends State<LoggedIn> {
         type: BottomNavigationBarType.shifting,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.account_circle,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Account',
             backgroundColor: globals.light ? Colors.lightBlueAccent: Colors.blue[700],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.search,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Search',
             backgroundColor: globals.light ? Colors.green : Colors.green[700],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.home,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Feed',
             backgroundColor: globals.light ? Colors.redAccent: Colors.red[900],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
+            icon: Icon(Icons.add_box,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.add_box,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Add Post',
             backgroundColor: globals.light ? Colors.purple : Colors.purple[700],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.email),
+            icon: Icon(Icons.email,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.email,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Messages',
             backgroundColor: globals.light ?  Colors.orange : Colors.orange[900],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings,
+              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
+            ),
+            activeIcon: Icon(Icons.settings,
+              color: globals.light ? AppColors.postTextColor : Colors.white,
+            ),
             label: 'Settings',
             backgroundColor: globals.light ?  Colors.pink : Colors.pink[900],
           ),

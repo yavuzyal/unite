@@ -9,12 +9,14 @@ import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart';
 import 'package:unite/LoggedIn.dart';
+import 'package:unite/profile.dart';
 import 'package:unite/utils/colors.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'usables/config.dart' as globals;
 import 'utils/styles.dart';
 import 'utils/colors.dart';
+import 'Settings.dart';
 
 class Post {
   late final image;
@@ -156,179 +158,182 @@ class _EditProfile extends State {
               key: _formKey,
               child: Padding(
                 padding: AppDimensions.padding20,
-                child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: (){
-                        pickImage();
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
-                        child: ClipOval(
-                          child: _imageFile == null ? Image.asset('assets/usericon.png') : Image.file(_imageFile!),
-                        ),
-                        radius: 70,
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Username",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                child:SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          pickImage();
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
+                          child: ClipOval(
+                            child: _imageFile == null ? Image.asset('assets/usericon.png') : Image.file(_imageFile!),
+                          ),
+                          radius: 70,
                         ),
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          username = '';
-                        }
-                        else
-                          username = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Enter Your University",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                      SizedBox(height: 20,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Username",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
                         ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            username = '';
+                          }
+                          else
+                            username = value!;
+                        },
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          school = '';
-                        }
-                        else
-                          school = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Enter Your Major",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                      SizedBox(height: 10,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Your University",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
                         ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            school = '';
+                          }
+                          else
+                            school = value!;
+                        },
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          major = '';
-                        }
-                        else
-                          major = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Enter Your Age",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                      SizedBox(height: 10,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Your Major",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
                         ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            major = '';
+                          }
+                          else
+                            major = value!;
+                        },
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          age = '';
-                        }
-                        else
-                          age = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Enter Your Interests",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                      SizedBox(height: 10,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Your Age",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
                         ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            age = '';
+                          }
+                          else
+                            age = value!;
+                        },
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          interest = '';
-                        }
-                        else
-                          interest = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    TextFormField(
-                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                      textAlign: TextAlign.center,
-                      decoration: new InputDecoration(
-                        hintText: "Enter Your Bio",
-                        hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                        fillColor: Colors.black,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(0.0),
-                          borderSide: new BorderSide(),
+                      SizedBox(height: 10,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Your Interests",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
                         ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            interest = '';
+                          }
+                          else
+                            interest = value!;
+                        },
                       ),
-                      validator: (String? value) {
-                        if(value!.isEmpty || value == ''){
-                          bio = '';
-                        }
-                        else
-                          bio = value!;
-                      },
-                    ),
-                    SizedBox(height: 10,),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                      SizedBox(height: 10,),
+                      TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter Your Bio",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(0.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          if(value!.isEmpty || value == ''){
+                            bio = '';
+                          }
+                          else
+                            bio = value!;
+                        },
                       ),
-                      onPressed: () {
-                        if(_formKey.currentState!.validate()){
+                      SizedBox(height: 10,),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                        ),
+                        onPressed: () {
+                          if(_formKey.currentState!.validate()){
 
-                          if(_imageFile == null){
-                            uploadProfile(username,school,major,age,interest,bio,'');
-                          }
-                          else{
-                            uploadImageToFirebase(context);
-                          }
-                          
-                          setState(() {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Profile Updated')),
+                            if(_imageFile == null){
+                              uploadProfile(username,school,major,age,interest,bio,'');
+                              Navigator.pop(context);
+                                  }
+                            else{
+                              uploadImageToFirebase(context);
+                              Navigator.pop(context);
+                                  }
+
+                            setState(() {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Profile Updated')),
+                              );
+                            }
                             );
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),
-                            );
-                          });
-                        }
-                      },
-                      child: Text(
-                        "Update Profile",
-                        style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
+                          }
+                        },
+                        child: Text(
+                          "Update Profile",
+                          style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
+                        ),
                       ),
-                    ),
-                    //addPostButton(context, post_message),
-                  ],
+                      //addPostButton(context, post_message),
+                    ],
+                  ),
                 ),
               ),
             ),

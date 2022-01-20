@@ -100,13 +100,18 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
     String reshared_id = liked.get('sharedFrom');
 
+    String location_name = liked.get('location');
+
+    String reshared_if = reshared_id == "" ? "" : 'Reshared';
+
     if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
       String name = snap['username'];
 
       setState(() {
         reshared = name;
-        if_reshared = liked.get('location');
+        if_reshared = reshared_if;
+        location = location_name;
       });
     }
 
@@ -140,6 +145,8 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
     final firestoreInstance = FirebaseFirestore.instance;
 
+    DocumentSnapshot info1 = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
+
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -147,7 +154,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
           "comment" : [],
           "caption": caption,
           "datetime": DateTime.now(),
-          "location": location,
+          "location": info1.get('location'),
           "likedBy": [],
           "sharedFrom": widget.post.owner,
         }).then((value){
@@ -256,6 +263,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
   String if_reshared = '';
   String reshared = '';
   bool bookmarked = false;
+  String location = '';
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +326,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
                                       ),
                                       Column(
                                         children: [
+                                          Text(location,  style: AppStyles.postLocation),
                                           SizedBox(height : 5),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
@@ -421,6 +430,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
                                     ],
                                   ),
 
+                                  Text(location,  style: AppStyles.postLocation),
                                   SizedBox(height :5),
                                   Row(
                                     children: [

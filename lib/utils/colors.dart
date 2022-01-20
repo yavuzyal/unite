@@ -9,6 +9,7 @@ class AppColors{
    static const Color bottomBarLogoColor = Colors.white;
    static const Color postBackgroundColor = Color(0xFFFFFF);
    static const Color postTextColor = Colors.white;
+   static const Color locationTextColor = Colors.white70;
 }
 
 class darkAppColors{

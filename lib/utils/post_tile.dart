@@ -96,20 +96,23 @@ class _PostTileState extends State<PostTile> {
 
     String reshared_id = liked.get('sharedFrom');
 
+    String loc = liked.get('location');
+
+    String reshared_if = reshared_id == "" ? "" : 'Reshared';
+
     if(reshared_id != ''){
       DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
       String name = snap['username'];
 
       setState(() {
         reshared = name;
-        if_reshared = liked.get('location');
+        if_reshared = reshared_if;
+        location = loc;
       });
     }
 
     QuerySnapshot user = await FirebaseFirestore.instance
         .collection('users').doc(_user!.uid).collection('bookmarks').get();
-
-    List<dynamic> listOfBookmarks = [];
 
     for(var check_post in user.docs){
       if(check_post['postId'] == widget.post.postId){
@@ -117,16 +120,6 @@ class _PostTileState extends State<PostTile> {
           bookmarked = true;
         });
       }
-    }
-
-    if(reshared_id != ''){
-      DocumentSnapshot snap = await FirebaseFirestore.instance.collection('users').doc(reshared_id).get();
-      String name = snap['username'];
-
-      setState(() {
-        reshared = name;
-        if_reshared = liked.get('location');
-      });
     }
 
     List<dynamic> listOfLikes = [];
@@ -146,6 +139,8 @@ class _PostTileState extends State<PostTile> {
 
     final firestoreInstance = FirebaseFirestore.instance;
 
+    DocumentSnapshot info1 = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
+
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -153,7 +148,7 @@ class _PostTileState extends State<PostTile> {
           "comment" : [],
           "caption": caption,
           "datetime": DateTime.now(),
-          "location": location,
+          "location": info1.get('location'),
           "likedBy": [],
           "sharedFrom": widget.post.owner,
         }).then((value){
@@ -262,7 +257,7 @@ class _PostTileState extends State<PostTile> {
   String if_reshared = '';
   String reshared = '';
   bool bookmarked = false;
-
+  String location = '';
   @override
   Widget build(BuildContext context) {
     if(widget.post.image_url != ''){
@@ -341,6 +336,7 @@ class _PostTileState extends State<PostTile> {
                                       ),
                                       Column(
                                         children: [
+                                          Text(location,  style: AppStyles.postLocation),
                                           SizedBox(height :5),
                                           Text(widget.post.text, style: AppStyles.postText),
                                           SizedBox(height : 15),
@@ -446,7 +442,7 @@ class _PostTileState extends State<PostTile> {
                                       ),
                                     ],
                                   ),
-
+                                  Text(location,  style: AppStyles.postLocation),
                                   SizedBox(height :5),
                                   Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
                                   SizedBox(height : 15),

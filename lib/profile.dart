@@ -513,6 +513,9 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                                           'uid': _user!.uid,
                                                           'follow_request': 'no',
                                                           });
+
+                                                      FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').doc(post.postId).delete();
+
                                                       setState(() {
 
                                                       });

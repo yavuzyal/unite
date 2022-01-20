@@ -64,6 +64,12 @@ class _PostScreen extends State {
   Future uploadPost(uid, like, comment, url, caption) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
+    List<String> indexList = [];
+
+    for(int i = 1; i <= location.length; i++){
+      indexList.add(location.substring(0, i).toLowerCase());
+    }
+
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
           "image_url" : url,
@@ -74,6 +80,8 @@ class _PostScreen extends State {
           "location": location,
           "likedBy": [],
           "sharedFrom": '',
+          'location_array' : indexList,
+          "owner" : _user!.uid,
         }).then((value){
       print(value.id);
     });

@@ -110,6 +110,12 @@ class _PostTileState extends State<PostTile> {
         location = loc;
       });
     }
+    else{
+      setState(() {
+        if_reshared = reshared_if;
+        location = loc;
+      });
+    }
 
     QuerySnapshot user = await FirebaseFirestore.instance
         .collection('users').doc(_user!.uid).collection('bookmarks').get();
@@ -151,6 +157,7 @@ class _PostTileState extends State<PostTile> {
           "location": info1.get('location'),
           "likedBy": [],
           "sharedFrom": widget.post.owner,
+          "owner" : _user!.uid,
         }).then((value){
       //print(value.id);
     });

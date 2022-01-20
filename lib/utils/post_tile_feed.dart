@@ -114,11 +114,14 @@ class _PostTileFeedState extends State<PostTileFeed> {
         location = location_name;
       });
     }
+    else{
+      setState(() {
+        if_reshared = reshared_if;
+        location = location_name;
+      });
+    }
 
-    QuerySnapshot user = await FirebaseFirestore.instance
-        .collection('users').doc(_user!.uid).collection('bookmarks').get();
-
-    List<dynamic> listOfBookmarks = [];
+    QuerySnapshot user = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').get();
 
     for(var check_post in user.docs){
       if(check_post['postId'] == widget.post.postId){
@@ -132,8 +135,6 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
     listOfLikes = liked.get('likedBy');
 
-    //print(widget.post.text);
-    //print(listOfLikes);
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -157,6 +158,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
           "location": info1.get('location'),
           "likedBy": [],
           "sharedFrom": widget.post.owner,
+          "owner" : _user!.uid,
         }).then((value){
       //print(value.id);
     });

@@ -72,56 +72,58 @@ class _Search extends State<Search> with TickerProviderStateMixin{
             ),
             Expanded(
               child: TabBarView(
-                children: [Column(
-                  children:
-                  [Padding(padding: AppDimensions.padding20,
-                  child: TextField(
-                    style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
-                    enableSuggestions: true,
-                    cursorColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
-                    onChanged: (val) => initiateSearch(val),
+                children: [SingleChildScrollView(
+                  child: Column(
+                    children:
+                    [Padding(padding: AppDimensions.padding20,
+                    child: TextField(
+                      style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                      enableSuggestions: true,
+                      cursorColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
+                      onChanged: (val) => initiateSearch(val),
+                    ),
                   ),
-                ),
               StreamBuilder<QuerySnapshot>(
-                stream: name != "" && name != null
-                    ?
-                FirebaseFirestore.instance.collection('users').where("searchKey", arrayContains: name).snapshots()
-                    : FirebaseFirestore.instance.collection('users').where("username", isNull: false).snapshots(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
-                    default:
-                      return SingleChildScrollView(
-                        child: ListView(
-                        padding: AppDimensions.padding20,
-                        shrinkWrap: true,
-                        children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                          return  ListTile(
-                            leading: document['isPrivate'] == 'private' ?  Icon(Icons.lock, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor) : Icon(Icons.account_circle, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
-                            //trailing: Icon(Icons.arrow_forward),
-                            //selectedTileColor: Colors.yellow,
-                            horizontalTitleGap: 0,
-                            onTap: (){
-                              //print(document['userId']);
-                              document['userId'] != _user!.uid ?
-                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                  SearchedProfile(userId: document['userId'])),) :
-                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                  LoggedIn()));
-                            },
-                            title: name != "" && name != null ? new Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,) : Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,),
-                          );
-                        }).toList(),
-                      ),);
-                  }
-                },
+                  stream: name != "" && name != null
+                      ?
+                  FirebaseFirestore.instance.collection('users').where("searchKey", arrayContains: name).snapshots()
+                      : FirebaseFirestore.instance.collection('users').where("username", isNull: false).snapshots(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.waiting:
+                        return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
+                      default:
+                        return SingleChildScrollView(
+                          child: ListView(
+                          padding: AppDimensions.padding20,
+                          shrinkWrap: true,
+                          children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                            return  ListTile(
+                              leading: document['isPrivate'] == 'private' ?  Icon(Icons.lock, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor) : Icon(Icons.account_circle, color: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor),
+                              //trailing: Icon(Icons.arrow_forward),
+                              //selectedTileColor: Colors.yellow,
+                              horizontalTitleGap: 0,
+                              onTap: (){
+                                //print(document['userId']);
+                                document['userId'] != _user!.uid ?
+                                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                    SearchedProfile(userId: document['userId'])),) :
+                                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                    LoggedIn()));
+                              },
+                              title: name != "" && name != null ? new Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,) : Text(document['username'], style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,),
+                            );
+                          }).toList(),
+                        ),);
+                    }
+                  },
               ),
-                  ],
+                    ],
               ),
+                ),
                   Column(
                     children:
                     [Padding(padding: AppDimensions.padding20,

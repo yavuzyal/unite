@@ -39,12 +39,19 @@ Future validate(String new_caption, String new_location, String new_image_url, P
   String image_url = info1.get('image_url');
   String location = info1.get('location');
 
+
   if(new_caption != '' && new_caption != caption){
 
+    List<String> indexListCaption = [];
+
+    for(int i = 1; i <= new_caption.length; i++){
+      indexListCaption.add(new_caption.substring(0, i).toLowerCase());
+    }
     await FirebaseFirestore.instance.collection('users').doc(
         post.owner).collection('posts').doc(post.postId).update(
         {
           'caption' : new_caption,
+          'text_array' : indexListCaption,
         });
 
     error_text = "Post edited";
@@ -52,10 +59,17 @@ Future validate(String new_caption, String new_location, String new_image_url, P
 
   if(new_location != '' && new_location != location){
 
+    List<String> indexList = [];
+
+    for(int i = 1; i <= new_location.length; i++){
+      indexList.add(new_location.substring(0, i).toLowerCase());
+    }
+
     await FirebaseFirestore.instance.collection('users').doc(
         post.owner).collection('posts').doc(post.postId).update(
         {
           'location' : new_location,
+          'location_array' : indexList,
         });
     error_text = "Post edited";
 

@@ -93,24 +93,6 @@ class _PostScreen extends State {
       print(value.id);
     });
 
-    url != "" ?
-    firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
-        {
-          'message' : 'You uploaded a post!',
-          'datetime': DateTime.now(),
-          'url' : url,
-          'uid': '',
-          'follow_request': 'no',
-        }) :
-    firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
-        {
-          'message' : 'You shared a message!',
-          'datetime': DateTime.now(),
-          'url' : url,
-          'uid': '',
-          'follow_request': 'no',
-        });
-
   }
 
   Future uploadImageToFirebase(BuildContext context, caption) async {

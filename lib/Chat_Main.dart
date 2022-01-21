@@ -8,6 +8,9 @@ import 'package:http/http.dart';
 import 'package:unite/ChatPage.dart';
 import 'package:unite/SearchedProfile.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'usables/config.dart' as globals;
+import 'package:unite/utils/colors.dart';
+import 'package:unite/utils/styles.dart';
 
 
 //EDIT PROFILE ICINDEN USERNAME VE PP UPDATE ETMEYI UNUTMA!!!!!!
@@ -27,6 +30,7 @@ class _ChatMain extends State<ChatMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: globals.light ? Colors.white: Colors.grey[700],
         body: Column(
           children: [
             //SizedBox(height: 20,),
@@ -68,7 +72,7 @@ class _ChatMain extends State<ChatMain> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                 ChatPage(userId: document.id)),);
                           },
-                          title: Text(document['userName']),
+                          title: Text(document['userName'], style: AppStyles.postText),
                         );
                       }).toList(),
                     );

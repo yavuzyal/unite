@@ -7,6 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:unite/utils/dimensions.dart';
+import 'usables/config.dart' as globals;
+import 'utils/colors.dart';
+import 'utils/styles.dart';
 
 class ChatPage extends StatefulWidget {
 
@@ -72,6 +75,19 @@ class _ChatPage extends State<ChatPage> {
       'profile_pic': pp2,
     });
 
+    DocumentSnapshot user_me = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    final firestoreInstance = FirebaseFirestore.instance;
+
+    firestoreInstance.collection("users").doc(widget.userId).collection('notifications').add(
+        {
+          'message' : '${user_me.get('username')} sent you a message!',
+          'datetime': DateTime.now(),
+          'url' : user_me.get('profile_pic'),
+          'uid': '',
+          'follow_request': 'no',
+        });
+
   }
 
   Future<String> name_pp() async {
@@ -91,7 +107,9 @@ class _ChatPage extends State<ChatPage> {
       future: name_pp(),
       builder: (context, snapshot){
         return Scaffold(
+          backgroundColor: globals.light ? Colors.white: Colors.grey[700],
           appBar: AppBar(
+            backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
             centerTitle: true,
             title: Text(snapshot.data.toString()),
           ),
@@ -127,7 +145,7 @@ class _ChatPage extends State<ChatPage> {
                                       child: Container(
                                         padding: AppDimensions.padding20,
                                         decoration: BoxDecoration(
-                                          color: Colors.pinkAccent,
+                                          color: globals.light ? Colors.pinkAccent : Colors.indigo,
                                           borderRadius: BorderRadius.only(
                                               topRight: Radius.circular(40.0),
                                               bottomRight: Radius.circular(40.0),
@@ -148,7 +166,7 @@ class _ChatPage extends State<ChatPage> {
                                     child: Container(
                                       padding: AppDimensions.padding20,
                                       decoration: BoxDecoration(
-                                        color: Colors.lightBlue,
+                                        color: globals.light ? Colors.lightBlue : Colors.black26,
                                         borderRadius: BorderRadius.only(
                                             topRight: Radius.circular(40.0),
                                             bottomRight: Radius.circular(0.0),
@@ -176,9 +194,11 @@ class _ChatPage extends State<ChatPage> {
                       Expanded(
                         child: TextFormField(
                           controller: _controller,
+                          style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           textAlign: TextAlign.center,
                           decoration: new InputDecoration(
                             hintText: "Add a message...",
+                            hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                             fillColor: Colors.black,
                             border: new OutlineInputBorder(
                               borderRadius: new BorderRadius.circular(0.0),
@@ -192,7 +212,7 @@ class _ChatPage extends State<ChatPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.arrow_forward),
-                        color: Colors.blue,
+                        color: globals.light ? Colors.blue : Colors.grey,
                         iconSize: 35,
                         onPressed: () async {
                           if(_formKey.currentState!.validate()){

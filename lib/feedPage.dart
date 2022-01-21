@@ -99,16 +99,6 @@ class _feedPageState extends State<feedPage> {
                                   .collection('posts')
                                   .doc(post.postId)
                                   .delete();
-                              FirebaseFirestore.instance.collection("users")
-                                  .doc(_user!.uid).collection('notifications')
-                                  .add(
-                                  {
-                                    'message': 'You deleted a post!',
-                                    'datetime': DateTime.now(),
-                                    'url': post.image_url,
-                                    'uid': _user!.uid,
-                                    'follow_request': 'no',
-                                  });
                             });
                           },
                           like: () {},

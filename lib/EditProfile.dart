@@ -135,6 +135,21 @@ class _EditProfile extends State {
       //print(value.id);
     });
 
+    QuerySnapshot query = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('messages').get();
+
+    List userIds = [];
+
+    for(var i in query.docs){
+      userIds.add(i.id);
+    }
+
+    for(int i=0; i < userIds.length; i++){
+      await FirebaseFirestore.instance.collection('users').doc(userIds[i]).collection('messages').doc(_user!.uid).update({
+        'userName' : username == "" ? name : username,
+        "profile_pic": (profile_pic == '') ? user_profile.profile_pic : profile_pic,
+      });
+    }
+
   }
 
   @override

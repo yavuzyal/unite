@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/post_tile_searched.dart';
+import 'ChatPage.dart';
 import 'LoggedIn.dart';
 import 'ShowImageFullSlider.dart';
 import 'utils/colors.dart';
@@ -570,7 +571,8 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                         SizedBox(width: 20),
                                         ElevatedButton(
                                           onPressed: (){
-
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                                ChatPage(userId: widget.userId,)),);
                                           },
                                           child: Text('Message', style: globals.light ? AppStyles.profileText: darkAppStyles.profileText),
                                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor)),

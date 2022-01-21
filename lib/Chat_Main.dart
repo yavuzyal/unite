@@ -1,12 +1,19 @@
-
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:unite/ChatPage.dart';
 import 'package:unite/SearchedProfile.dart';
 import 'package:unite/utils/dimensions.dart';
+
+
+//EDIT PROFILE ICINDEN USERNAME VE PP UPDATE ETMEYI UNUTMA!!!!!!
+//SEARCHPROFILE ICINDEN MESSAGE KISMINA CHATPAGE ATAN KODU EKLE
+//MESSAGE ATINCA NOTIF GITSIN
+//MESSAGE PRIV PROFILDE GITMESIN
 
 class ChatMain extends StatefulWidget {
   @override
@@ -15,21 +22,7 @@ class ChatMain extends StatefulWidget {
 
 class _ChatMain extends State<ChatMain> {
   String name = "";
-
-
-  Future<void> getData() async {
-
-    final _fireStore = FirebaseFirestore.instance;
-    // Get docs from collection reference
-    QuerySnapshot querySnapshot = await _fireStore.collection('users').get();
-
-    // Get data from docs and convert map to List
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-    //for a specific field
-    //final allData = querySnapshot.docs.map((doc) => doc.get('fieldName')).toList();
-
-    print(allData);
-  }
+  final _user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -38,30 +31,47 @@ class _ChatMain extends State<ChatMain> {
           children: [
             //SizedBox(height: 20,),
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('users').where("username", isNull: false).snapshots(),
+              stream: FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('messages').snapshots(),
               builder:
-                  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  (BuildContext context, snapshot) {
                 if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return new Text('Loading...');
+                    return Center(child: CircularProgressIndicator(),);
                   default:
-                    return SingleChildScrollView(
-                      child: ListView(
-                        padding: AppDimensions.padding20,
-                        shrinkWrap: true,
-                        children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                          return  ListTile(
-                            onTap: (){
-                              //print(document['userId']);
-                              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                  ChatPage(userId: document['userId'])),);
-                            },
-                            title: name != "" && name != null ? new Text(document['username']) : Text(document['username']),
-                          );
-                        }).toList(),
-                      ),);
+
+                    print(snapshot.data!.docs.cast());
+
+                    return ListView(
+                      padding: AppDimensions.padding20,
+                      shrinkWrap: true,
+                      children:
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                        return  ListTile(
+                          leading: document['profile_pic'] == '' ?
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(40)),
+                            child: CircleAvatar(
+                              radius: 25,
+                              child: Image.asset('assets/usericon.png'),
+                            ),
+                          ) :
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(40)),
+                            child: CircleAvatar(
+                              radius: 25,
+                              child: Image.network(document['profile_pic']),
+                            ),
+                          ),
+                          onTap: (){
+                            //print(document['userId']);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                ChatPage(userId: document.id)),);
+                          },
+                          title: Text(document['userName']),
+                        );
+                      }).toList(),
+                    );
                 }
               },
             ),
@@ -76,4 +86,3 @@ class _ChatMain extends State<ChatMain> {
     });
   }
 }
-

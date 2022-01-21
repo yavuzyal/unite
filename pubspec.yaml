@@ -45,6 +45,13 @@ dependencies:
   fluttertoast: ^8.0.8
   like_button: ^2.0.4
   mailer: ^5.0.2
+  flutter_chat_ui: ^1.5.3
+  flutter_firebase_chat_core: ^1.5.1
+  file_picker: ^4.3.1
+  open_file: ^3.2.1
+  carousel_slider: ^4.0.0
+  flutter_login_facebook: ^1.2.0
+  firebase_messaging: ^11.2.5
 
 
   # The following adds the Cupertino Icons font to your application.

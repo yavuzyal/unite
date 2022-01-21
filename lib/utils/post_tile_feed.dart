@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:like_button/like_button.dart';
-import '../editPost.dart';
 import 'post.dart';
 import 'styles.dart';
 import 'colors.dart';
@@ -12,8 +10,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:unite/valueListenables.dart';
 
-class PostTile extends StatefulWidget {
+class PostTileFeed extends StatefulWidget {
 
   final Post post;
   final VoidCallback delete;
@@ -21,14 +20,15 @@ class PostTile extends StatefulWidget {
   bool searched;
   int dummy = 0;
 
-  PostTile({required this.post, required this.delete, required this.like, required this.searched});
+  PostTileFeed({required this.post, required this.delete, required this.like, required this.searched});
 
   @override
-  _PostTileState createState() => _PostTileState();
+  _PostTileFeedState createState() => _PostTileFeedState();
+
 
 }
 
-class _PostTileState extends State<PostTile> {
+class _PostTileFeedState extends State<PostTileFeed> {
 
   final _user = FirebaseAuth.instance.currentUser;
   bool liked_already = false;
@@ -89,6 +89,9 @@ class _PostTileState extends State<PostTile> {
         bookmarked = false;
       });
     }
+
+    valueListenables.bookmarkedPost.value= !valueListenables.bookmarkedPost.value;
+
   }
 
   Future <bool> alreadyLiked() async {
@@ -97,7 +100,7 @@ class _PostTileState extends State<PostTile> {
 
     String reshared_id = liked.get('sharedFrom');
 
-    String loc = liked.get('location');
+    String location_name = liked.get('location');
 
     String reshared_if = reshared_id == "" ? "" : 'Reshared';
 
@@ -108,18 +111,17 @@ class _PostTileState extends State<PostTile> {
       setState(() {
         reshared = name;
         if_reshared = reshared_if;
-        location = loc;
+        location = location_name;
       });
     }
     else{
       setState(() {
         if_reshared = reshared_if;
-        location = loc;
+        location = location_name;
       });
     }
 
-    QuerySnapshot user = await FirebaseFirestore.instance
-        .collection('users').doc(_user!.uid).collection('bookmarks').get();
+    QuerySnapshot user = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').get();
 
     for(var check_post in user.docs){
       if(check_post['postId'] == widget.post.postId){
@@ -133,8 +135,6 @@ class _PostTileState extends State<PostTile> {
 
     listOfLikes = liked.get('likedBy');
 
-    //print(widget.post.text);
-    //print(listOfLikes);
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -237,7 +237,6 @@ class _PostTileState extends State<PostTile> {
         post.likeCount = post.likeCount + 1;
       });
 
-
       DocumentSnapshot info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
       await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('notifications').add({
@@ -247,6 +246,7 @@ class _PostTileState extends State<PostTile> {
         'uid': _user!.uid,
         'follow_request': 'no',
       });
+
 
       return success;
     }
@@ -282,6 +282,7 @@ class _PostTileState extends State<PostTile> {
   String reshared = '';
   bool bookmarked = false;
   String location = '';
+
   @override
   Widget build(BuildContext context) {
     if(widget.post.image_url != ''){
@@ -297,31 +298,14 @@ class _PostTileState extends State<PostTile> {
                         FirebaseAnalytics.instance.logScreenView(screenClass: "PostPage", screenName: "PostPage");
                       },
                       child: Card(
-                        margin: EdgeInsets.all(8),
+                        margin: EdgeInsets.all(10),
                         color: AppColors.postBackgroundColor,
                         child:
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(10.0),
                           child: Column(
                             children: [
-                              Row(
-                                children: [
-                                  Spacer(),
-                                  Center(child: if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text('')),
-                                  Spacer(),
-                                  _user!.uid == widget.post.owner ? IconButton(padding: EdgeInsets.all(0),
-                                      alignment: Alignment.center,
-                                      visualDensity: VisualDensity.compact,
-                                      iconSize: 15,
-                                      splashRadius: 20,
-                                      color: AppColors.postTextColor,
-                                      onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => editPost(post: widget.post)),
-                                      ),
-                                      icon: Icon(Icons.edit)) : SizedBox.shrink()
-                                ],
-                              ),
+                              if_reshared == 'Reshared' ? Text('${widget.post.owner_name} ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -331,43 +315,26 @@ class _PostTileState extends State<PostTile> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          SizedBox(width: 5),
-                                          Text(widget.post.date,
-                                            style: GoogleFonts.signika(
-                                              color: AppColors.postTextColor,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          widget.searched == false ?
-                                          IconButton(
-                                            padding: EdgeInsets.all(0),
-                                            visualDensity: VisualDensity.compact,
-                                            alignment: Alignment.center,
-                                            onPressed: widget.delete,
-                                            iconSize: 20,
-                                            splashRadius: 20,
-                                            color: AppColors.postTextColor,
-                                            icon: Icon(
-                                              Icons.delete_outline,
-                                            ),
-                                          ) : SizedBox.shrink(),
+                                          Text(widget.post.date, style: AppStyles.postText),
+                                          //SizedBox(width :5),
+                                          SizedBox.shrink(),
                                           IconButton(
                                             padding: EdgeInsets.all(0),
                                             alignment: Alignment.center,
                                             visualDensity: VisualDensity.compact,
-                                            onPressed: () => bookmark(widget.post),
+                                            onPressed: () => {
+                                            bookmark(widget.post),
+                                          },
                                             iconSize: 20,
                                             splashRadius: 20,
                                             color: AppColors.postTextColor,
                                             icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
                                           ),
                                           IconButton(
-                                            padding: EdgeInsets.all(0),
                                             alignment: Alignment.center,
-                                            visualDensity: VisualDensity.compact,
                                             onPressed: () => report(widget.post),
                                             iconSize: 20,
-                                            splashRadius: 20,
+                                            splashRadius: 24,
                                             color: AppColors.postTextColor,
                                             icon: Icon(
                                               Icons.report,
@@ -378,8 +345,15 @@ class _PostTileState extends State<PostTile> {
                                       Column(
                                         children: [
                                           Text(location,  style: AppStyles.postLocation),
-                                          SizedBox(height :5),
-                                          Text(widget.post.text, style: AppStyles.postText),
+                                          SizedBox(height : 5),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Text(widget.post.owner_name, style: AppStyles.postOwnerText),
+                                              SizedBox(width: 10),
+                                              Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
+                                            ],
+                                          ),
                                           SizedBox(height : 15),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -444,23 +418,13 @@ class _PostTileState extends State<PostTile> {
                             children: [
                               Column(
                                 children: [
-                                  if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
+                                  if_reshared == 'Reshared' ? Text('${widget.post.owner_name} ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text(''),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Text(widget.post.date, style: AppStyles.postText),
                                       //SizedBox(width :5),
-                                      widget.searched == false ?
-                                      IconButton(
-                                        alignment: Alignment.center,
-                                        onPressed: widget.delete,
-                                        iconSize: 20,
-                                        splashRadius: 24,
-                                        color: AppColors.postTextColor,
-                                        icon: Icon(
-                                          Icons.delete_outline,
-                                        ),
-                                      ) : SizedBox.shrink(),
+                                      SizedBox.shrink(),
                                       IconButton(
                                         padding: EdgeInsets.all(0),
                                         alignment: Alignment.center,
@@ -481,22 +445,18 @@ class _PostTileState extends State<PostTile> {
                                           Icons.report,
                                         ),
                                       ),
-                                      _user!.uid == widget.post.owner ? IconButton(padding: EdgeInsets.all(0),
-                                          alignment: Alignment.center,
-                                          visualDensity: VisualDensity.compact,
-                                          iconSize: 20,
-                                          splashRadius: 20,
-                                          color: AppColors.postTextColor,
-                                          onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => editPost(post: widget.post)),
-                                          ),
-                                          icon: Icon(Icons.edit)) : SizedBox.shrink()
                                     ],
                                   ),
+
                                   Text(location,  style: AppStyles.postLocation),
                                   SizedBox(height :5),
-                                  Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
+                                  Row(
+                                    children: [
+                                      Text(widget.post.owner_name, style: AppStyles.postOwnerText),
+                                      SizedBox(width: 10),
+                                      Text(widget.post.text, style: AppStyles.postText, overflow: TextOverflow.fade,),
+                                    ],
+                                  ),
                                   SizedBox(height : 15),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

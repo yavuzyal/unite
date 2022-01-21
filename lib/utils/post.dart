@@ -4,8 +4,10 @@ class Post {
   String date;
   int likeCount;
   int commentCount;
-  Map<String, String> comments;
+  List<dynamic> comments;
   String postId;
+  String owner = '';
+  String owner_name = '';
 
   Post({
     required this.postId,
@@ -15,6 +17,8 @@ class Post {
     required this.likeCount,
     required this.commentCount,
     required this.comments,
+    this.owner = '',
+    this.owner_name = ''
   });
 
   @override

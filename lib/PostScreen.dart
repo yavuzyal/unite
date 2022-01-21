@@ -11,6 +11,9 @@ import 'package:path/path.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'usables/config.dart' as globals;
+import 'utils/colors.dart';
+import 'utils/styles.dart';
 
 class Post {
   late final image;
@@ -44,6 +47,8 @@ class _PostScreen extends State {
   String post_message = '';
   String location = '';
   final _formKey = GlobalKey<FormState>();
+  final _textFormController = TextEditingController();
+  final _textFormController2 = TextEditingController();
 
   final _picker = ImagePicker();
 
@@ -59,7 +64,17 @@ class _PostScreen extends State {
   Future uploadPost(uid, like, comment, url, caption) async {
     final firestoreInstance = FirebaseFirestore.instance;
 
-    //firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').orderBy('datetime').get();
+    List<String> indexList = [];
+
+    for(int i = 1; i <= location.length; i++){
+      indexList.add(location.substring(0, i).toLowerCase());
+    }
+
+    List<String> indexListCaption = [];
+
+    for(int i = 1; i <= caption.length; i++){
+      indexListCaption.add(caption.substring(0, i).toLowerCase());
+    }
 
     firestoreInstance.collection("users").doc(_user!.uid).collection('posts').add(
         {
@@ -70,16 +85,32 @@ class _PostScreen extends State {
           "datetime": DateTime.now(),
           "location": location,
           "likedBy": [],
+          "sharedFrom": '',
+          'location_array' : indexList,
+          "owner" : _user!.uid,
+          "text_array" : indexListCaption
         }).then((value){
       print(value.id);
     });
 
+    url != "" ?
     firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
         {
           'message' : 'You uploaded a post!',
           'datetime': DateTime.now(),
           'url' : url,
+          'uid': '',
+          'follow_request': 'no',
+        }) :
+    firestoreInstance.collection("users").doc(_user!.uid).collection('notifications').add(
+        {
+          'message' : 'You shared a message!',
+          'datetime': DateTime.now(),
+          'url' : url,
+          'uid': '',
+          'follow_request': 'no',
         });
+
   }
 
   Future uploadImageToFirebase(BuildContext context, caption) async {
@@ -127,6 +158,7 @@ class _PostScreen extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: globals.light ? Colors.white: Colors.grey[700],
       body: Stack(
         children: [
           Container(
@@ -165,7 +197,7 @@ class _PostScreen extends State {
                                 : FlatButton(
                               child: Icon(
                                 Icons.add_a_photo,
-                                color: Colors.lightBlueAccent,
+                                color: globals.light ? Colors.lightBlueAccent : Colors.black,
                                 size: 50,
                               ),
                               onPressed: pickImage,
@@ -180,9 +212,12 @@ class _PostScreen extends State {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
+                        controller: _textFormController,
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Write a caption...",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(5.0),
@@ -208,9 +243,12 @@ class _PostScreen extends State {
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                     child: Expanded(
                       child: TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        controller: _textFormController2,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Location...",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(5.0),
@@ -233,27 +271,26 @@ class _PostScreen extends State {
                   ),
                   SizedBox(height: 10,),
                   ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                    ),
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
+                        if(_imageFile == null){
+                          uploadPost(_user!.uid, 0, 0, '', post_message);
+                        }
+                        else{
+                          uploadImageToFirebase(context, post_message);
+                        }
 
-                        uploadImageToFirebase(context, post_message);
-
-                        //setState(() {
-                         // ScaffoldMessenger.of(context).showSnackBar(
-                         //   const SnackBar(
-                         //       content: Text('Added Post :D')),
-                         // );
-                          //Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //      builder: (context) => LoggedIn()),
-                          //);
-                        //});
                       }
+                      _textFormController.clear();
+                      _textFormController2.clear();
+
                     },
                     child: Text(
                       "Add Post",
-                      style: TextStyle(fontSize: 20,color: Colors.white),
+                      style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,
                     ),
                   ),
                   SizedBox(height: 15,),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unite/LoggedIn.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
@@ -18,8 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:unite/Login.dart';
 import 'package:unite/RegisterPage.dart';
 import 'package:unite/profile.dart';
+import 'package:unite/utils/colors.dart';
 import 'package:unite/utils/post_page.dart';
 import 'Walkthrough.dart';
+import 'feedPage.dart';
 import 'utils/post.dart';
 
 import 'Greeting.dart';
@@ -29,7 +32,8 @@ import 'Settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Future<FirebaseApp> _fbapp = Firebase.initializeApp();
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  globals.light = prefs.getBool('isLight') ?? true;
   runApp(
     ChangeNotifierProvider(
       create: (context) => GoogleSignInProvider(),
@@ -44,8 +48,11 @@ Future<void> main() async {
               return Greeting();
             }
             else{
-              return Center(
-                child: CircularProgressIndicator(),
+              return Scaffold(
+                backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+                body: Center(
+                  child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+                ),
               );
             }
             throw "You have thrown something";
@@ -63,8 +70,10 @@ Future<void> main() async {
           '/pageOne': (context) => LoginPage(),
           '/profile': (context) => Profile(),
           '/walkthrough': (context) => WalkthroughScreen(),
+          '/feed': (context) => feedPage()
         },
-      ),)
+      ),
+    ),
   );
 }
 
@@ -74,8 +83,8 @@ class MainPage extends StatefulWidget {
   @override
   State<MainPage> createState() => _MainPageState();
 
-  static final ValueNotifier<ThemeMode> themeNotifier =
-  ValueNotifier(ThemeMode.light);
+  static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+
 }
 
 class _MainPageState extends State<MainPage> {
@@ -114,7 +123,12 @@ class _MainPageState extends State<MainPage> {
         builder: (context, snapshot){
           if(snapshot.connectionState == ConnectionState.waiting){
             print("problem");
-            return Center(child: CircularProgressIndicator(),);
+            return Scaffold(
+              backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+              body: Center(
+                child: CircularProgressIndicator(color: globals.light ? AppColors.logoColor: darkAppColors.postTextColor),
+              ),
+            );
           }
           else if(snapshot.hasData) {
             print(snapshot);

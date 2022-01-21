@@ -11,6 +11,7 @@ import 'package:unite/Login.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'utils/styles.dart';
 import 'utils/colors.dart';
+import 'usables/config.dart' as globals;
 
 class RegisterPage extends StatefulWidget {
 
@@ -68,7 +69,7 @@ class _RegisterPage2 extends State<RegisterPage> {
       return Scaffold(
         appBar: AppBar(
           title: Text("Register Page"),
-          backgroundColor: AppColors.logoColor,
+          backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
           centerTitle: true,
         ),
         body: Center(
@@ -86,9 +87,11 @@ class _RegisterPage2 extends State<RegisterPage> {
                       Text("UNIte", style: AppStyles.appNamePage,),
                       SizedBox(height: 20.0,),
                       TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Email",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(0.0),
@@ -110,9 +113,11 @@ class _RegisterPage2 extends State<RegisterPage> {
                       ),
                       SizedBox(height: 20.0,),
                       TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Username",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(0.0),
@@ -131,10 +136,12 @@ class _RegisterPage2 extends State<RegisterPage> {
                       ),
                       SizedBox(height: 20.0,),
                       TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                         obscureText: true,
                         textAlign: TextAlign.center,
                         decoration: new InputDecoration(
                           hintText: "Enter Password",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(0.0),
@@ -160,8 +167,8 @@ class _RegisterPage2 extends State<RegisterPage> {
                       SizedBox(height: 20.0,),
                       ElevatedButton(
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith(
-                                buttonColorCheck)),
+                          backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                        ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
 
@@ -169,9 +176,31 @@ class _RegisterPage2 extends State<RegisterPage> {
 
                             List<String> indexList = [];
 
+                            username = username.toLowerCase().trim();
+
                             for(int i = 1; i <= username.length; i++){
                               indexList.add(username.substring(0, i).toLowerCase());
                             }
+
+                            final _user = await FirebaseAuth.instance.currentUser;
+
+                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
+                              'username' : username,
+                              'searchKey': indexList,
+                              'userId': _user!.uid,
+                              'isPrivate': 'public',
+                              'followers': [],
+                              'followerCount': 0,
+                              'following': [],
+                              'followingCount': 0,
+                              "school" : '',
+                              "major" : '',
+                              "age" : '',
+                              "interest": '',
+                              "bio": '',
+                              "profile_pic": '',
+                              'follow_requests': [],
+                            });
 
                             //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
 

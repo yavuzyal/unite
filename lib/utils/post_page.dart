@@ -7,6 +7,7 @@ import 'package:like_button/like_button.dart';
 import 'post.dart';
 import 'styles.dart';
 import 'colors.dart';
+import 'package:unite/usables/config.dart' as globals;
 
 class PostPage extends StatefulWidget {
 
@@ -66,12 +67,18 @@ class _PostPageState extends State<PostPage> {
       ),
     ),
     );
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.get('likedBy');
+
+    print("aaaa");
+
+    tags = liked.get('tags');
+
+    print(tags);
 
     print(listOfLikes.contains(_user!.uid));
 
@@ -84,7 +91,7 @@ class _PostPageState extends State<PostPage> {
 
   Future onPostComment() async{
 
-    DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> comments = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfComments = [];
 
@@ -96,14 +103,14 @@ class _PostPageState extends State<PostPage> {
 
     listOfComments.add(_user!.uid + comment);
 
-    await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
+    await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
       'comment': listOfComments,
     });
 
     final firestoreInstance = FirebaseFirestore.instance;
     DocumentSnapshot info = await firestoreInstance.collection('users').doc(_user!.uid).get();
 
-    firestoreInstance.collection("users").doc(widget.userId).collection('notifications').add(
+    firestoreInstance.collection("users").doc(widget.post.owner).collection('notifications').add(
         {
           'message' : 'You received a comment from ${info['username']}: \"${comment}\"',
           'datetime': DateTime.now(),
@@ -117,13 +124,11 @@ class _PostPageState extends State<PostPage> {
   Future <bool> alreadyLiked() async {
 
 
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
     listOfLikes = liked.data()!.cast().values.toList()[1];
-
-    print(listOfLikes.contains(_user!.uid));
 
     if(listOfLikes.contains(_user!.uid)){
       return true;
@@ -134,8 +139,8 @@ class _PostPageState extends State<PostPage> {
   Future<bool> onLikeButtonTapped(bool isLiked) async{
 
     bool success = false;
-
-    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).get();
+    
+    DocumentSnapshot<Map<String, dynamic>> liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     List<dynamic> listOfLikes = [];
 
@@ -144,7 +149,7 @@ class _PostPageState extends State<PostPage> {
     if(isLiked == false){
       listOfLikes.add(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
         'likeCount': widget.post.likeCount + 1,
         'likedBy': listOfLikes,
       }).then((value) => success = true);
@@ -153,7 +158,7 @@ class _PostPageState extends State<PostPage> {
         widget.post.likeCount = widget.post.likeCount + 1;
       });
 
-      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('notifications').add({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('notifications').add({
         'message' : 'You Received a Like!',
         'datetime': DateTime.now(),
         'url' : widget.post.image_url,
@@ -166,7 +171,7 @@ class _PostPageState extends State<PostPage> {
     else{
       listOfLikes.remove(_user!.uid);
 
-      await FirebaseFirestore.instance.collection('users').doc(widget.userId).collection('posts').doc(widget.post.postId).update({
+      await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).update({
         'likeCount': widget.post.likeCount - 1,
         'likedBy': listOfLikes,
       }).then((value) => success = false);
@@ -184,6 +189,7 @@ class _PostPageState extends State<PostPage> {
   String comment = '';
   bool liked_already = false;
   final _textFormController = TextEditingController();
+  List tags = [];
 
   @override
   Widget build(BuildContext context) {
@@ -192,9 +198,10 @@ class _PostPageState extends State<PostPage> {
       child: FutureBuilder(
           future: MappingOperation().then((result) => liked_already = result),
           builder: (context, snaphot){
-
             return Scaffold(
+              backgroundColor: globals.light ? Colors.white: Colors.grey[700],
               appBar: AppBar(
+                backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
                 centerTitle: true,
                 title: Text('Post Page'),
               ),
@@ -235,9 +242,21 @@ class _PostPageState extends State<PostPage> {
                           Icon(Icons.chat_bubble_outline, color: AppColors.appTextColor),
                           SizedBox(width: 5),
                           Text('${widget.post.comments.length}', style: AppStyles.profileText)
+
                         ],
                       ),
-
+                      Wrap(
+                          children: tags.map(
+                                  (tag) => Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Chip(
+                                  label:Text(tag),
+                                  labelStyle: AppStyles.tagText,
+                                  backgroundColor: globals.light ? AppColors.logoColor : Colors.deepPurple,
+                                ),
+                              )
+                          ).toList()
+                      ),
                       Expanded(
                         child: ListView.builder(
                           itemCount: CommentCards.length,
@@ -252,10 +271,12 @@ class _PostPageState extends State<PostPage> {
                           children: [
                             Expanded(
                               child: TextFormField(
+                                style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                                 controller: _textFormController,
                                 textAlign: TextAlign.center,
                                 decoration: new InputDecoration(
                                   hintText: "Add a comment...",
+                                  hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
                                   fillColor: Colors.black,
                                   border: new OutlineInputBorder(
                                     borderRadius: new BorderRadius.circular(0.0),

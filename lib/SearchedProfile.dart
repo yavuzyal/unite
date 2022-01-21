@@ -445,11 +445,6 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                     title: Text(user),
                     centerTitle: true,
                   ),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: (){FirebaseCrashlytics.instance.crash();},
-                    backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
-                    child: Icon(Icons.close, color: globals.light ? AppColors.postTextColor : darkAppColors.postTextColor,),
-                  ),
                   body:
                     RefreshIndicator(
                       onRefresh: getPosts,

@@ -12,6 +12,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:unite/usables/config.dart' as globals;
 
 class PostTile extends StatefulWidget {
 
@@ -136,6 +137,8 @@ class _PostTileState extends State<PostTile> {
     //print(widget.post.text);
     //print(listOfLikes);
 
+    tags = liked.get('tags');
+
     if(listOfLikes.contains(_user!.uid)){
       return true;
     }
@@ -151,6 +154,8 @@ class _PostTileState extends State<PostTile> {
     List<String> indexList = [];
 
     String location = info1.get('location');
+
+    List tags_list = info1.get('tags');
 
     for(int i = 1; i <= location.length; i++){
       indexList.add(location.substring(0, i).toLowerCase());
@@ -174,7 +179,8 @@ class _PostTileState extends State<PostTile> {
           "sharedFrom": widget.post.owner,
           'location_array' : indexList,
           "owner" : _user!.uid,
-          "text_array" : indexListCaption
+          "text_array" : indexListCaption,
+          'tags' : tags_list
         }).then((value){
       //print(value.id);
     });
@@ -265,6 +271,8 @@ class _PostTileState extends State<PostTile> {
   String reshared = '';
   bool bookmarked = false;
   String location = '';
+  List tags = [];
+
   @override
   Widget build(BuildContext context) {
     if(widget.post.image_url != ''){
@@ -388,12 +396,25 @@ class _PostTileState extends State<PostTile> {
                                                 },),
                                             ],
                                           ),
+
                                           SizedBox(height : 45),
                                         ],
                                       ),
                                     ],
                                   ),
                                 ],
+                              ),
+                              Wrap(
+                                  children: tags.map(
+                                          (tag) => Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Chip(
+                                          label:Text(tag),
+                                          labelStyle: AppStyles.tagText,
+                                          backgroundColor: globals.light ? AppColors.logoColor : Colors.deepPurple,
+                                        ),
+                                      )
+                                  ).toList()
                               ),
                             ],
                           ),
@@ -505,8 +526,19 @@ class _PostTileState extends State<PostTile> {
                                         },),
                                     ],
                                   ),
-                                  SizedBox(height : 45),
-
+                                  Wrap(
+                                    children: tags.map(
+                                      (tag) => Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Chip(
+                                            label:Text(tag),
+                                          labelStyle: AppStyles.tagText,
+                                          backgroundColor: globals.light ? AppColors.logoColor : Colors.deepPurple,
+                                        ),
+                                      )
+                                    ).toList()
+                                  ),
+                                  SizedBox(height : 10),
                                 ],
                               ),
                             ],

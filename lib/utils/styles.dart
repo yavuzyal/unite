@@ -77,6 +77,11 @@ class AppStyles{
     fontSize: 17,
   );
 
+  static final tagText = GoogleFonts.signika(
+    color: Colors.white,
+    fontSize: 12,
+  );
+
   static final colorizeColors = [
     Color(0xFF60A8F7),
     Color(0xFF9947EE),

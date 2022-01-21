@@ -46,9 +46,11 @@ class _PostScreen extends State {
   final _user = FirebaseAuth.instance.currentUser;
   String post_message = '';
   String location = '';
+  String tags = '';
   final _formKey = GlobalKey<FormState>();
   final _textFormController = TextEditingController();
   final _textFormController2 = TextEditingController();
+  final _textFormController3 = TextEditingController();
 
   final _picker = ImagePicker();
 
@@ -62,6 +64,9 @@ class _PostScreen extends State {
   }
 
   Future uploadPost(uid, like, comment, url, caption) async {
+
+    List tags_list = tags.toLowerCase().split(",");
+
     final firestoreInstance = FirebaseFirestore.instance;
 
     List<String> indexList = [];
@@ -88,7 +93,8 @@ class _PostScreen extends State {
           "sharedFrom": '',
           'location_array' : indexList,
           "owner" : _user!.uid,
-          "text_array" : indexListCaption
+          "text_array" : indexListCaption,
+          'tags' : tags_list
         }).then((value){
       print(value.id);
     });
@@ -149,25 +155,11 @@ class _PostScreen extends State {
               key: _formKey,
               child: Column(
                 children: [
-                  /*Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Text(
-                        "Select an image to add",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 28,
-                        ),
-                      ),
-                    ),
-                  ),*/
-                  //SizedBox(height: 10.0),
                   Expanded(
                     child: Stack(
                       children: [
                         Container(
                           decoration: myBoxDecoration(),
-                          //color: Colors.lightBlueAccent,
                           height: double.infinity,
                           width: double.infinity,
                           margin: const EdgeInsets.only(
@@ -239,7 +231,7 @@ class _PostScreen extends State {
                         ),
                         validator: (String? value) {
                           if (value == '' || value == null) {
-                            return 'Please enter some text';
+                            return null;
                           }
                           else {
                             location = value;
@@ -247,6 +239,34 @@ class _PostScreen extends State {
                             //print('post message yazdirma yeri');
                           }
                           return null;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                    child: Expanded(
+                      child: TextFormField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        controller: _textFormController3,
+                        textAlign: TextAlign.center,
+                        decoration: new InputDecoration(
+                          hintText: "Enter tags...",
+                          hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                          fillColor: Colors.black,
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(5.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          if (value == '' || value == null) {
+                            return null;
+                          }
+                          else {
+                            tags = value;
+                          }
                         },
                       ),
                     ),
@@ -268,6 +288,7 @@ class _PostScreen extends State {
                       }
                       _textFormController.clear();
                       _textFormController2.clear();
+                      _textFormController3.clear();
 
                     },
                     child: Text(

@@ -29,7 +29,7 @@ class editPost extends StatefulWidget {
 
 
 
-Future validate(String new_caption, String new_location, String new_image_url, Post post, context) async{
+Future validate(String new_caption, String new_location, String new_image_url, String new_tags, Post post, context) async{
 
   final firestoreInstance = FirebaseFirestore.instance;
 
@@ -38,7 +38,7 @@ Future validate(String new_caption, String new_location, String new_image_url, P
   String caption = info1.get('caption');
   String image_url = info1.get('image_url');
   String location = info1.get('location');
-
+  List tags_list = info1.get('tags');
 
   if(new_caption != '' && new_caption != caption){
 
@@ -85,9 +85,17 @@ Future validate(String new_caption, String new_location, String new_image_url, P
     error_text = "Post edited";
   }
 
+  List new_tags_list = new_tags.toLowerCase().split(",");
 
+  if(new_tags_list.isNotEmpty && new_tags_list != tags_list){
 
-
+    await FirebaseFirestore.instance.collection('users').doc(
+        post.owner).collection('posts').doc(post.postId).update(
+        {
+          'tags' : new_tags_list,
+        });
+    error_text = "Post edited";
+  }
 }
 
 final _formKey = GlobalKey<FormState>();
@@ -98,6 +106,7 @@ String new_caption = '';
 String new_location = '';
 String new_image_url = '';
 String error_text = '';
+String new_tags = '';
 
 class _editPostState extends State<editPost> {
   Future pickImage() async {
@@ -124,7 +133,7 @@ class _editPostState extends State<editPost> {
 
     firebase_storage.UploadTask task = await Future.value(uploadTask);
     Future.value(uploadTask).then((value) async => {
-      new_image_url = await value.ref.getDownloadURL(), print(new_image_url), validate(new_caption, new_location, new_image_url, widget.post, context),
+      new_image_url = await value.ref.getDownloadURL(), print(new_image_url), validate(new_caption, new_location, new_image_url, new_tags, widget.post, context),
         print("Upload file path ${value.ref.fullPath}"),ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Uploaded to storage"),
       )),
     }).onError((error, stackTrace) => {
@@ -144,14 +153,13 @@ class _editPostState extends State<editPost> {
         body: Stack(
           children: [
             Container(
-              margin: const EdgeInsets.only(top: 20),
               child: Form(
                 key: _formKey,
                 child: Flex(
                   direction: Axis.vertical,
                   children: [Flexible(
                     child: Padding(
-                      padding: AppDimensions.padding20,
+                      padding: EdgeInsets.all(8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -205,6 +213,24 @@ class _editPostState extends State<editPost> {
                             },
                           ),
                           SizedBox(height: 10,),
+                          TextFormField(
+                            textAlign: TextAlign.center,
+                            style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                            decoration: new InputDecoration(
+                              hintText: "Enter new tags",
+                              hintStyle: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                              fillColor: Colors.black,
+                              border: new OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(0.0),
+                                borderSide: new BorderSide(),
+                              ),
+                            ),
+                            validator: (String? value) {
+                              value != null ? new_tags = value : new_tags = '';
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 10,),
                           ElevatedButton(
                             style: ButtonStyle(
                               backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
@@ -212,7 +238,7 @@ class _editPostState extends State<editPost> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 if(_imageFile == null){
-                                  validate(new_caption, new_location, new_image_url, widget.post, context);
+                                  validate(new_caption, new_location, new_image_url, new_tags, widget.post, context);
                                   Navigator.pop(context);
                                 }
                                 else{

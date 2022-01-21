@@ -23,8 +23,8 @@ class _Search extends State<Search> with TickerProviderStateMixin{
   String name = "";
   String loc = "";
   String cap = "";
-
-  late TabController _tabController = new TabController(length: 3, vsync: this);
+  String tag = "";
+  late TabController _tabController = new TabController(length: 4, vsync: this);
 
   Future<void> getData() async {
 
@@ -65,6 +65,9 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                 ),
                 Tab(
                   text: 'Caption',
+                ),
+                Tab(
+                  text: 'Tags',
                 ),
               ],
               controller: _tabController,
@@ -150,9 +153,65 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                             default:
                               return Expanded(
                                 child: SingleChildScrollView(
-                                  child: ListView(
-                                    padding: AppDimensions.padding20,
-                                    shrinkWrap: true,
+                                  child: Column(
+                                    children:
+                                    snapshot.data!.docs.map((DocumentSnapshot document) {
+
+                                      Post post = Post(text: document['caption'].toString(),
+                                          image_url: document['image_url'].toString() ,
+                                          date: document['datetime'].toDate().toString().substring(0,10),
+                                          likeCount: document['likeCount'],
+                                          commentCount: document['comment'].length,
+                                          comments: document['comment'],
+                                          postId: document.id,
+                                          owner: document['owner']);
+
+                                      return PostTileFeed(
+                                        //userId: _user!.uid,
+                                          post: post,
+                                          delete: () {
+                                            //myPosts.remove(post);
+                                          },
+                                          like: () {},
+                                          searched: true);
+                                    }
+                                    ).toList(),
+                                ),
+                              ),
+                                );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+
+                  Column(
+                    children:
+                    [Padding(padding: AppDimensions.padding20,
+                      child: TextField(
+                        style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,
+                        enableSuggestions: true,
+                        cursorColor: globals.light ? AppColors.appTextColor : darkAppColors.appTextColor,
+                        onChanged: (val) => initiateSearch(val),
+                      ),
+                    ),
+                      //SizedBox(height: 20,),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: cap != "" && cap != null
+                            ?
+                        FirebaseFirestore.instance.collectionGroup('posts').where("text_array", arrayContains: cap).snapshots()
+                            : FirebaseFirestore.instance.collectionGroup('posts').where("text_array", isNull: true).snapshots(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          print(snapshot.error);
+                          if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return new Text('Loading...', style: globals.light ? AppStyles.profileText : darkAppStyles.profileText,);
+                            default:
+                              return Expanded(
+                                child: SingleChildScrollView(
+                                  child: Column(
                                     children:
                                     snapshot.data!.docs.map((DocumentSnapshot document) {
 
@@ -198,10 +257,10 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                     ),
                       //SizedBox(height: 20,),
                       StreamBuilder<QuerySnapshot>(
-                        stream: cap != "" && cap != null
+                        stream: tag != "" && tag != null
                             ?
-                        FirebaseFirestore.instance.collectionGroup('posts').where("text_array", arrayContains: cap).snapshots()
-                            : FirebaseFirestore.instance.collectionGroup('posts').where("text_array", isNull: true).snapshots(),
+                        FirebaseFirestore.instance.collectionGroup('posts').where("tags", arrayContains: tag).snapshots()
+                            : FirebaseFirestore.instance.collectionGroup('posts').where("tags", isNull: true).snapshots(),
                         builder:
                             (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                           print(snapshot.error);
@@ -212,9 +271,7 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                             default:
                               return Expanded(
                                 child: SingleChildScrollView(
-                                  child: ListView(
-                                    padding: AppDimensions.padding20,
-                                    shrinkWrap: true,
+                                  child: Column(
                                     children:
                                     snapshot.data!.docs.map((DocumentSnapshot document) {
 
@@ -230,10 +287,8 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                                           owner: document['owner']);
 
                                       return PostTileFeed(
-                                        //userId: _user!.uid,
                                           post: post,
                                           delete: () {
-                                            //myPosts.remove(post);
                                           },
                                           like: () {},
                                           searched: true);
@@ -261,6 +316,7 @@ class _Search extends State<Search> with TickerProviderStateMixin{
       name = val.toLowerCase().trim();
       loc = val.toLowerCase().trim();
       cap = val.toLowerCase().trim();
+      tag = val.toLowerCase().trim();
     });
   }
 }

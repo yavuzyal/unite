@@ -565,9 +565,29 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                         ),
                                         SizedBox(width: 20),
                                         ElevatedButton(
-                                          onPressed: (){
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                                ChatPage(userId: widget.userId,)),);
+                                          onPressed: () {
+                                            if (following || !ispriv) {
+                                              Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ChatPage(userId: widget
+                                                            .userId,)),);
+                                            }
+                                            else{
+                                              showDialog<String>(
+                                                  context: context,
+                                                  builder: (BuildContext context) => AlertDialog(
+                                                  title: const Text('Error'),
+                                                  content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                  children: const <Widget>[
+                                                  Text('You can\'t message this person.'),
+                                            ],
+                                            ),
+                                            ),
+                                              ),
+                                              );
+                                            }
                                           },
                                           child: Text('Message', style: globals.light ? AppStyles.profileText: darkAppStyles.profileText),
                                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(globals.light ? AppColors.logoColor : darkAppColors.logoColor)),

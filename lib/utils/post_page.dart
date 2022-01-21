@@ -222,9 +222,9 @@ class _PostPageState extends State<PostPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(widget.post.owner_name, style: AppStyles.profileTextName),
+                          Text(widget.post.owner_name, style: globals.light ? AppStyles.profileText : AppStyles.postText),
                           SizedBox(width: 20),
-                          Text(widget.post.text, style: AppStyles.profileText, overflow: TextOverflow.fade,),
+                          Text(widget.post.text, style: globals.light ? AppStyles.profileText : AppStyles.postText, overflow: TextOverflow.fade,),
                         ],
                       ),                      SizedBox(height: 10.0,),
                       Row(
@@ -237,11 +237,11 @@ class _PostPageState extends State<PostPage> {
                             },
                           ),
                           SizedBox(width: 5),
-                          Text('${widget.post.likeCount}', style: AppStyles.profileText),
+                          Text('${widget.post.likeCount}', style: AppStyles.postText),
                           SizedBox(width: 15),
-                          Icon(Icons.chat_bubble_outline, color: AppColors.appTextColor),
+                          Icon(Icons.chat_bubble_outline, color: globals.light ? AppColors.appTextColor : AppColors.postTextColor),
                           SizedBox(width: 5),
-                          Text('${widget.post.comments.length}', style: AppStyles.profileText)
+                          Text('${widget.post.comments.length}', style: AppStyles.postText)
 
                         ],
                       ),
@@ -291,6 +291,7 @@ class _PostPageState extends State<PostPage> {
                               ),
                             ),
                             FloatingActionButton(
+                              backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
                                 onPressed: () async {
                                   if(_formKey.currentState!.validate()){
                                     onPostComment();

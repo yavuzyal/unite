@@ -215,8 +215,6 @@ class _Search extends State<Search> with TickerProviderStateMixin{
                                     children:
                                     snapshot.data!.docs.map((DocumentSnapshot document) {
 
-                                      print(document.id);
-
                                       Post post = Post(text: document['caption'].toString(),
                                           image_url: document['image_url'].toString() ,
                                           date: document['datetime'].toDate().toString().substring(0,10),

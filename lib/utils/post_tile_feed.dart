@@ -97,6 +97,10 @@ class _PostTileFeedState extends State<PostTileFeed> {
 
   Future <bool> alreadyLiked() async {
 
+    DocumentSnapshot user_info = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).get();
+
+    widget.post.owner_name = user_info['username'];
+
     DocumentSnapshot liked = await FirebaseFirestore.instance.collection('users').doc(widget.post.owner).collection('posts').doc(widget.post.postId).get();
 
     String reshared_id = liked.get('sharedFrom');
@@ -249,7 +253,6 @@ class _PostTileFeedState extends State<PostTileFeed> {
       setState(() {
         post.likeCount = post.likeCount - 1;
       });
-
 
       return success;
     }

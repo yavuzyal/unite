@@ -297,7 +297,7 @@ class _PostTileState extends State<PostTile> {
                             children: [
                               Row(
                                 children: [
-                                  Spacer(),
+                                  SizedBox(width: 100),
                                   Center(child: if_reshared == 'Reshared' ? Text('ReUNited From ' + reshared, style: TextStyle(color: Colors.white, )): Text('')),
                                   Spacer(),
                                   _user!.uid == widget.post.owner ? IconButton(padding: EdgeInsets.all(0),
@@ -310,7 +310,17 @@ class _PostTileState extends State<PostTile> {
                                         context,
                                         MaterialPageRoute(builder: (context) => editPost(post: widget.post)),
                                       ),
-                                      icon: Icon(Icons.edit)) : SizedBox.shrink()
+                                      icon: Icon(Icons.edit)) : SizedBox.shrink(),
+                                  IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    alignment: Alignment.center,
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () => bookmark(widget.post),
+                                    iconSize: 20,
+                                    splashRadius: 20,
+                                    color: AppColors.postTextColor,
+                                    icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
+                                  ),
                                 ],
                               ),
                               Row(
@@ -342,16 +352,6 @@ class _PostTileState extends State<PostTile> {
                                               Icons.delete_outline,
                                             ),
                                           ) : SizedBox.shrink(),
-                                          IconButton(
-                                            padding: EdgeInsets.all(0),
-                                            alignment: Alignment.center,
-                                            visualDensity: VisualDensity.compact,
-                                            onPressed: () => bookmark(widget.post),
-                                            iconSize: 20,
-                                            splashRadius: 20,
-                                            color: AppColors.postTextColor,
-                                            icon: bookmarked == true ? Icon(Icons.bookmark) : Icon(Icons.bookmark_outline),
-                                          ),
                                           IconButton(
                                             padding: EdgeInsets.all(0),
                                             alignment: Alignment.center,

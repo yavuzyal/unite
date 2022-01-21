@@ -50,13 +50,12 @@ class _LoggedIn extends State<LoggedIn> {
     Profile(),
     Search(),
     feedPage(),
-    PostScreen(),
     ChatMain(),
     Settings(),
   ];
 
   static List<String> page_names = [
-    "Account", "Search", "Feed", "Add_post", "Messages", "Settings"
+    "Account", "Search", "Feed", "Messages", "Settings"
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -70,10 +69,10 @@ class _LoggedIn extends State<LoggedIn> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.bookmarks),
+          icon: Icon(Icons.add_box),
           color: globals.light ? AppColors.postTextColor : darkAppColors.appTextColor,
           onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => bookmarkPage()),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => PostScreen()),);
           },
         ),
         actions: <Widget>[
@@ -123,16 +122,6 @@ class _LoggedIn extends State<LoggedIn> {
             ),
             label: 'Feed',
             backgroundColor: globals.light ? Colors.redAccent: Colors.red[900],
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box,
-              color: globals.light ? AppColors.appTextColor : darkAppColors.postTextColor,
-            ),
-            activeIcon: Icon(Icons.add_box,
-              color: globals.light ? AppColors.postTextColor : Colors.white,
-            ),
-            label: 'Add Post',
-            backgroundColor: globals.light ? Colors.purple : Colors.purple[700],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.email,

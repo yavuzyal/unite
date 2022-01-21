@@ -72,7 +72,7 @@ class _ChatMain extends State<ChatMain> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
                                 ChatPage(userId: document.id)),);
                           },
-                          title: Text(document['userName'], style: AppStyles.postText),
+                          title: Text(document['userName'], style: globals.light ? AppStyles.profileText : AppStyles.postText),
                         );
                       }).toList(),
                     );

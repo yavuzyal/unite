@@ -126,7 +126,7 @@ class _PostTileFeedState extends State<PostTileFeed> {
     }
 
     tags = await liked.get('tags');
-    
+
     QuerySnapshot user = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').get();
 
     for(var check_post in user.docs){

@@ -199,6 +199,7 @@ class _PostPageState extends State<PostPage> {
           future: MappingOperation().then((result) => liked_already = result),
           builder: (context, snaphot){
             return Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: globals.light ? Colors.white: Colors.grey[700],
               appBar: AppBar(
                 backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
@@ -248,7 +249,7 @@ class _PostPageState extends State<PostPage> {
                       Wrap(
                           children: tags.map(
                                   (tag) => Padding(
-                                padding: const EdgeInsets.all(4.0),
+                                padding: const EdgeInsets.all(2.0),
                                 child: Chip(
                                   label:Text(tag),
                                   labelStyle: AppStyles.tagText,

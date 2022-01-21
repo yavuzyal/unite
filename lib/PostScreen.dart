@@ -146,6 +146,11 @@ class _PostScreen extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
+        title: Text('New post'),
+        centerTitle: true,
+      ),
       backgroundColor: globals.light ? Colors.white: Colors.grey[700],
       body: Stack(
         children: [
@@ -226,7 +231,9 @@ class _PostScreen extends State {
                           fillColor: Colors.black,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(5.0),
-                            borderSide: new BorderSide(),
+                            borderSide: new BorderSide(
+                              color: globals.light ? Color(0xFF000000) : Color(0xFF000000)
+                            ),
                           ),
                         ),
                         validator: (String? value) {

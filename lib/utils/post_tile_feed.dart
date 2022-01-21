@@ -13,6 +13,7 @@ import 'package:mailer/smtp_server.dart';
 import 'package:unite/valueListenables.dart';
 import 'package:unite/usables/config.dart' as globals;
 
+
 class PostTileFeed extends StatefulWidget {
 
   final Post post;
@@ -58,8 +59,6 @@ class _PostTileFeedState extends State<PostTileFeed> {
   }
 
   Future <void>bookmark(Post post)async {
-    DocumentSnapshot user = await FirebaseFirestore.instance
-        .collection('users').doc(_user!.uid).get();
 
     if (bookmarked == false) {
 
@@ -126,8 +125,8 @@ class _PostTileFeedState extends State<PostTileFeed> {
       });
     }
 
-    tags = liked.get('tags');
-
+    tags = await liked.get('tags');
+    
     QuerySnapshot user = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').get();
 
     for(var check_post in user.docs){
@@ -135,8 +134,11 @@ class _PostTileFeedState extends State<PostTileFeed> {
         setState(() {
           bookmarked = true;
         });
+        break;
       }
     }
+
+    print("${widget.post.postId} $bookmarked");
 
     List<dynamic> listOfLikes = [];
 

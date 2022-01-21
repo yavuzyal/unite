@@ -22,5 +22,5 @@ class Post {
   });
 
   @override
-  String toString() => 'Post: $text\nDate: $date\nLikes: $likeCount\nComments: $commentCount';
+  String toString() => 'ID: $postId\nCaption: $text\nDate: $date\nLikes: $likeCount\nComments: $commentCount';
 }

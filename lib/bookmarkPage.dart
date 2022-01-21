@@ -20,17 +20,6 @@ import 'utils/post.dart';
 import 'Greeting.dart';
 import 'Settings.dart';
 
-class NotificationCard{
-  String message = '';
-  String date = '';
-  String url = '';
-  String uid = '';
-  String followReq  = '';
-
-  String notificationId = '';
-
-  NotificationCard({required this.message, required this.date, required this.url, required this.uid, required this.notificationId, required this.followReq});
-}
 
 class bookmarkPage extends StatefulWidget {
   const bookmarkPage({Key? key}) : super(key: key);

@@ -151,6 +151,47 @@ class _LoginPage2 extends State<LoginPage> {
         'deactivated': false,
       });
 
+      List followers = profile_info.get('followers');
+      List following = profile_info.get('following');
+
+      for(int i = 0; i < followers.length; i++){
+
+        String followerId = followers[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followingArray = [];
+
+        followingArray = follower.get('following');
+        int followingCount = follower.get('followingCount');
+
+        followingArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'following': followingArray,
+          'followingCount': followingCount + 1,
+        });
+      }
+
+      for(int i = 0; i < following.length; i++){
+
+        String followerId = following[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followerArray = [];
+
+        followerArray = follower.get('followers');
+        int followerCount = follower.get('followerCount');
+
+        followerArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'followers': followerArray,
+          'followerCount': followerCount + 1,
+        });
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Your account has been reactivated')),
@@ -184,6 +225,47 @@ class _LoginPage2 extends State<LoginPage> {
         'deactivated' : false,
       });
 
+      List followers = profile_info.get('followers');
+      List following = profile_info.get('following');
+
+      for(int i = 0; i < followers.length; i++){
+
+        String followerId = followers[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followingArray = [];
+
+        followingArray = follower.get('following');
+        int followingCount = follower.get('followingCount');
+
+        followingArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'following': followingArray,
+          'followingCount': followingCount + 1,
+        });
+      }
+
+      for(int i = 0; i < following.length; i++){
+
+        String followerId = following[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followerArray = [];
+
+        followerArray = follower.get('followers');
+        int followerCount = follower.get('followerCount');
+
+        followerArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'followers': followerArray,
+          'followerCount': followerCount + 1,
+        });
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Your account has been reactivated')),
@@ -209,6 +291,47 @@ class _LoginPage2 extends State<LoginPage> {
         'profile_pic' : image,
         'deactivated' : false,
       });
+
+      List followers = profile_info.get('followers');
+      List following = profile_info.get('following');
+
+      for(int i = 0; i < followers.length; i++){
+
+        String followerId = followers[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followingArray = [];
+
+        followingArray = follower.get('following');
+        int followingCount = follower.get('followingCount');
+
+        followingArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'following': followingArray,
+          'followingCount': followingCount + 1,
+        });
+      }
+
+      for(int i = 0; i < following.length; i++){
+
+        String followerId = following[i];
+
+        DocumentSnapshot follower = await FirebaseFirestore.instance.collection('users').doc(followerId).get();
+
+        List followerArray = [];
+
+        followerArray = follower.get('followers');
+        int followerCount = follower.get('followerCount');
+
+        followerArray.add(_user!.uid);
+
+        await FirebaseFirestore.instance.collection('users').doc(followerId).update({
+          'followers': followerArray,
+          'followerCount': followerCount + 1,
+        });
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

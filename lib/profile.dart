@@ -143,7 +143,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                 Container(
                                   width: MediaQuery.of(context).size.width*0.3,
                                   child: Text(follower[0],
-                                    style: AppStyles.profileText,
+                                    style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,
                                   ),
                                 ),
                               ],
@@ -273,7 +273,7 @@ class _ProfileState extends State<Profile> with TickerProviderStateMixin{
                                   Container(
                                     width: MediaQuery.of(context).size.width*0.3,
                                     child: Text(follower[0],
-                                      style: AppStyles.profileText,
+                                      style: globals.light ? AppStyles.profileText: darkAppStyles.profileText,
                                     ),
                                   ),
                                 ],

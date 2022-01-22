@@ -60,7 +60,10 @@ class GoogleSignInProvider extends ChangeNotifier{
         "bio": '',
         "profile_pic": '',
         'follow_requests': '',
-        'bookmarks' : []
+        'bookmarks' : [],
+        'deactivated' : false,
+        'old_username' : '',
+        'old_profile_pic' : ''
       });
     }
 

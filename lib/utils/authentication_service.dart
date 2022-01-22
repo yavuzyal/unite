@@ -52,7 +52,10 @@ class AuthenticationService{
         "bio": '',
         "profile_pic": '',
         'follow_requests': '',
-        'bookmarks' : []
+        'bookmarks' : [],
+        'deactivated' : false,
+        'old_username' : '',
+        'old_profile_pic' : ''
       });
 
       await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').add({});

@@ -71,7 +71,10 @@ class _LoginPage2 extends State<LoginPage> {
       "bio": '',
       "profile_pic": '',
       'follow_requests': [],
-      'bookmarks' : []
+      'bookmarks' : [],
+      'deactivated' : false,
+      'old_username' : '',
+      'old_profile_pic' : ''
     });
 
     await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({});
@@ -130,7 +133,29 @@ class _LoginPage2 extends State<LoginPage> {
 
   Future GoogleLogin() async {
 
-    //DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    final _user = FirebaseAuth.instance.currentUser;
+
+    DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    bool deactivated = profile_info.get('deactivated');
+
+    if(deactivated) {
+      String image = profile_info.get("old_profile_pic");
+      String name = profile_info.get("old_username");
+
+      await FirebaseFirestore.instance.collection('users')
+          .doc(_user!.uid)
+          .update({
+        'username': name,
+        'profile_pic': image,
+        'deactivated': false,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Your account has been reactivated')),
+      );
+    }
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
@@ -138,8 +163,59 @@ class _LoginPage2 extends State<LoginPage> {
     //FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
   }
 
+  Future login() async{
+
+    final _user = FirebaseAuth.instance.currentUser;
+
+    DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    bool deactivated = profile_info.get('deactivated');
+
+    print(deactivated);
+
+    if(deactivated){
+
+      String image = profile_info.get("old_profile_pic");
+      String name = profile_info.get("old_username");
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'username' : name,
+        'profile_pic' : image,
+        'deactivated' : false,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Your account has been reactivated')),
+      );
+    }
+  }
+
   Future facebooklogin() async {
 
+    final _user = FirebaseAuth.instance.currentUser;
+
+    DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    bool deactivated = profile_info.get('deactivated');
+
+    if(deactivated){
+
+      String image = profile_info.get("old_profile_pic");
+      String name = profile_info.get("old_username");
+
+      await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+        'username' : name,
+        'profile_pic' : image,
+        'deactivated' : false,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Your account has been reactivated')),
+      );
+
+    }
     //DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
     Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
@@ -253,9 +329,9 @@ class _LoginPage2 extends State<LoginPage> {
                               backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
                             ),                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-
                                 await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((currentUser) => {
                                   setState(() {
+                                    login();
                                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Successful')),);
                                     FirebaseAnalytics.instance.logScreenView(screenName: "Profile");
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()),);

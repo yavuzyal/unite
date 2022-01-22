@@ -221,6 +221,9 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
 
     followerArray = follower.get('followers');
     String private = follower.get('isPrivate');
+    bool deac = follower.get('deactivated');
+
+    deactivated = deac;
 
     if(private == 'private'){
       ispriv = true;
@@ -418,6 +421,65 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
    return SizedBox.shrink();
   }
 
+  Widget deactivated_page(){
+    return Scaffold(
+                  backgroundColor: globals.light ? Colors.white: Colors.grey[700],
+                  appBar: AppBar(
+                    backgroundColor: globals.light ? Colors.lightBlueAccent : Colors.black,
+                    title: Text(user),
+                    centerTitle: true,
+                  ),
+                  body:
+                  RefreshIndicator(
+                    onRefresh: getPosts,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Padding(
+                              padding: AppDimensions.padding8,
+                              child: Column(
+                                children: [
+                                  Image.asset('assets/unite_logo.png', height: 50, width: 50,),
+                                  SizedBox(height: 30.0,),
+                                  ClipRRect(
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (user_profile.profile_pic != '') {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(builder: (context) =>
+                                                  SliderShowFullmages(listImagesModel: [user_profile.profile_pic])));
+                                        }
+                                      },
+                                      child: CircleAvatar(
+                                        backgroundColor: globals.light ? AppColors.logoColor : darkAppColors.logoColor,
+                                        child: ClipOval(
+                                          child:
+                                          user_profile.profile_pic == '' ?
+                                          Image.asset('assets/usericon.png') :
+                                          Image.network(user_profile.profile_pic),
+                                          //Image.network('https://pbs.twimg.com/profile_images/477095600941707265/p1_nev2e_400x400.jpeg', fit: BoxFit.cover,),
+                                        ),
+                                        radius: 70,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height : 15),
+                                  Text(user, style: globals.light ? AppStyles.profileName: darkAppStyles.profileName, textAlign: TextAlign.center,),
+                                  SizedBox(height : 15),
+                                  Text("User has been deactivated", style: globals.light ? AppStyles.profileText: darkAppStyles.profileText, textAlign: TextAlign.center,),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),),
+                );
+  }
+
   //firebase_storage.FirebaseStorage.instance.ref().child('posts').child(_user!.uid).child('/$fileName');
 
   List<Post> myPosts = [];
@@ -427,12 +489,17 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
   List followingList = [];
   final _user = FirebaseAuth.instance.currentUser;
   late TabController _tabController = new TabController(length: 3, vsync: this);
+  bool deactivated = false;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: Future.wait([ ifPrivate(), isFollowing()]),
         builder: (context, snapshot) {
+          print(deactivated);
+          if(deactivated == true){
+            return deactivated_page();
+          }
           return FutureBuilder(
               future: getPosts(),
               builder: (context, snapshot){
@@ -484,7 +551,6 @@ class _SearchedProfile extends State<SearchedProfile> with TickerProviderStateMi
                                     ),
                                     SizedBox(height : 15),
                                     Text(user, style: globals.light ? AppStyles.profileName: darkAppStyles.profileName, textAlign: TextAlign.center,),
-                                    //user!.displayName!
 
                                     Padding(
                                       padding: AppDimensions.paddingltrb,

@@ -67,6 +67,26 @@ class _Settings2 extends State<Settings> {
 
   }
 
+  Future deactivateAccount() async {
+
+    final _user = FirebaseAuth.instance.currentUser;
+
+    DocumentSnapshot userInfo = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+
+    String image = userInfo.get("profile_pic");
+    String name = userInfo.get("username");
+
+    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).update({
+      'username' : "UNIte user",
+      'profile_pic' : "",
+      'deactivated' : true,
+      'old_username' : name,
+      'old_profile_pic' : image,
+      'isPrivate' : 'public'
+    });
+
+    }
+
   Future deleteAccount() async {
 
     final _user = FirebaseAuth.instance.currentUser;
@@ -154,7 +174,7 @@ class _Settings2 extends State<Settings> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset('assets/unite_logo.png', height: 150, width: 150,),
+                          Image.asset('assets/unite_logo.png', height: 100, width: 100,),
                           SizedBox(height: 20.0,),
                           Text("UNIte", style: globals.light ? AppStyles.appNameMainPage : darkAppStyles.appNameMainPage,),
                           SizedBox(height: 20.0,),
@@ -247,21 +267,43 @@ class _Settings2 extends State<Settings> {
                                     content: Text('Logged Out')),
                               );
 
-                              //setLogOut();
 
                             },
                             child: Text('Log Out', style: globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),
-
                           SizedBox(height: 10,),
                           ElevatedButton(
                             style: ButtonStyle(
                                 backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
                                 minimumSize: MaterialStateProperty.all(Size(200,50))
-                            ),                             onPressed: () {
-                              setState(() async {
+                            ),
+                            onPressed: () async{
+                              deactivateAccount();
+                              await FirebaseAuth.instance.signOut();
+
+                              final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                              provider.googleLogout();
+
+                              await FacebookLogin().logOut();
+
+                              setState(() {
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              );
+                          }
+                              );
+                              },
+                            child: Text("Deactivate account", style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
+                          ),
+                          SizedBox(height: 10,),
+                          ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
+                                minimumSize: MaterialStateProperty.all(Size(200,50))
+                            ),
+                            onPressed: () {
                                 deleteAccount();
-                              });
                             },
                             child: Text("Delete account", style:  globals.light ? AppStyles.buttonText :  darkAppStyles.buttonText,),
                           ),

@@ -15,6 +15,7 @@ import 'package:unite/RegisterPage.dart';
 import 'package:unite/google_sign_in.dart';
 import 'package:unite/main.dart';
 import 'package:unite/setUsername.dart';
+import 'package:unite/utils/authentication_service.dart';
 import 'package:unite/utils/dimensions.dart';
 import 'package:unite/utils/styles.dart';
 import 'package:unite/usables/config.dart' as globals;
@@ -129,7 +130,7 @@ class _LoginPage2 extends State<LoginPage> {
 
   Future GoogleLogin() async {
 
-    DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    //DocumentSnapshot profile_info = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()),);
 
@@ -285,11 +286,13 @@ class _LoginPage2 extends State<LoginPage> {
                           ElevatedButton.icon(
                             style: ButtonStyle(
                               backgroundColor: globals.light ? MaterialStateProperty.all<Color>(AppColors.logoColor) : MaterialStateProperty.all<Color>(darkAppColors.logoColor),
-                            ),                              onPressed: (){
-                                final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
-                                provider.googleLogin();
+                            ),
+                            onPressed: () async{
 
-                                GoogleLogin();
+                                final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
+                                provider.googleLogin().then((value) => GoogleLogin());
+
+                                //GoogleLogin();
                               },
                             label: Text("Sign In with Google", style: TextStyle(fontSize: 16),),
                             icon: FaIcon(FontAwesomeIcons.google),

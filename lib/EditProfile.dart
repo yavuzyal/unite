@@ -77,6 +77,16 @@ class _EditProfile extends State {
     });
   }
 
+  Future<bool> alreadyTaken(String username) async{
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username).get();
+
+    if(snap.docs.isNotEmpty){
+      return true;
+    }
+
+    return false;
+  }
+
   Future uploadImageToFirebase(BuildContext context) async {
     String fileName = basename(_imageFile!.path);
     firebase_storage.Reference ref =
@@ -318,22 +328,36 @@ class _EditProfile extends State {
                         onPressed: () {
                           if(_formKey.currentState!.validate()){
 
-                            if(_imageFile == null){
-                              uploadProfile(username,school,major,age,interest,bio,'');
-                              Navigator.pop(context);
-                                  }
-                            else{
-                              uploadImageToFirebase(context);
-                              Navigator.pop(context);
-                                  }
+                            alreadyTaken(username).then((res) async {
+                              if(res){
+                                return showDialog(
+                                    context: context,
+                                    builder: (context){
+                                      return AlertDialog(
+                                        title: Text('Username already taken!'),
+                                        content: Text('Please select another one!'),
+                                      );
+                                    });
+                              }
+                              else {
+                                if(_imageFile == null){
+                                  uploadProfile(username,school,major,age,interest,bio,'');
+                                  Navigator.pop(context);
+                                }
+                                else{
+                                  uploadImageToFirebase(context);
+                                  Navigator.pop(context);
+                                }
 
-                            setState(() {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Profile Updated')),
-                              );
-                            }
-                            );
+                                setState(() {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Profile Updated')),
+                                  );
+                                }
+                                );
+                              }
+                            });
                           }
                         },
                         child: Text(

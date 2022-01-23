@@ -43,6 +43,16 @@ class _RegisterPage2 extends State<RegisterPage> {
     return AppColors.buttonColor;
   }
 
+  Future<bool> alreadyTaken(String username) async{
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username).get();
+
+    if(snap.docs.isNotEmpty){
+      return true;
+    }
+
+    return false;
+  }
+
   final _formKey = GlobalKey<FormState>();
   String email = "";
   String password = "";
@@ -172,49 +182,65 @@ class _RegisterPage2 extends State<RegisterPage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
 
-                            await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+                            alreadyTaken(username).then((res) async {
+                              if(res){
+                                return showDialog(
+                                    context: context,
+                                    builder: (context){
+                                      return AlertDialog(
+                                        title: Text('Username already taken!'),
+                                        content: Text('Please select another one!'),
+                                      );
+                                    });
+                              }
+                              else{
+                                await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
-                            List<String> indexList = [];
+                                List<String> indexList = [];
 
-                            username = username.toLowerCase().trim();
+                                username = username.toLowerCase().trim();
 
-                            for(int i = 1; i <= username.length; i++){
-                              indexList.add(username.substring(0, i).toLowerCase());
-                            }
+                                for(int i = 1; i <= username.length; i++){
+                                  indexList.add(username.substring(0, i).toLowerCase());
+                                }
 
-                            final _user = await FirebaseAuth.instance.currentUser;
+                                final _user = await FirebaseAuth.instance.currentUser;
 
-                            await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
-                              'username' : username,
-                              'searchKey': indexList,
-                              'userId': _user!.uid,
-                              'isPrivate': 'public',
-                              'followers': [],
-                              'followerCount': 0,
-                              'following': [],
-                              'followingCount': 0,
-                              "school" : '',
-                              "major" : '',
-                              "age" : '',
-                              "interest": '',
-                              "bio": '',
-                              "profile_pic": '',
-                              'follow_requests': [],
+                                await FirebaseFirestore.instance.collection('users').doc(_user!.uid).set({
+                                  'username' : username,
+                                  'searchKey': indexList,
+                                  'userId': _user!.uid,
+                                  'isPrivate': 'public',
+                                  'followers': [],
+                                  'followerCount': 0,
+                                  'following': [],
+                                  'followingCount': 0,
+                                  "school" : '',
+                                  "major" : '',
+                                  "age" : '',
+                                  "interest": '',
+                                  "bio": '',
+                                  "profile_pic": '',
+                                  'follow_requests': [],
+                                });
+
+                                //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
+
+                                setState(() {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Signed Up Successfully!')),
+                                  );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()),
+                                  );
+                                });
+                                //database.child('users/').child(username).set({'email': email, 'password': password})
+                                //    .onError((error, stackTrace) => print("There is an error of setting the email and password to Firebase dB"));
+                              }
                             });
-
-                            setState(() {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Signed Up Successfully!')),
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                              );
-                            });
-                            //database.child('users/').child(username).set({'email': email, 'password': password})
-                            //    .onError((error, stackTrace) => print("There is an error of setting the email and password to Firebase dB"));
                           }
                         },
                         child: const Text(

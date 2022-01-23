@@ -291,11 +291,12 @@ class _PostScreen extends State {
                         else{
                           uploadImageToFirebase(context, post_message);
                         }
-
                       }
                       _textFormController.clear();
                       _textFormController2.clear();
                       _textFormController3.clear();
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedIn()));
 
                     },
                     child: Text(

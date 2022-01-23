@@ -176,6 +176,13 @@ class _Settings2 extends State<Settings> {
 
     await FirebaseFirestore.instance.collection("users").doc(_user!.uid).delete().then((_){
       _user!.delete();
+
+      setState(() {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      });
     });
 
   }

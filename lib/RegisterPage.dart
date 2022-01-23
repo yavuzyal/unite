@@ -222,6 +222,9 @@ class _RegisterPage2 extends State<RegisterPage> {
                                   "bio": '',
                                   "profile_pic": '',
                                   'follow_requests': [],
+                                  'deactivated' : false,
+                                  'old_username' : '',
+                                  'old_profile_pic' : ''
                                 });
 
                                 //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});

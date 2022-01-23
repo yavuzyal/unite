@@ -77,10 +77,6 @@ class _LoginPage2 extends State<LoginPage> {
       'old_profile_pic' : ''
     });
 
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('notifications').add({});
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('posts').add({});
-    await FirebaseFirestore.instance.collection('users').doc(_user!.uid).collection('bookmarks').add({});
-
   }
 
 

@@ -202,8 +202,6 @@ class _RegisterPage2 extends State<RegisterPage> {
                               'follow_requests': [],
                             });
 
-                            //await FirebaseFirestore.instance.collection('users').add({'username' : username, 'searchKey': indexList});    //.add({'username' :username});
-
                             setState(() {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
